@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Drill and Blast</string>
+    <string name="new_project_button">New Drill Log</string>
+    <string name="project_name_label">Project Name</string>
+    <string name="contractor_name_label">Contractor Name</string>
+    <string name="shot_number_label">Shot Number</string>
+    <string name="start_date_label">Start Date</string>
+    <string name="save_button">Save</string>
+</resources>
