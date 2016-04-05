@@ -24,7 +24,20 @@ public class ProjectActivity extends AppCompatActivity {
             position = process.getExtras().getInt("key");
             setProjectData(position);
         }
+
         Button saveButton = (Button) findViewById(R.id.save_project_button);
+        Button drillLogButton = (Button) findViewById(R.id.drill_log_button);
+
+        if (drillLogButton != null) {
+            drillLogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent toDrillGrid = new Intent(ProjectActivity.this, GridActivity.class);
+                    startActivity(toDrillGrid);
+                    finish();
+                }
+            });
+        }
 
         if (saveButton != null) {
             saveButton.setOnClickListener(new View.OnClickListener() {
