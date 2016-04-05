@@ -10,17 +10,19 @@ public class Project {
     private String contractorName;
     private Date startDate;
     private double shotNumber;
+    private String drillerName;
 
     public Project() {
         super();
     }
 
-    public Project(String projectName, String contractorName, Date startDate, double shotNumber) {
+    public Project(String projectName, String contractorName, Date startDate, double shotNumber, String drillerName) {
         super();
         this.projectName = projectName;
         this.contractorName = contractorName;
         this.startDate = startDate;
         this.shotNumber = shotNumber;
+        this.drillerName = drillerName;
     }
 
     public String getProjectName() {
@@ -53,4 +55,12 @@ public class Project {
         return this.projectName;
     }
 
+
+    public String getDrillerName() {
+        return drillerName;
+    }
+
+    public void setDrillerName(String drillerName){
+       this.drillerName = drillerName;
+    }
 }

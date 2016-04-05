@@ -71,14 +71,17 @@ public class ProjectActivity extends AppCompatActivity {
         EditText contractor_name = (EditText) findViewById(R.id.contractor_name_text_field);
         EditText start_date = (EditText) findViewById(R.id.start_date_text_field);
         EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
+        EditText drillerName = (EditText) findViewById(R.id.driller_name_text_field);
 
         String shotNumber = String.valueOf(project.getShotNumber());
 
+        drillerName.setText(project.getDrillerName());
         project_name.setText(project.getProjectName());
         contractor_name.setText(project.getContractorName());
         //bug: need to figure out how to use our date as a string and place it in the start date field
         //start_date.setText(project.getStartDate());
         shot_number.setText(shotNumber);
+
     }
 
     public Project createProject(){
@@ -86,9 +89,11 @@ public class ProjectActivity extends AppCompatActivity {
         EditText contractor_name = (EditText) findViewById(R.id.contractor_name_text_field);
         EditText start_date = (EditText) findViewById(R.id.start_date_text_field);
         EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
+        EditText drillerName = (EditText) findViewById(R.id.driller_name_text_field);
 
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
+        String drillName = drillerName.getText().toString();
         String projectName = project_name.getText().toString();
         String contractorName = contractor_name.getText().toString();
         String date = start_date.getText().toString();
@@ -101,6 +106,6 @@ public class ProjectActivity extends AppCompatActivity {
         }
         double shotNumber = Double.parseDouble(shot_number.getText().toString());
 
-        return new Project(projectName, contractorName, startDate, shotNumber);
+        return new Project(projectName, contractorName, startDate, shotNumber, drillName);
     }
 }
