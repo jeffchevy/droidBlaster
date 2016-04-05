@@ -19,11 +19,11 @@ import java.util.Date;
 
 public class ProjectListActivity extends AppCompatActivity {
     //I don't like the use of static here, but it will work for now.
-    static final Project teton = new Project("Teton", "Zach", new Date(), 1,"Fred");
-    static final Project wasatch = new Project("Wasatch", "Brent", new Date(), 1,"Tyler");
-    static final Project yellowstone = new Project("Yellowstone", "Tyler", new Date(), 1,"Tony");
-    static final Project glacier = new Project("Glacier", "Jeff", new Date(), 1,"TJ");
-    static final Project kaysville = new Project("Kaysville", "Jamila", new Date(), 1,"Marquoin");
+    static final Project teton = new Project("Teton", "Zach", new Date(), 1,"Fred",23);
+    static final Project wasatch = new Project("Wasatch", "Brent", new Date(), 1,"Tyler",24);
+    static final Project yellowstone = new Project("Yellowstone", "Tyler", new Date(), 1,"Tony",68);
+    static final Project glacier = new Project("Glacier", "Jeff", new Date(), 1,"TJ",68);
+    static final Project kaysville = new Project("Kaysville", "Jamila", new Date(), 1,"Marquoin",87);
     static final ArrayList<Project> PROJECTS = new ArrayList<Project>(Arrays.asList(teton, wasatch, yellowstone, glacier, kaysville));
 
     @Override

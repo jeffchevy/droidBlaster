@@ -101,15 +101,34 @@
         android:layout_alignEnd="@+id/contractor_name_text_field" />
 
     <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:id="@+id/shot_number_label"
+    android:text="@string/shot_number_label"
+    android:layout_below="@+id/driller_name_text_field"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/shot_number_text_field"
+        android:layout_below="@+id/shot_number_label"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <!--Bit size-->
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/shot_number_label"
-        android:text="@string/shot_number_label"
-        android:layout_below="@+id/driller_name_text_field"
-        android:layout_above="@+id/shot_number_text_field"
-        android:layout_alignRight="@+id/driller_name_text_field"
-        android:layout_alignEnd="@+id/driller_name_text_field"
+        android:id="@+id/bit_size_label"
+        android:text="@string/bit_size_label"
+        android:layout_below="@+id/start_date_text_field"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -118,47 +137,52 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:id="@+id/shot_number_text_field"
-        android:layout_centerVertical="true"
+        android:id="@+id/bit_size_text_field"
+        android:layout_below="@+id/bit_size_label"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/start_date_text_field"
-        android:layout_alignEnd="@+id/start_date_text_field" />
+        android:layout_alignRight="@+id/save_project_button"
+        android:layout_alignEnd="@+id/save_project_button" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/save_project_button"
-        android:layout_marginTop="47dp"
         android:text="@string/save_button"
         android:background="#4aec68"
-        android:layout_below="@+id/shot_number_text_field"
-        android:layout_alignRight="@+id/shot_number_text_field"
-        android:layout_alignEnd="@+id/shot_number_text_field"
+        android:layout_above="@+id/drill_log_button"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:drawableRight="@mipmap/ic_save_black_24dp"
+        />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/drill_log_button"
         android:text="Drill Log"
-        android:background="#4a70ec"
-        android:layout_below="@+id/save_project_button"
+        android:background="#EC407A"
+        android:layout_above="@+id/daily_log_button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/save_project_button"
-        android:layout_alignEnd="@+id/save_project_button" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:drawableRight="@mipmap/ic_description_black_24dp"
+        />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/daily_log_button"
         android:text="Daily Log"
         android:background="#4a70ec"
-        android:layout_below="@+id/drill_log_button"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/drill_log_button"
-        android:layout_alignEnd="@+id/drill_log_button" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:drawableRight="@mipmap/ic_event_black_24dp"
+        />
     />
 
 </RelativeLayout>

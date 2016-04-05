@@ -11,18 +11,20 @@ public class Project {
     private Date startDate;
     private double shotNumber;
     private String drillerName;
+    private double bitSize;
 
     public Project() {
         super();
     }
 
-    public Project(String projectName, String contractorName, Date startDate, double shotNumber, String drillerName) {
+    public Project(String projectName, String contractorName, Date startDate, double shotNumber, String drillerName, double bitSize) {
         super();
         this.projectName = projectName;
         this.contractorName = contractorName;
         this.startDate = startDate;
         this.shotNumber = shotNumber;
         this.drillerName = drillerName;
+        this.bitSize = bitSize;
     }
 
     public String getProjectName() {
@@ -63,4 +65,13 @@ public class Project {
     public void setDrillerName(String drillerName){
        this.drillerName = drillerName;
     }
+
+    public double getBitSize(){
+        return bitSize;
+    }
+    public void setBitSiZe(double bitSiZe){
+        this.bitSize=bitSiZe;
+    }
+
+
 }
