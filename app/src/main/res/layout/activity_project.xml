@@ -72,21 +72,21 @@
         android:inputType="textPersonName"
         android:ems="10"
         android:id="@+id/driller_name_text_field"
-        android:layout_below="@+id/contractor_name_label"
+        android:layout_below="@+id/driller_name_label"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/contractor_name_text_field"
+        android:layout_alignEnd="@+id/contractor_name_text_field" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/start_date_label"
-        android:layout_below="@+id/driller_name_text_field"
+        android:text="@string/start_date_label"
+        android:layout_below="@+id/shot_number_text_field"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:text="@string/start_date_label"/>
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -97,18 +97,21 @@
         android:layout_below="@+id/start_date_label"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/contractor_name_text_field"
+        android:layout_alignEnd="@+id/contractor_name_text_field" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/shot_number_label"
-        android:layout_below="@+id/start_date_text_field"
+        android:text="@string/shot_number_label"
+        android:layout_below="@+id/driller_name_text_field"
+        android:layout_above="@+id/shot_number_text_field"
+        android:layout_alignRight="@+id/driller_name_text_field"
+        android:layout_alignEnd="@+id/driller_name_text_field"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:text="@string/shot_number_label"/>
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -116,11 +119,11 @@
         android:inputType="number"
         android:ems="10"
         android:id="@+id/shot_number_text_field"
-        android:layout_below="@+id/shot_number_label"
+        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/start_date_text_field"
+        android:layout_alignEnd="@+id/start_date_text_field" />
 
     <Button
         android:layout_width="wrap_content"
