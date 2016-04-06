@@ -29,11 +29,14 @@ import java.util.Date;
 public class ProjectListActivity extends AppCompatActivity {
     //I don't like the use of static here, but it will work for now.
     private static final String TAG = "ProjectListActivity";
-    static final Project teton = new Project("Teton", "Zach", new Date(), 1,"Fred");
-    static final Project wasatch = new Project("Wasatch", "Brent", new Date(), 1,"Tyler");
-    static final Project yellowstone = new Project("Yellowstone", "Tyler", new Date(), 1,"Tony");
-    static final Project glacier = new Project("Glacier", "Jeff", new Date(), 1,"TJ");
-    static final Project kaysville = new Project("Kaysville", "Jamila", new Date(), 1,"Marquoin");
+    static final DrillLog drillLog = new DrillLog("tom", 2);
+    static final ArrayList<DrillLog> drillLogs = new ArrayList<DrillLog>(Arrays.asList(drillLog));
+
+    static final Project teton = new Project("Teton", "Zach", new Date(), 1,"Fred", 2, drillLogs);
+    static final Project wasatch = new Project("Wasatch", "Brent", new Date(), 1,"Tyler", 2, new ArrayList<DrillLog>());
+    static final Project yellowstone = new Project("Yellowstone", "Tyler", new Date(), 1,"Tony", 2, new ArrayList<DrillLog>());
+    static final Project glacier = new Project("Glacier", "Jeff", new Date(), 1,"TJ", 2, new ArrayList<DrillLog>());
+    static final Project kaysville = new Project("Kaysville", "Jamila", new Date(), 1,"Marquoin", 2, new ArrayList<DrillLog>());
     static final ArrayList<Project> PROJECTS = new ArrayList<Project>(Arrays.asList(teton, wasatch, yellowstone, glacier, kaysville));
 
     @Override
@@ -43,7 +46,7 @@ public class ProjectListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_project_list);
 
-        HttpURLConnection urlConnection = null;
+ /*       HttpURLConnection urlConnection = null;
         try {
             Log.d(TAG, "http://www.android.com/");
             URL url = new URL("http://www.android.com/");
@@ -55,7 +58,7 @@ public class ProjectListActivity extends AppCompatActivity {
             while (dis.available() != 0) {
                 System.out.println(dis.readLine());
             }
-*/
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -64,7 +67,7 @@ public class ProjectListActivity extends AppCompatActivity {
         finally {
             urlConnection.disconnect();
         }
-
+*/
         final ArrayAdapter arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, PROJECTS);
 
         ListView listView = (ListView) findViewById(R.id.project_list_view);

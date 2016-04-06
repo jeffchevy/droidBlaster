@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ProjectActivity extends AppCompatActivity {
@@ -32,8 +33,9 @@ public class ProjectActivity extends AppCompatActivity {
             drillLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent toDrillGrid = new Intent(ProjectActivity.this, GridActivity.class);
-                    startActivity(toDrillGrid);
+                    Intent toDrillLogList = new Intent(ProjectActivity.this, DrillLogListActivity.class);
+                    toDrillLogList.putExtra("key", position);
+                    startActivity(toDrillLogList);
                     finish();
                 }
             });
@@ -125,6 +127,8 @@ public class ProjectActivity extends AppCompatActivity {
 
         double bitSize = Double.parseDouble(bit_Size.getText().toString());
 
-        return new Project(projectName, contractorName, startDate, shotNumber, drillName, bitSize);
+        ArrayList<DrillLog> drillLogs = new ArrayList<>();
+
+        return new Project(projectName, contractorName, startDate, shotNumber, drillName, bitSize, drillLogs);
     }
 }
