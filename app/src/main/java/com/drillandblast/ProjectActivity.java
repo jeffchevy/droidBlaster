@@ -28,6 +28,7 @@ public class ProjectActivity extends AppCompatActivity {
 
         Button saveButton = (Button) findViewById(R.id.save_project_button);
         Button drillLogButton = (Button) findViewById(R.id.drill_log_button);
+        Button dailyLogButton = (Button) findViewById(R.id.daily_log_button);
 
         if (drillLogButton != null) {
             drillLogButton.setOnClickListener(new View.OnClickListener() {
@@ -36,6 +37,17 @@ public class ProjectActivity extends AppCompatActivity {
                     Intent toDrillLogList = new Intent(ProjectActivity.this, DrillLogListActivity.class);
                     toDrillLogList.putExtra("key", position);
                     startActivity(toDrillLogList);
+                    finish();
+                }
+            });
+        }
+        if (dailyLogButton != null) {
+            dailyLogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent toDailyLogList = new Intent(ProjectActivity.this, DailyLogActivity.class);
+                    toDailyLogList.putExtra("key", position);
+                    startActivity(toDailyLogList);
                     finish();
                 }
             });
