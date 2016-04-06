@@ -24,7 +24,20 @@ public class ProjectActivity extends AppCompatActivity {
             position = process.getExtras().getInt("key");
             setProjectData(position);
         }
+
         Button saveButton = (Button) findViewById(R.id.save_project_button);
+        Button drillLogButton = (Button) findViewById(R.id.drill_log_button);
+
+        if (drillLogButton != null) {
+            drillLogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent toDrillGrid = new Intent(ProjectActivity.this, GridActivity.class);
+                    startActivity(toDrillGrid);
+                    finish();
+                }
+            });
+        }
 
         if (saveButton != null) {
             saveButton.setOnClickListener(new View.OnClickListener() {
@@ -72,8 +85,10 @@ public class ProjectActivity extends AppCompatActivity {
         EditText start_date = (EditText) findViewById(R.id.start_date_text_field);
         EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
         EditText drillerName = (EditText) findViewById(R.id.driller_name_text_field);
+        EditText bit_Size = (EditText) findViewById(R.id.bit_size_text_field);
 
         String shotNumber = String.valueOf(project.getShotNumber());
+        String bitSize =String.valueOf(project.getBitSize());
 
         drillerName.setText(project.getDrillerName());
         project_name.setText(project.getProjectName());
@@ -81,6 +96,7 @@ public class ProjectActivity extends AppCompatActivity {
         //bug: need to figure out how to use our date as a string and place it in the start date field
         //start_date.setText(project.getStartDate());
         shot_number.setText(shotNumber);
+
 
     }
 
@@ -90,6 +106,7 @@ public class ProjectActivity extends AppCompatActivity {
         EditText start_date = (EditText) findViewById(R.id.start_date_text_field);
         EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
         EditText drillerName = (EditText) findViewById(R.id.driller_name_text_field);
+        EditText bit_Size = (EditText) findViewById(R.id.bit_size_text_field);
 
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -106,6 +123,8 @@ public class ProjectActivity extends AppCompatActivity {
         }
         double shotNumber = Double.parseDouble(shot_number.getText().toString());
 
-        return new Project(projectName, contractorName, startDate, shotNumber, drillName);
+        double bitSize = Double.parseDouble(bit_Size.getText().toString());
+
+        return new Project(projectName, contractorName, startDate, shotNumber, drillName, bitSize);
     }
 }
