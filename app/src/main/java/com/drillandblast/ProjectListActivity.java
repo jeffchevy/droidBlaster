@@ -3,6 +3,7 @@ package com.drillandblast;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,12 +14,21 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.view.View.OnClickListener;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
 public class ProjectListActivity extends AppCompatActivity {
     //I don't like the use of static here, but it will work for now.
+    private static final String TAG = "ProjectListActivity";
     static final Project teton = new Project("Teton", "Zach", new Date(), 1,"Fred");
     static final Project wasatch = new Project("Wasatch", "Brent", new Date(), 1,"Tyler");
     static final Project yellowstone = new Project("Yellowstone", "Tyler", new Date(), 1,"Tony");
@@ -29,7 +39,31 @@ public class ProjectListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "Starting onCreate");
+
         setContentView(R.layout.activity_project_list);
+
+        HttpURLConnection urlConnection = null;
+        try {
+            Log.d(TAG, "http://www.android.com/");
+            URL url = new URL("http://www.android.com/");
+/*
+            urlConnection = (HttpURLConnection) url.openConnection();
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            DataInputStream dis = new DataInputStream(in);
+
+            while (dis.available() != 0) {
+                System.out.println(dis.readLine());
+            }
+*/
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            urlConnection.disconnect();
+        }
 
         final ArrayAdapter arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, PROJECTS);
 
