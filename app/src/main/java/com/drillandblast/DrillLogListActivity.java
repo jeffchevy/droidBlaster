@@ -17,10 +17,10 @@ public class DrillLogListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drill_log_list);
 
-        int position = 0;
+        //final int position = 0;
 
         Intent process = getIntent();
-        position = process.getExtras().getInt("key");
+        final int position = process.getExtras().getInt("key");
 
         Project project = ProjectListActivity.PROJECTS.get(position);
         ArrayList<DrillLog> drillLogs = project.getDrillLogs();
@@ -38,14 +38,14 @@ public class DrillLogListActivity extends AppCompatActivity {
             newDrillLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Project project = ProjectListActivity.PROJECTS.get(0);
-                    project.addDrillLog(new DrillLog("Tom", 3));
+
+                    //project.addDrillLog(new DrillLog("Tom", 3));
                     //Intent toDrillLog = new Intent(DrillLogListActivity.this, GridActivity.class);
                     //startActivity(toDrillLog);
                     //finish();
-                    Intent toProject = new Intent(DrillLogListActivity.this, ProjectActivity.class);
-                    toProject.putExtra("key", 0);
-                    startActivity(toProject);
+                    Intent toDrillLog = new Intent(DrillLogListActivity.this, DrillLogActivity.class);
+                    toDrillLog.putExtra("key", position);
+                    startActivity(toDrillLog);
                     finish();
                 }
             });

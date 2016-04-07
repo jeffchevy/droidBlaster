@@ -1,5 +1,8 @@
 package com.drillandblast;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 /**
  * Created by Zachary on 4/5/2016.
  */
@@ -7,15 +10,19 @@ public class DrillLog {
 
     private String drillerName;
     private double drillId;
+    private Date drillDate;
+    private ArrayList<GridCoordinate> gridCoordinates;
 
     public DrillLog() {
         super();
     }
 
-    public DrillLog(String drillerName, double drillId) {
+    public DrillLog(String drillerName, double drillId, Date drillDate, ArrayList<GridCoordinate> gridCoordinates) {
         super();
         this.drillerName = drillerName;
         this.drillId = drillId;
+        this.drillDate = drillDate;
+        this.gridCoordinates = gridCoordinates;
     }
 
     public String getDrillerName() {
@@ -34,8 +41,24 @@ public class DrillLog {
         this.drillId = drillId;
     }
 
+    public Date getDrillDate() {
+        return drillDate;
+    }
+
+    public void setDrillDate(Date drillDate) {
+        this.drillDate = drillDate;
+    }
+
+    public ArrayList<GridCoordinate> getGridCoordinates() {
+        return gridCoordinates;
+    }
+
+    public void setGridCoordinates(ArrayList<GridCoordinate> gridCoordinates) {
+        this.gridCoordinates = gridCoordinates;
+    }
+
     @Override
     public String toString() {
-        return this.drillerName;
+        return this.drillerName + " - " + this.drillId;
     }
 }

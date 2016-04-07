@@ -17,7 +17,8 @@
         </activity>
         <activity android:name=".ProjectActivity" />
         <activity android:name=".GridActivity" />
-        <activity android:name=".DrillLogListActivity"></activity>
+        <activity android:name=".DrillLogListActivity" />
+        <activity android:name=".DrillLogActivity"></activity>
     </application>
 
 </manifest>
