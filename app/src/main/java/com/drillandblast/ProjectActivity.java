@@ -58,7 +58,7 @@ public class ProjectActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if(isEdit){
-                        ProjectListActivity.PROJECTS.set(position, createProject());
+                        ProjectListActivity.projects.set(position, createProject());
                         backToProjectList();
                     }
                     else {
@@ -71,7 +71,7 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     public void addProject(){
-        ProjectListActivity.PROJECTS.add(createProject());
+        ProjectListActivity.projects.add(createProject());
         backToProjectList();
         //arrayAdapter.add(new Project("Yellowstone", "Jeff", new Date(), 1));
     }
@@ -92,7 +92,7 @@ public class ProjectActivity extends AppCompatActivity {
 
     //set the data for a given project in our arrayList to all the text fields in the form
     public void setProjectData(int position){
-        Project project = ProjectListActivity.PROJECTS.get(position);
+        Project project = ProjectListActivity.projects.get(position);
 
         EditText project_name = (EditText) findViewById(R.id.project_name_text_field);
         EditText contractor_name = (EditText) findViewById(R.id.contractor_name_text_field);

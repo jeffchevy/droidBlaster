@@ -8,6 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -16,12 +17,15 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-/**
- * Created by a3k18zz on 4/6/2016.
- */
-public class ProjectList  extends AsyncTask<String, Void, Boolean> {
+public class ProjectListTaskRunner extends AsyncTask<String, Void, Boolean> {
 
-    private static final String TAG = "ProjectList";
+    private String token= null;
+    private static final String TAG = "ProjectListTaskRunner";
+
+    public ProjectListTaskRunner(String token) {
+        super();
+        this.token = token;
+    }
 
     @Override
     protected void onPreExecute() {
@@ -34,10 +38,12 @@ public class ProjectList  extends AsyncTask<String, Void, Boolean> {
         try {
 
             //------------------>>
-            HttpGet httppost = new HttpGet("http://api.openweathermap.org/data/2.5/station/find?lat=55&lon=37&cnt=30&APPID=20d9e84dee0027674854c747af46e557");
-            Log.d(TAG, "doInBackground: "+httppost.getURI().toString());
+            HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/drillLog");
+            httpGet.setHeader("token", token);
+            Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
             HttpClient httpclient = new DefaultHttpClient();
-            HttpResponse response = httpclient.execute(httppost);
+
+            HttpResponse response = httpclient.execute(httpGet);
 
             // StatusLine stat = response.getStatusLine();
             int status = response.getStatusLine().getStatusCode();
@@ -48,14 +54,8 @@ public class ProjectList  extends AsyncTask<String, Void, Boolean> {
                 String data = EntityUtils.toString(entity);
 
 
-                JSONObject jsono = new JSONObject(data);
-                Log.d(TAG, "JSON object: " + jsono.toString());
-//                JSONArray geonames = jsono.getJSONArray("geonames");
-//                for (int i=0;i<geonames.length();i++)
-//                {
-//                    JSONObject city = geonames.getJSONObject(i);
-//                    Log.d(TAG, "doInBackground: "+city.get("name"));
-//                }
+                JSONObject json = new JSONObject(data);
+                Log.d(TAG, "JSON object: " + json.toString());
 
                 return true;
             }

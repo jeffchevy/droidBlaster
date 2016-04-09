@@ -22,7 +22,7 @@ public class DrillLogListActivity extends AppCompatActivity {
         Intent process = getIntent();
         position = process.getExtras().getInt("key");
 
-        Project project = ProjectListActivity.PROJECTS.get(position);
+        Project project = ProjectListActivity.projects.get(position);
         ArrayList<DrillLog> drillLogs = project.getDrillLogs();
 
 
@@ -38,7 +38,7 @@ public class DrillLogListActivity extends AppCompatActivity {
             newDrillLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Project project = ProjectListActivity.PROJECTS.get(0);
+                    Project project = ProjectListActivity.projects.get(0);
                     project.addDrillLog(new DrillLog("Tom", 3));
                     //Intent toDrillLog = new Intent(DrillLogListActivity.this, GridActivity.class);
                     //startActivity(toDrillLog);

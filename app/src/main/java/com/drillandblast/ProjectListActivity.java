@@ -1,6 +1,7 @@
 package com.drillandblast;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,43 +15,45 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.view.View.OnClickListener;
 
-import com.drillandblast.http.ProjectList;
+import com.drillandblast.http.ProjectListTaskRunner;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class ProjectListActivity extends AppCompatActivity {
     //I don't like the use of static here, but it will work for now.
     private static final String TAG = "ProjectListActivity";
     static final DrillLog drillLog = new DrillLog("tom", 2);
     static final ArrayList<DrillLog> drillLogs = new ArrayList<DrillLog>(Arrays.asList(drillLog));
-
-    static final Project teton = new Project("Teton", "Zach", new Date(), 1,"Fred", 2, drillLogs);
-    static final Project wasatch = new Project("Wasatch", "Brent", new Date(), 1,"Tyler", 2, new ArrayList<DrillLog>());
-    static final Project yellowstone = new Project("Yellowstone", "Tyler", new Date(), 1,"Tony", 2, new ArrayList<DrillLog>());
-    static final Project glacier = new Project("Glacier", "Jeff", new Date(), 1,"TJ", 2, new ArrayList<DrillLog>());
-    static final Project kaysville = new Project("Kaysville", "Jamila", new Date(), 1,"Marquoin", 2, new ArrayList<DrillLog>());
-    static final ArrayList<Project> PROJECTS = new ArrayList<Project>(Arrays.asList(teton, wasatch, yellowstone, glacier, kaysville));
+    private ArrayAdapter arrayAdapter = null;
+    static List<Project> projects = new ArrayList<>();
+    private String token = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Starting onCreate");
 
+        Intent process = getIntent();
+        token = process.getStringExtra("token");
+
         setContentView(R.layout.activity_project_list);
 
-        ProjectList projectList = new ProjectList();
-        projectList.execute();
-        final ArrayAdapter arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, PROJECTS);
+        AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
+        projectListTaskRunner.execute();
+        arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, projects);
 
         ListView listView = (ListView) findViewById(R.id.project_list_view);
         listView.setAdapter(arrayAdapter);
@@ -60,15 +63,15 @@ public class ProjectListActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Project project = PROJECTS.get(position);
-                Intent editProject = new Intent(ProjectListActivity.this, ProjectActivity.class);
-                editProject.putExtra("key", position);
-                startActivity(editProject);
-                finish();
-                // When clicked, show a toast with the TextView text
-                Toast.makeText(getApplicationContext(),
-                        ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
-            }
+            Project project = projects.get(position);
+            Intent editProject = new Intent(ProjectListActivity.this, ProjectActivity.class);
+            editProject.putExtra("key", position);
+            startActivity(editProject);
+            finish();
+            // When clicked, show a toast with the TextView text
+            Toast.makeText(getApplicationContext(),
+                    ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
+        }
         });
 
         Button button = (Button) findViewById(R.id.new_project_button);
@@ -81,6 +84,81 @@ public class ProjectListActivity extends AppCompatActivity {
                     //arrayAdapter.add(new Project("Yellowstone", "Jeff", new Date(), 1));
                 }
             });
+        }
+    }
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+
+        private String resp;
+
+        @Override
+        protected String doInBackground(String... params) {
+            String data = null;
+            try {
+                //------------------>>
+                HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
+                httpGet.setHeader("token", token);
+                Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
+                HttpClient httpclient = new DefaultHttpClient();
+
+                HttpResponse response = httpclient.execute(httpGet);
+
+                // StatusLine stat = response.getStatusLine();
+                int status = response.getStatusLine().getStatusCode();
+                Log.d(TAG, "doInBackground: "+status);
+
+                if (status == 200) {
+                    HttpEntity entity = response.getEntity();
+                    data = EntityUtils.toString(entity);
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return data;
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                JSONArray jsonarray = new JSONArray(result);
+                for (int i = 0; i < jsonarray.length(); i++) {
+                    JSONObject jsonobject = jsonarray.getJSONObject(i);
+                    String customer = (String) getValue(jsonobject, "customer");
+                    String drillersName = (String) getValue(jsonobject,"drillersName");
+                    String shotNumber = (String) getValue(jsonobject,"shotNumber");
+                    String contractorsName = (String) getValue(jsonobject,"contractorsName");
+                    String jobName = (String) getValue(jsonobject, "jobName");
+                    Project project = new Project(jobName, contractorsName, null, 1D, drillersName, 13D, null);
+                    projects.add(project);
+                }
+                arrayAdapter.notifyDataSetChanged();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        private Object getValue(JSONObject jsonObject, String name){
+            Object result= null;
+            try{
+                result = jsonObject.getString(name);
+            } catch (Exception ex) {}
+            return result;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // Things to be done before execution of long running operation. For
+            // example showing ProgessDialog
+        }
+        @Override
+        protected void onProgressUpdate(String... text) {
+            // Things to be done while execution of long running operation is in
+            // progress. For example updating ProgessDialog
         }
     }
 
