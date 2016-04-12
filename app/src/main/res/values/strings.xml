@@ -9,4 +9,12 @@
     <string name="save_button">Save</string>
     <string name="bit_size_label">Bit Size</string>
     <string name="new_drill_log_button">New Drill Log</string>
+    <string name="title_activity_daily_log">DailyLogActivity</string>
+    <string name="drill_id_label">Drill #</string>
+    <string name="gallons_fuel_label">Gallons Fuel</string>
+    <string name="daily_log_date_label">Date</string>
+    <string name="meter_start_label">Meter Start</string>
+    <string name="meter_end_label">Meter End</string>
+    <string name="bulk_tank_label">Bulk Tank Pumped From</string>
+    <string name="percussion_time_label">Percussion Time</string>
 </resources>

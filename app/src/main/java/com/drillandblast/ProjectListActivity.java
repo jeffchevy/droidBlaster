@@ -14,6 +14,8 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.view.View.OnClickListener;
 
+import com.drillandblast.http.ProjectList;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -52,28 +54,8 @@ public class ProjectListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_project_list);
 
- /*       HttpURLConnection urlConnection = null;
-        try {
-            Log.d(TAG, "http://www.android.com/");
-            URL url = new URL("http://www.android.com/");
-/*
-            urlConnection = (HttpURLConnection) url.openConnection();
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            DataInputStream dis = new DataInputStream(in);
-
-            while (dis.available() != 0) {
-                System.out.println(dis.readLine());
-            }
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            urlConnection.disconnect();
-        }
-*/
+        ProjectList projectList = new ProjectList();
+        projectList.execute();
         final ArrayAdapter arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, PROJECTS);
 
         ListView listView = (ListView) findViewById(R.id.project_list_view);
