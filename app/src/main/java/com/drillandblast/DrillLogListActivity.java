@@ -25,6 +25,9 @@ public class DrillLogListActivity extends AppCompatActivity {
         Project project = ProjectListActivity.projects.get(position);
         ArrayList<DrillLog> drillLogs = project.getDrillLogs();
 
+        if(drillLogs == null || drillLogs.size() < 1) {
+            drillLogs = new ArrayList<DrillLog>();
+        }
 
         final ArrayAdapter arrayAdapter = new ArrayAdapter<DrillLog>(this, R.layout.simple_row, drillLogs);
 
