@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class DrillLogActivity extends AppCompatActivity {
@@ -20,10 +21,8 @@ public class DrillLogActivity extends AppCompatActivity {
 
         Intent process = getIntent();
         final int position = process.getExtras().getInt("key");
-
-
-
         Button saveButton = (Button) findViewById(R.id.save_drill_log_button);
+        Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
 
         if(saveButton != null) {
             saveButton.setOnClickListener(new View.OnClickListener() {
@@ -37,11 +36,23 @@ public class DrillLogActivity extends AppCompatActivity {
                 }
             });
         }
+
+        if(gridCoordinatesButton !=null) {
+            gridCoordinatesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent toDrillLogCoordinates = new Intent(DrillLogActivity.this, GridActivity.class);
+                    toDrillLogCoordinates.putExtra("key", position);
+                    startActivity(toDrillLogCoordinates);
+                    finish();
+                }
+            });
+        }
     }
 
     public void saveDrillLogData(int position)
     {
-        Project project = ProjectListActivity.PROJECTS.get(position);
+        Project project = ProjectListActivity.projects.get(position);
 
         EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
         EditText drill_number = (EditText) findViewById(R.id.drill_number_text_field);
@@ -62,7 +73,7 @@ public class DrillLogActivity extends AppCompatActivity {
         }
         //String shotNumber = String.valueOf(project.getShotNumber());
         //String bitSize =String.valueOf(project.getBitSize());
-        DrillLog drillLog = new DrillLog(drillerName, drillId, drillDate);
+        DrillLog drillLog = new DrillLog(drillerName, drillId, drillDate, new ArrayList<GridCoordinate>());
         project.addDrillLog(drillLog);
     }
 }

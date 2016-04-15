@@ -27,8 +27,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".DrillLogActivity"></activity>
+            android:label="@string/title_activity_settings" />
+        <activity android:name=".DrillLogActivity" />
+        <activity android:name=".GridCoordinateActivity"></activity>
     </application>
 
 </manifest>
