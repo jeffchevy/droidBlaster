@@ -19,15 +19,20 @@ public class GridActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
 
+
+
         TableLayout tbl = (TableLayout) findViewById(R.id.drill_log_table);
+        final ArrayList<GridCoordinate> gridCoordinates = new ArrayList<GridCoordinate>();
         //TableLayout.LayoutParams tblparams = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
+
 
         Intent process = getIntent();
 
         final int projectPosition = process.getExtras().getInt("project");
         Project project = ProjectListActivity.projects.get(projectPosition);
 
-        DrillLog drillLog = new DrillLog(null, 0, new Date(), new ArrayList<GridCoordinate>());
+        final int drillLogPosition = process.getExtras().getInt("drillLogPosition");
+        DrillLog drillLog = project.getDrillLog(drillLogPosition);
 
         int rowCount = 200;
         int colCount = 240;
@@ -39,19 +44,22 @@ public class GridActivity extends AppCompatActivity {
 
 
             for(int j=0; j<colCount; j++) {
-                //GridCoordinate gridCoordinate = new GridCoordinate(i, j, 0, "", 2);
+                final GridCoordinate gridCoordinate = new GridCoordinate(i, j, 0, "", 2);
                 //gridCoordinate.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
                 //row.addView(gridCoordinate);
                 TextView textView = new TextView(this);
                 textView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-                textView.setText("0");
+                textView.setText(gridCoordinate.toString() + "|");
                 row.addView(textView);
+                gridCoordinates.add(gridCoordinate);
 
                 textView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent toGridCoordinate = new Intent(GridActivity.this, GridCoordinateActivity.class);
-                        //toDrillLogList.putExtra("x", rowNumber);
+                        toGridCoordinate.putExtra("gridEntry", gridCoordinates.size()-1);
+                        toGridCoordinate.putExtra("project", projectPosition);
+                        toGridCoordinate.putExtra("drillLog", drillLogPosition);
                         startActivity(toGridCoordinate);
                         finish();
                     }

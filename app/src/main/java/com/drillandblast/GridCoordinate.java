@@ -64,4 +64,9 @@ public class GridCoordinate {
     public void setBitSize(double bitSize) {
         this.bitSize = bitSize;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.depth);
+    }
 }
