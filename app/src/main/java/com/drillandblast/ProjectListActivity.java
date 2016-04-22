@@ -34,8 +34,14 @@ import java.util.List;
 public class ProjectListActivity extends AppCompatActivity {
     //I don't like the use of static here, but it will work for now.
     private static final String TAG = "ProjectListActivity";
-    static final DrillLog drillLog = new DrillLog("tom", 2);
-    static final ArrayList<DrillLog> drillLogs = new ArrayList<DrillLog>(Arrays.asList(drillLog));
+    static final GridCoordinateInfo gridCoordinateInfo1 = new GridCoordinateInfo(13, "Comment");
+    //static final GridCoordinate gridCoordinate = new GridCoordinate(1, 1, gridCoordinateInfo1);
+    //static final GridCoordinate gridCoordinate1 = new GridCoordinate(1, 1, gridCoordinateInfo1);
+    //static final GridCoordinate gridCoordinate2 = new GridCoordinate(1, 1, gridCoordinateInfo1);
+    //static final GridCoordinate gridCoordinate3 = new GridCoordinate(1, 1, gridCoordinateInfo1);
+    //static final ArrayList<GridCoordinate> gridCoordinates = new ArrayList<GridCoordinate>(Arrays.asList(gridCoordinate, gridCoordinate1, gridCoordinate2, gridCoordinate3));
+    //static final DrillLog drillLog = new DrillLog("tom", 2, new Date(), gridCoordinates);
+    //static final ArrayList<DrillLog> drillLogs = new ArrayList<DrillLog>(Arrays.asList(drillLog));
     private ArrayAdapter arrayAdapter = null;
     static List<Project> projects = new ArrayList<>();
     private String token = null;
