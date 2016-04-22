@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DrillLogListActivity extends AppCompatActivity {
 
@@ -23,7 +24,7 @@ public class DrillLogListActivity extends AppCompatActivity {
         position = process.getExtras().getInt("key");
 
         Project project = ProjectListActivity.projects.get(position);
-        ArrayList<DrillLog> drillLogs = project.getDrillLogs();
+        List<DrillLog> drillLogs = project.getDrillLogs();
 
 
         final ArrayAdapter arrayAdapter = new ArrayAdapter<DrillLog>(this, R.layout.simple_row, drillLogs);

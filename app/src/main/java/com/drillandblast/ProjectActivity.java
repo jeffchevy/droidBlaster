@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ProjectActivity extends AppCompatActivity {
     public boolean isEdit = false;
@@ -45,7 +46,7 @@ public class ProjectActivity extends AppCompatActivity {
             dailyLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent toDailyLogList = new Intent(ProjectActivity.this, DailyLogActivity.class);
+                    Intent toDailyLogList = new Intent(ProjectActivity.this, DailyListActivity.class);
                     toDailyLogList.putExtra("key", position);
                     startActivity(toDailyLogList);
                     finish();
@@ -139,8 +140,10 @@ public class ProjectActivity extends AppCompatActivity {
 
         double bitSize = Double.parseDouble(bit_Size.getText().toString());
 
-        ArrayList<DrillLog> drillLogs = new ArrayList<>();
+        List<DrillLog> drillLogs = new ArrayList<>();
 
-        return new Project(projectName, contractorName, startDate, shotNumber, drillName, bitSize, drillLogs);
+        List<DailyLog> dailyLogs = new ArrayList<>();
+
+        return new Project(projectName, contractorName, startDate, shotNumber, drillName, bitSize, drillLogs, dailyLogs);
     }
 }
