@@ -101,6 +101,7 @@ public class ProjectListActivity extends AppCompatActivity {
             String data = null;
             try {
                 //------------------>>
+                //HttpGet httpGet = new HttpGet("http://localhost:1337/api/v1/project");
                 HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
                 httpGet.setHeader("token", token);
                 Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
