@@ -140,8 +140,8 @@ public class ProjectListActivity extends AppCompatActivity {
                     String shotNumber = (String) getValue(jsonobject,"shotNumber");
                     String contractorsName = (String) getValue(jsonobject,"contractorsName");
                     String jobName = (String) getValue(jsonobject, "jobName");
-                    Project project = new Project(jobName, contractorsName, null, 1D, drillersName, 13D, null);
-                    projects.add(project);
+                    //Project project = new Project(jobName, contractorsName, null, 1D, drillersName, 13D, null);
+                    //projects.add(project);
                 }
                 arrayAdapter.notifyDataSetChanged();
             }

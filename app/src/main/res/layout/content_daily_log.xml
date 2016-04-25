@@ -103,8 +103,8 @@
            android:layout_below="@+id/meter_start_label"
            android:layout_alignParentLeft="true"
            android:layout_alignParentStart="true"
-           android:layout_alignRight="@+id/shot_number_text_field"
-           android:layout_alignEnd="@+id/shot_number_text_field" />
+           android:layout_alignRight="@+id/daily_log_date_text_field"
+           android:layout_alignEnd="@+id/daily_log_date_text_field" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -121,7 +121,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
-            android:id="@+id/shot_number_text_field"
+            android:id="@+id/meter_end_text_field"
             android:layout_below="@+id/meter_end_label"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -134,7 +134,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/bulk_tank_label"
         android:text="@string/bulk_tank_label"
-        android:layout_below="@+id/shot_number_text_field"
+        android:layout_below="@+id/meter_end_text_field"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -147,8 +147,8 @@
             android:layout_below="@+id/bulk_tank_label"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/shot_number_text_field"
-            android:layout_alignEnd="@+id/shot_number_text_field" />
+            android:layout_alignRight="@+id/meter_end_text_field"
+            android:layout_alignEnd="@+id/meter_end_text_field" />
 
 
 
@@ -171,13 +171,13 @@
         android:layout_below="@+id/percussion_time_label"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/shot_number_text_field"
-        android:layout_alignEnd="@+id/shot_number_text_field" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/save_project_button"
+        android:id="@+id/save_daily_log_button"
         android:text="@string/save_button"
         android:background="#4aec68"
         android:layout_below="@+id/percussion_time_text_field"

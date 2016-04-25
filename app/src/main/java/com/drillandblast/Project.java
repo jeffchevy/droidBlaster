@@ -2,6 +2,8 @@ package com.drillandblast;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 /**
  * Created by Zachary on 3/31/2016.
  */
@@ -13,13 +15,14 @@ public class Project {
     private double shotNumber;
     private String drillerName;
     private double bitSize;
-    private ArrayList<DrillLog> drillLogs;
+    private List<DrillLog> drillLogs;
+    private List<DailyLog> dailyLogs;
 
     public Project() {
         super();
     }
 
-    public Project(String projectName, String contractorName, Date startDate, double shotNumber, String drillerName, double bitSize, ArrayList<DrillLog> drillLogs) {
+    public Project(String projectName, String contractorName, Date startDate, double shotNumber, String drillerName, double bitSize, List<DrillLog> drillLogs ,List<DailyLog> dailyLogs ){
         super();
         this.projectName = projectName;
         this.contractorName = contractorName;
@@ -28,6 +31,7 @@ public class Project {
         this.drillerName = drillerName;
         this.bitSize = bitSize;
         this.drillLogs = drillLogs;
+        this.dailyLogs = dailyLogs;
     }
 
     public String getProjectName() {
@@ -70,11 +74,11 @@ public class Project {
         this.bitSize=bitSiZe;
     }
 
-    public ArrayList<DrillLog> getDrillLogs() {
+    public List<DrillLog> getDrillLogs() {
         return drillLogs;
     }
 
-    public void setDrillLogs(ArrayList<DrillLog> drillLogs) {
+    public void setDrillLogs(List<DrillLog> drillLogs) {
         this.drillLogs = drillLogs;
     }
 
@@ -91,7 +95,21 @@ public class Project {
         return this.projectName;
     }
 
+    public List<DailyLog> getDailyLogs() {
+        return dailyLogs;
+    }
 
+    public DailyLog getDailyLog(int position) {
+        return dailyLogs.get(position);
+    }
+
+    public void setDailyLogs(List<DailyLog> drillLogs) {
+        this.dailyLogs = dailyLogs;
+    }
+
+    public void addDailyLog(DailyLog dailyLog) {
+        dailyLogs.add(dailyLog);
+    }
 
 
 
