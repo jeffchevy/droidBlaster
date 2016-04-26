@@ -16,12 +16,15 @@ import java.util.List;
 public class ProjectActivity extends AppCompatActivity {
     public boolean isEdit = false;
     public int position = 0;
+    public String token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project);
 
         Intent process = getIntent();
+        token = process.getStringExtra("token");
+
         if(editProject(process)){
             position = process.getExtras().getInt("key");
             setProjectData(position);
@@ -48,6 +51,7 @@ public class ProjectActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent toDailyLogList = new Intent(ProjectActivity.this, DailyListActivity.class);
                     toDailyLogList.putExtra("key", position);
+                    toDailyLogList.putExtra("token", token);
                     startActivity(toDailyLogList);
                     finish();
                 }
@@ -144,6 +148,6 @@ public class ProjectActivity extends AppCompatActivity {
 
         List<DailyLog> dailyLogs = new ArrayList<>();
 
-        return new Project(projectName, contractorName, startDate, shotNumber, drillName, bitSize, drillLogs, dailyLogs);
+        return new Project("",projectName, contractorName, startDate, shotNumber, drillName, bitSize, drillLogs, dailyLogs);
     }
 }

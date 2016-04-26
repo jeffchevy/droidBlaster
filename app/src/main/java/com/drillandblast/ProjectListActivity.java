@@ -72,6 +72,7 @@ public class ProjectListActivity extends AppCompatActivity {
             Project project = projects.get(position);
             Intent editProject = new Intent(ProjectListActivity.this, ProjectActivity.class);
             editProject.putExtra("key", position);
+            editProject.putExtra("token", token);
             startActivity(editProject);
             finish();
             // When clicked, show a toast with the TextView text
@@ -101,7 +102,8 @@ public class ProjectListActivity extends AppCompatActivity {
             String data = null;
             try {
                 //------------------>>
-                HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
+//                HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
+                HttpGet httpGet = new HttpGet("http://192.168.1.16:1337/api/v1/project");
                 httpGet.setHeader("token", token);
                 Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
                 HttpClient httpclient = new DefaultHttpClient();
@@ -134,13 +136,15 @@ public class ProjectListActivity extends AppCompatActivity {
                 JSONArray jsonarray = new JSONArray(result);
                 for (int i = 0; i < jsonarray.length(); i++) {
                     JSONObject jsonobject = jsonarray.getJSONObject(i);
+                    String id = (String) getValue(jsonobject, "_id");
                     String customer = (String) getValue(jsonobject, "customer");
                     String drillersName = (String) getValue(jsonobject,"drillersName");
                     String shotNumber = (String) getValue(jsonobject,"shotNumber");
                     String contractorsName = (String) getValue(jsonobject,"contractorsName");
                     String jobName = (String) getValue(jsonobject, "jobName");
-                    //Project project = new Project(jobName, contractorsName, null, 1D, drillersName, 13D, null);
-                    //projects.add(project);
+
+                    Project project = new Project(id, jobName, contractorsName, null, Double.valueOf(shotNumber), drillersName, 13D, null, null);
+                    projects.add(project);
                 }
                 arrayAdapter.notifyDataSetChanged();
             }

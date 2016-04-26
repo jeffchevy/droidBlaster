@@ -25,7 +25,8 @@ public class LoginTaskRunner extends AsyncTask<String,String,String> {
             postParameters.add(new BasicNameValuePair("password",params[1]));
             String response = null;
             try {
-                result = SimpleHttpClient.executeHttpPost("http://10.0.2.2:1337/api/v1/authenticate", postParameters);
+                result = SimpleHttpClient.executeHttpPost("http://192.168.1.16:1337/api/v1/authenticate", postParameters);
+//                result = SimpleHttpClient.executeHttpPost("http://localhost:1337/api/v1/authenticate", postParameters);
 
             } catch (Exception e) {
                 e.printStackTrace();
