@@ -1,14 +1,15 @@
 package com.drillandblast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Zachary on 4/6/2016.
  */
-public class GridCoordinate {
+public class GridCoordinate implements Serializable {
 
-    private double row;
-    private double column;
+    private int row;
+    private int column;
     private double depth;
     private String comment;
     private double bitSize;
@@ -17,7 +18,7 @@ public class GridCoordinate {
         super();
     }
 
-    public GridCoordinate(double row, double column, double depth, String comment, double bitSize) {
+    public GridCoordinate(int row, int column, double depth, String comment, double bitSize) {
         this.row = row;
         this.column = column;
         this.depth = depth;
@@ -25,19 +26,19 @@ public class GridCoordinate {
         this.bitSize = bitSize;
     }
 
-    public double getRow() {
+    public int getRow() {
         return row;
     }
 
-    public void setRow(double row) {
+    public void setRow(int row) {
         this.row = row;
     }
 
-    public double getColumn() {
+    public int getColumn() {
         return column;
     }
 
-    public void setColumn(double column) {
+    public void setColumn(int column) {
         this.column = column;
     }
 
