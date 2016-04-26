@@ -52,6 +52,7 @@ public class ProjectActivity extends AppCompatActivity {
                     Intent toDailyLogList = new Intent(ProjectActivity.this, DailyListActivity.class);
                     toDailyLogList.putExtra("key", position);
                     toDailyLogList.putExtra("token", token);
+                    toDailyLogList.putExtra("project", ProjectListActivity.projects.get(position));
                     startActivity(toDailyLogList);
                     finish();
                 }

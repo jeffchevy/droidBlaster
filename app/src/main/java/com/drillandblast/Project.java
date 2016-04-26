@@ -1,5 +1,6 @@
 package com.drillandblast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * Created by Zachary on 3/31/2016.
  */
-public class Project {
+public class Project implements Serializable {
 
     private String id;
     private String projectName;

@@ -20,12 +20,12 @@ public class LoginTaskRunner extends AsyncTask<String,String,String> {
 
         int count = params.length;
         if(count==2){
-            ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-            postParameters.add(new BasicNameValuePair("email",params[0]));
-            postParameters.add(new BasicNameValuePair("password",params[1]));
+            JSONObject json = new JSONObject();
             String response = null;
             try {
-                result = SimpleHttpClient.executeHttpPost("http://192.168.1.16:1337/api/v1/authenticate", postParameters);
+                json.put("email", params[0]);
+                json.put("password",params[1]);
+                result = SimpleHttpClient.executeHttpPost("http://192.168.1.16:1337/api/v1/authenticate", json);
 //                result = SimpleHttpClient.executeHttpPost("http://localhost:1337/api/v1/authenticate", postParameters);
 
             } catch (Exception e) {

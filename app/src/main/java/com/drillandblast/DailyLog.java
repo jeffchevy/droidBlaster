@@ -1,5 +1,6 @@
 package com.drillandblast;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,8 +9,9 @@ import java.util.Date;
 /**
  * Created by Jacoxty on 4/12/2016.
  */
-public class DailyLog {
+public class DailyLog implements Serializable {
 
+    private String id;
     private String drillNum;
     private double gallonsFuel;
     private String date;
@@ -24,8 +26,9 @@ public class DailyLog {
         super();
     }
 
-    public DailyLog(String drillNum, double gallonsFuel, String date, int meterStart, int meterEnd, String bulkTankPumpedFrom, String percussionTime) {
+    public DailyLog(String id, String drillNum, double gallonsFuel, String date, int meterStart, int meterEnd, String bulkTankPumpedFrom, String percussionTime) {
         super();
+        this.id = id;
         this.drillNum = drillNum;
         this.gallonsFuel = gallonsFuel;
         this.date = date;
@@ -90,6 +93,14 @@ public class DailyLog {
 
     public void setPercussionTime(Date PercussionTime) {
         this.percussionTime = percussionTime;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String toString() {

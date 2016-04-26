@@ -42,9 +42,10 @@ public class DailyListActivity extends AppCompatActivity {
 
         Intent process = getIntent();
         token = process.getStringExtra("token");
+        project = (Project) process.getSerializableExtra("project");
 
         int position = process.getExtras().getInt("key");
-        project = ProjectListActivity.projects.get(position);
+//        project = ProjectListActivity.projects.get(position);
 
         AsyncTaskRunner dailyListTaskRunner = new AsyncTaskRunner();
         dailyListTaskRunner.execute();
@@ -60,7 +61,8 @@ public class DailyListActivity extends AppCompatActivity {
                                     int position, long id) {
                 DailyLog dailyLog = dailyLogs.get(position);
                 Intent editDailyLog = new Intent(DailyListActivity.this, DailyLogActivity.class);
-                editDailyLog.putExtra("key", position);
+                editDailyLog.putExtra("dailyLog", dailyLog);
+                editDailyLog.putExtra("project", project);
                 editDailyLog.putExtra("token", token);
                 startActivity(editDailyLog);
                 finish();
@@ -128,10 +130,12 @@ public class DailyListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             try {
+                arrayAdapter.clear();
                 JSONArray jsonarray = new JSONArray(result);
                 for (int i = 0; i < jsonarray.length(); i++) {
                     JSONObject jsonobject = jsonarray.getJSONObject(i);
 
+                    String id = (String) getValue(jsonobject, "_id");
                     String drillNumber = (String) getValue(jsonobject, "drillNumber");
                     String gallonsPumped = (String) getValue(jsonobject,"gallonsPumped");
                     String bulkTankPumpedFrom = (String) getValue(jsonobject,"bulkTankPumpedFrom");
@@ -140,7 +144,7 @@ public class DailyListActivity extends AppCompatActivity {
                     String percussionTime = (String) getValue(jsonobject, "percussionTime");
                     String dateStr = (String) getValue(jsonobject, "date");
 
-                    DailyLog dailyLog = new DailyLog(drillNumber, Double.valueOf(gallonsPumped), dateStr, Integer.valueOf(hourMeterStart),
+                    DailyLog dailyLog = new DailyLog(id, drillNumber, Double.valueOf(gallonsPumped), dateStr, Integer.valueOf(hourMeterStart),
                             Integer.valueOf(hourMeterEnd), bulkTankPumpedFrom, percussionTime );
                     dailyLogs.add(dailyLog);
                 }

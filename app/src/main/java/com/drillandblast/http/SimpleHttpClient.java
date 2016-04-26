@@ -23,6 +23,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -101,11 +102,11 @@ public class SimpleHttpClient {
      * specified parameters.
      *
      * @param url The web address to post the request to
-     * @param postParameters The parameters to send via the request
+     * @param json The json object to send
      * @return The result of the request
      * @throws Exception
      */
-    public static String executeHttpPost(String url, ArrayList<NameValuePair> postParameters) throws Exception {
+    public static String executeHttpPost(String url, JSONObject json) throws Exception {
         BufferedReader in = null;
         try {
             Log.d(TAG, "executeHttpPost");
@@ -114,11 +115,44 @@ public class SimpleHttpClient {
             HttpPost request = new HttpPost(url);
             request.addHeader("Content-Type", "application/json");
 
-            JSONObject keyArg = new JSONObject();
-            keyArg.put(postParameters.get(0).getName(),postParameters.get(0).getValue());
-            keyArg.put(postParameters.get(1).getName(),postParameters.get(1).getValue());
+            StringEntity formEntity = new StringEntity(json.toString());
+            request.setEntity(formEntity);
 
-            StringEntity formEntity = new StringEntity(keyArg.toString());
+            HttpResponse response = client.execute(request);
+            in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+            StringBuffer sb = new StringBuffer("");
+            String line = "";
+            String NL = System.getProperty("line.separator");
+            while ((line = in.readLine()) != null) {
+                sb.append(line + NL);
+            }
+            in.close();
+
+            String result = sb.toString();
+            return result;
+        }
+        finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    public static String executeHttpPut(String url, JSONObject json, String token) throws Exception {
+        BufferedReader in = null;
+        try {
+            Log.d(TAG, "executeHttpPost");
+            HttpClient client = getHttpClient();
+            Log.d(TAG, "executeHttpPost: " + client);
+            HttpPut request = new HttpPut(url);
+            request.addHeader("Content-Type", "application/json");
+            request.addHeader("x-access-token", token);
+
+            StringEntity formEntity = new StringEntity(json.toString());
             request.setEntity(formEntity);
 
             HttpResponse response = client.execute(request);
