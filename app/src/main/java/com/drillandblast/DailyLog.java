@@ -1,16 +1,20 @@
 package com.drillandblast;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * Created by Jacoxty on 4/12/2016.
  */
-public class DailyLog {
+public class DailyLog implements Serializable {
 
-    private int drillNum;
+    private String id;
+    private String drillNum;
     private double gallonsFuel;
-    private Date date;
+    private String date;
     private int meterStart;
     private int meterEnd;
     private String bulkTankPumpedFrom;
@@ -22,8 +26,9 @@ public class DailyLog {
         super();
     }
 
-    public DailyLog(int drillNum, double gallonsFuel, Date date, int meterStart, int meterEnd, String bulkTankPumpedFrom, String percussionTime) {
+    public DailyLog(String id, String drillNum, double gallonsFuel, String date, int meterStart, int meterEnd, String bulkTankPumpedFrom, String percussionTime) {
         super();
+        this.id = id;
         this.drillNum = drillNum;
         this.gallonsFuel = gallonsFuel;
         this.date = date;
@@ -34,11 +39,11 @@ public class DailyLog {
 
     }
 
-    public int getDrillNum() {
+    public String getDrillNum() {
         return drillNum;
     }
 
-    public void setDrillNum(int drillNum) {
+    public void setDrillNum(String drillNum) {
         this.drillNum = drillNum;
     }
 
@@ -50,11 +55,11 @@ public class DailyLog {
         this.gallonsFuel = gallonsFuel;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setStartDate(Date date) {
+    public void setStartDate(String date) {
         this.date = date;
     }
 
@@ -90,6 +95,19 @@ public class DailyLog {
         this.percussionTime = percussionTime;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String toString() {
+//        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+//        return formatter.format(this.getDate())+"- Drill#: "+this.drillNum;
+        return this.getDate()+"- Drill#: "+this.drillNum;
+    }
 
 
 }

@@ -97,14 +97,15 @@
        <EditText
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:inputType="text"
+           android:inputType="number"
            android:ems="10"
            android:id="@+id/meter_start_text_field"
            android:layout_below="@+id/meter_start_label"
            android:layout_alignParentLeft="true"
            android:layout_alignParentStart="true"
            android:layout_alignRight="@+id/daily_log_date_text_field"
-           android:layout_alignEnd="@+id/daily_log_date_text_field" />
+           android:layout_alignEnd="@+id/daily_log_date_text_field"
+           android:numeric="integer" />
 
         <TextView
             android:layout_width="wrap_content"

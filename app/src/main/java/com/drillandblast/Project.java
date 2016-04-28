@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class Project implements Serializable {
 
+    private String id;
     private String projectName;
     private String contractorName;
     private Date startDate;
@@ -23,8 +24,9 @@ public class Project implements Serializable {
         super();
     }
 
-    public Project(String projectName, String contractorName, Date startDate, double shotNumber, String drillerName, double bitSize, List<DrillLog> drillLogs ,List<DailyLog> dailyLogs ){
+    public Project(String id,String projectName, String contractorName, Date startDate, double shotNumber, String drillerName, double bitSize, List<DrillLog> drillLogs ,List<DailyLog> dailyLogs ){
         super();
+        this.id = id;
         this.projectName = projectName;
         this.contractorName = contractorName;
         this.startDate = startDate;
@@ -33,6 +35,14 @@ public class Project implements Serializable {
         this.bitSize = bitSize;
         this.drillLogs = drillLogs;
         this.dailyLogs = dailyLogs;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getProjectName() {

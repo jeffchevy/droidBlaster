@@ -53,34 +53,35 @@ public class LoginActivity extends AppCompatActivity {
                 asyncTask = runner.execute(userName, password);
                 try {
                     String asyncResultText = asyncTask.get();
-                    JSONObject json = new JSONObject(asyncResultText);
-                    Boolean successValue = (Boolean)json.get("success");
-                    String token = (String)json.get("token");
-                    if (!successValue)
-                    {
-                        result = "Login failed!";
-                    }
-                    else
-                    {
-                        result = "Login successful";
-                    }
+                    try {
+                        JSONObject json = new JSONObject(asyncResultText);
+                        Boolean successValue = (Boolean)json.get("success");
+                        String token = (String)json.get("token");
+                        if (!successValue)
+                        {
+                            result = "Login failed!";
+                        }
+                        else
+                        {
+                            result = "Login successful";
+                        }
 
-                    // MY_PREFS_NAME - a static String variable like:
-                    //public static final String MY_PREFS_NAME = "MyPrefsFile";
-                    SharedPreferences.Editor editor = getSharedPreferences("file", Context.MODE_PRIVATE).edit();
-                    editor.putString("token", token);
-                    editor.apply();
-                    if (successValue)
-                    {
-                        Intent next = new Intent(LoginActivity.this, ProjectListActivity.class);
-                        next.putExtra("token", token);
-                        startActivity(next);
-                        finish();
+                        // MY_PREFS_NAME - a static String variable like:
+                        //public static final String MY_PREFS_NAME = "MyPrefsFile";
+                        SharedPreferences.Editor editor = getSharedPreferences("file", Context.MODE_PRIVATE).edit();
+                        editor.putString("token", token);
+                        editor.apply();
+                        if (successValue)
+                        {
+                            Intent next = new Intent(LoginActivity.this, ProjectListActivity.class);
+                            next.putExtra("token", token);
+                            startActivity(next);
+                            finish();
+                        }
+
+                    } catch(Exception ex){
+                        result = asyncResultText;
                     }
-                } catch (InterruptedException e1) {
-                    result = e1.getMessage();
-                } catch (ExecutionException e1) {
-                    result = e1.getMessage();
                 } catch (Exception e1) {
                     result = e1.getMessage();
                 }

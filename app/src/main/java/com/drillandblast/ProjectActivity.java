@@ -16,16 +16,15 @@ import java.util.List;
 public class ProjectActivity extends AppCompatActivity {
     public boolean isEdit = false;
     public int position = 0;
-    public Project project = new Project("", "", new Date(), 0, "", 0, new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
+    public Project project = null;
+    public String token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project);
 
         Intent process = getIntent();
-        if(process.hasExtra("position")) {
-            position = process.getExtras().getInt("position");
-        }
+        token = process.getStringExtra("token");
 
         if(editProject(process)){
             project = (Project) process.getSerializableExtra("project");
@@ -41,6 +40,9 @@ public class ProjectActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent toDrillLogList = new Intent(ProjectActivity.this, DrillLogListActivity.class);
+                    if(project == null) {
+                        project = createProject();
+                    }
                     toDrillLogList.putExtra("project", project);
                     startActivity(toDrillLogList);
                     finish();
@@ -52,7 +54,12 @@ public class ProjectActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent toDailyLogList = new Intent(ProjectActivity.this, DailyListActivity.class);
-                    toDailyLogList.putExtra("key", position);
+                    //toDailyLogList.putExtra("key", position);
+                    if(project == null) {
+                        project = createProject();
+                    }
+                    toDailyLogList.putExtra("token", token);
+                    toDailyLogList.putExtra("project", project);
                     startActivity(toDailyLogList);
                     finish();
                 }
@@ -64,11 +71,12 @@ public class ProjectActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if(isEdit){
-                        ProjectListActivity.projects.set(position, createProject());
+                        ProjectListActivity.projects.set(ProjectListActivity.projects.indexOf(project), createProject());
                         backToProjectList();
                     }
                     else {
-                        addProject();
+                        createProject();
+                        backToProjectList();
                     }
 
                 }
@@ -90,7 +98,7 @@ public class ProjectActivity extends AppCompatActivity {
 
     public boolean editProject(Intent intent){
         isEdit = false;
-        if(intent.hasExtra("key")){
+        if(intent.hasExtra("project")){
             isEdit = true;
         }
         return isEdit;
@@ -149,6 +157,9 @@ public class ProjectActivity extends AppCompatActivity {
 
         List<DailyLog> dailyLogs = new ArrayList<>();
 
-        return new Project(projectName, contractorName, startDate, shotNumber, drillName, bitSize, drillLogs, dailyLogs);
+        project = new Project("",projectName, contractorName, startDate, shotNumber, drillName, bitSize, drillLogs, dailyLogs);
+
+        ProjectListActivity.projects.add(project);
+        return project;
     }
 }
