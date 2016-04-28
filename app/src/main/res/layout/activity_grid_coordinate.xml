@@ -85,7 +85,7 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save Hole"
+        android:text="Save"
         android:id="@+id/save_coordinate_button"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"

@@ -27,7 +27,7 @@ public class GridCoordinateActivity extends AppCompatActivity {
         TextView bitSize = (TextView) findViewById(R.id.bit_size_text_field);
         bitSize.setText(String.valueOf(gridCoordinate.getBitSize()));
         TextView comment = (TextView) findViewById(R.id.comment_text_field);
-        depth.setText(gridCoordinate.getComment());
+        comment.setText(gridCoordinate.getComment().toString());
 
         Button saveButton = (Button) findViewById(R.id.save_coordinate_button);
 
@@ -52,8 +52,8 @@ public class GridCoordinateActivity extends AppCompatActivity {
         TextView comment = (TextView) findViewById(R.id.comment_text_field);
 
         gridCoordinate.setDepth(Double.parseDouble(depth.getText().toString()));
-        gridCoordinate.setBitSize(Double.parseDouble(depth.getText().toString()));
-        gridCoordinate.setComment(comment.toString());
+        gridCoordinate.setBitSize(Double.parseDouble(bitSize.getText().toString()));
+        gridCoordinate.setComment(comment.getText().toString());
 
         drillLog.getGridCoordinates().add(gridCoordinate);
 

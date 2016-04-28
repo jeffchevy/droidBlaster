@@ -28,18 +28,27 @@ public class GridActivity extends AppCompatActivity {
         project = (Project) process.getSerializableExtra("project");
         drillLog = (DrillLog) process.getSerializableExtra("drillLog");
 
-        int rowCount = 4;
-        int colCount = 4;
-        int rowNumber = 0;
+        int rowCount = 40;
+        int colCount = 40;
+
+
+        TableLayout.LayoutParams tableRowParams=
+                new TableLayout.LayoutParams
+                        (TableLayout.LayoutParams.FILL_PARENT,TableLayout.LayoutParams.WRAP_CONTENT);
 
         for(int i=0; i<rowCount;i++) {
             TableRow row = new TableRow(this);
-            row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+            row.setLayoutParams(tableRowParams);
             for(int j=0; j<colCount; j++) {
                 final GridCoordinate gridCoordinate = new GridCoordinate(i, j, 0, "", 0);
                 TextView textView = new TextView(this);
-                textView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-                textView.setText(gridCoordinate.toString());
+                TableRow.LayoutParams tableCellParams = new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+
+                textView.setLayoutParams(tableCellParams);
+                textView.setText("    ");
+                textView.setPadding(5,2,5,2);
+                textView.setBackgroundDrawable(getResources().getDrawable(R.drawable.border));
+
                 row.addView(textView);
 
                 textView.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +64,6 @@ public class GridActivity extends AppCompatActivity {
                 });
             }
 
-            rowNumber++;
             tbl.addView(row, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
         }
 

@@ -22,7 +22,6 @@ public class DrillLogActivity extends AppCompatActivity {
 
         final Intent process = getIntent();
         project = (Project) process.getSerializableExtra("project");
-        //final int position = process.getExtras().getInt("key");
         Button saveButton = (Button) findViewById(R.id.save_drill_log_button);
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
         //final Project project = ProjectListActivity.projects.get(position);
@@ -30,8 +29,6 @@ public class DrillLogActivity extends AppCompatActivity {
         if(project.getDrillLogs() == null) {
             project.setDrillLogs(new ArrayList<DrillLog>());
         }
-
-        //project.addDrillLog(drillLog);
 
         if(saveButton != null) {
             saveButton.setOnClickListener(new View.OnClickListener() {
