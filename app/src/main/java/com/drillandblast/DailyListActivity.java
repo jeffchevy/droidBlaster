@@ -16,6 +16,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.drillandblast.http.SimpleHttpClient;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -71,24 +73,34 @@ public class DailyListActivity extends AppCompatActivity {
                         ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        Button button = (Button) findViewById(R.id.new_daily_log_button);
-
-        if (button != null) {
-            button.setOnClickListener(new View.OnClickListener() {
+        Button backButton = (Button) findViewById(R.id.back_button);
+        if (backButton != null) {
+            backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    createNewDailyLog();
-                    //arrayAdapter.add(new Project("Yellowstone", "Jeff", new Date(), 1));
+                    Intent next = new Intent(DailyListActivity.this, ProjectListActivity.class);
+                    next.putExtra("project", project);
+                    next.putExtra("token", token);
+                    startActivity(next);
+                    finish();
                 }
             });
         }
 
-    }
-    public void createNewDailyLog(){
-        Intent addNewDailyLog = new Intent(DailyListActivity.this, DailyLogActivity.class);
-        startActivity(addNewDailyLog);
-        finish();
+        Button button = (Button) findViewById(R.id.new_daily_log_button);
+        if (button != null) {
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent addNewDailyLog = new Intent(DailyListActivity.this, DailyLogActivity.class);
+                    addNewDailyLog.putExtra("project", project);
+                    addNewDailyLog.putExtra("token", token);
+                    startActivity(addNewDailyLog);
+                    finish();
+                }
+            });
+        }
+
     }
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
@@ -100,7 +112,7 @@ public class DailyListActivity extends AppCompatActivity {
             try {
                 //------------------>>
 //                HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
-                HttpGet httpGet = new HttpGet("http://192.168.1.16:1337/api/v1/dailyLogs/"+project.getId());
+                HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"dailyLogs/"+project.getId());
                 httpGet.setHeader("token", token);
                 Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
                 HttpClient httpclient = new DefaultHttpClient();

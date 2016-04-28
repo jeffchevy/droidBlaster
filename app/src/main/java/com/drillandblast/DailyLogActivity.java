@@ -13,7 +13,7 @@ import com.drillandblast.http.SimpleHttpClient;
 import org.json.JSONObject;
 
 public class DailyLogActivity extends AppCompatActivity {
-    public boolean isEdit = false;
+    private boolean isEdit = false;
     public int position = 0;
     public String token = null;
     private Project project = null;
@@ -28,9 +28,10 @@ public class DailyLogActivity extends AppCompatActivity {
         Intent process = getIntent();
         token = process.getStringExtra("token");
         project = (Project) process.getSerializableExtra("project");
+        dailyLog = (DailyLog) process.getSerializableExtra("dailyLog");
 
-        if(editDailyLog(process)){
-            dailyLog = (DailyLog) process.getSerializableExtra("dailyLog");
+        if(dailyLog != null){
+            isEdit = true;
             setDailLogData(dailyLog);
         }
 
@@ -55,14 +56,6 @@ public class DailyLogActivity extends AppCompatActivity {
 
         startActivity(toDailyLogList);
         finish();
-    }
-
-    public boolean editDailyLog(Intent intent){
-        isEdit = false;
-        if(intent.hasExtra("dailyLog")){
-            isEdit = true;
-        }
-        return isEdit;
     }
 
     public void setDailLogData(DailyLog dailyLog){
@@ -122,7 +115,14 @@ public class DailyLogActivity extends AppCompatActivity {
                 json.put("hourMeterEnd", params[4]);
                 json.put("percussionTime", params[5]);
 
-                result = SimpleHttpClient.executeHttpPut("http://192.168.1.16:1337/api/v1/dailyLogs/"+project.getId()+"/"+dailyLog.getId(), json, token);
+                if (isEdit)
+                {
+                    result = SimpleHttpClient.executeHttpPut("dailyLogs/"+project.getId()+"/"+dailyLog.getId(), json, token);
+                }
+                else
+                {
+                    result = SimpleHttpClient.executeHttpPost("dailyLogs/"+project.getId(), json, token);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
