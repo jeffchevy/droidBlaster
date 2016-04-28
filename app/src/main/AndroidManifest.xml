@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ProjectListActivity" />
-        <activity android:name=".ProjectActivity" />
+        <activity android:name=".ProjectActivity" android:parentActivityName=".ProjectListActivity"/>
         <activity android:name=".GridActivity" />
 
         <activity android:name=".DrillLogListActivity" />

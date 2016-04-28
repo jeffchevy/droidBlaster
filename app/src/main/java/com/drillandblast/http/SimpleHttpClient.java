@@ -42,6 +42,7 @@ import com.drillandblast.LoginActivity;
 
 
 public class SimpleHttpClient {
+    public static final String baseUrl = "http://192.168.1.16:1337/api/v1/";
     /** The time it takes for our client to timeout */
     public static final int HTTP_TIMEOUT = 30 * 1000; // milliseconds
     private static final String TAG = "SimpleHttpClient";
@@ -106,14 +107,17 @@ public class SimpleHttpClient {
      * @return The result of the request
      * @throws Exception
      */
-    public static String executeHttpPost(String url, JSONObject json) throws Exception {
+    public static String executeHttpPost(String url, JSONObject json, String token) throws Exception {
         BufferedReader in = null;
         try {
             Log.d(TAG, "executeHttpPost");
             HttpClient client = getHttpClient();
             Log.d(TAG, "executeHttpPost: " + client);
-            HttpPost request = new HttpPost(url);
+            HttpPost request = new HttpPost(baseUrl+url);
             request.addHeader("Content-Type", "application/json");
+            if (token != null) {
+                request.addHeader("x-access-token", token);
+            }
 
             StringEntity formEntity = new StringEntity(json.toString());
             request.setEntity(formEntity);
@@ -148,7 +152,7 @@ public class SimpleHttpClient {
             Log.d(TAG, "executeHttpPost");
             HttpClient client = getHttpClient();
             Log.d(TAG, "executeHttpPost: " + client);
-            HttpPut request = new HttpPut(url);
+            HttpPut request = new HttpPut(baseUrl+url);
             request.addHeader("Content-Type", "application/json");
             request.addHeader("x-access-token", token);
 
@@ -192,7 +196,7 @@ public class SimpleHttpClient {
         try {
             HttpClient client = getHttpClient();
             HttpGet request = new HttpGet();
-            request.setURI(new URI(url));
+            request.setURI(new URI(baseUrl+url));
             HttpResponse response = client.execute(request);
             in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 

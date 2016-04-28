@@ -15,7 +15,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.view.View.OnClickListener;
 
-import com.drillandblast.http.ProjectListTaskRunner;
+import com.drillandblast.http.SimpleHttpClient;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -44,6 +44,7 @@ public class ProjectListActivity extends AppCompatActivity {
     //static final ArrayList<DrillLog> drillLogs = new ArrayList<DrillLog>(Arrays.asList(drillLog));
     private ArrayAdapter arrayAdapter = null;
     static List<Project> projects = new ArrayList<>();
+    private Project project = null;
     private String token = null;
 
     @Override
@@ -69,9 +70,10 @@ public class ProjectListActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-            Project project = projects.get(position);
+            project = projects.get(position);
             Intent editProject = new Intent(ProjectListActivity.this, ProjectActivity.class);
             editProject.putExtra("key", position);
+            editProject.putExtra("project", project);
             editProject.putExtra("token", token);
             startActivity(editProject);
             finish();
@@ -103,7 +105,7 @@ public class ProjectListActivity extends AppCompatActivity {
             try {
                 //------------------>>
 //                HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
-                HttpGet httpGet = new HttpGet("http://192.168.1.16:1337/api/v1/project");
+                HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
                 httpGet.setHeader("token", token);
                 Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
                 HttpClient httpclient = new DefaultHttpClient();
@@ -133,6 +135,7 @@ public class ProjectListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             try {
+                arrayAdapter.clear();
                 JSONArray jsonarray = new JSONArray(result);
                 for (int i = 0; i < jsonarray.length(); i++) {
                     JSONObject jsonobject = jsonarray.getJSONObject(i);
