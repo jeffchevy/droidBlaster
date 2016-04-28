@@ -1,12 +1,13 @@
 package com.drillandblast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * Created by Zachary on 4/5/2016.
  */
-public class DrillLog {
+public class DrillLog implements Serializable {
 
     private String drillerName;
     private double drillId;

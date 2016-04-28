@@ -16,15 +16,20 @@ import java.util.List;
 public class ProjectActivity extends AppCompatActivity {
     public boolean isEdit = false;
     public int position = 0;
+    public Project project = new Project("", "", new Date(), 0, "", 0, new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project);
 
         Intent process = getIntent();
+        if(process.hasExtra("position")) {
+            position = process.getExtras().getInt("position");
+        }
+
         if(editProject(process)){
-            position = process.getExtras().getInt("key");
-            setProjectData(position);
+            project = (Project) process.getSerializableExtra("project");
+            setProjectData(project);
         }
 
         Button saveButton = (Button) findViewById(R.id.save_project_button);
@@ -36,7 +41,7 @@ public class ProjectActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent toDrillLogList = new Intent(ProjectActivity.this, DrillLogListActivity.class);
-                    toDrillLogList.putExtra("key", position);
+                    toDrillLogList.putExtra("project", project);
                     startActivity(toDrillLogList);
                     finish();
                 }
@@ -92,8 +97,8 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     //set the data for a given project in our arrayList to all the text fields in the form
-    public void setProjectData(int position){
-        Project project = ProjectListActivity.projects.get(position);
+    public void setProjectData(Project project){
+        Project p = project;
 
         EditText project_name = (EditText) findViewById(R.id.project_name_text_field);
         EditText contractor_name = (EditText) findViewById(R.id.contractor_name_text_field);
@@ -102,12 +107,12 @@ public class ProjectActivity extends AppCompatActivity {
         EditText drillerName = (EditText) findViewById(R.id.driller_name_text_field);
         EditText bit_Size = (EditText) findViewById(R.id.bit_size_text_field);
 
-        String shotNumber = String.valueOf(project.getShotNumber());
-        String bitSize =String.valueOf(project.getBitSize());
+        String shotNumber = String.valueOf(p.getShotNumber());
+        String bitSize =String.valueOf(p.getBitSize());
 
-        drillerName.setText(project.getDrillerName());
-        project_name.setText(project.getProjectName());
-        contractor_name.setText(project.getContractorName());
+        drillerName.setText(p.getDrillerName());
+        project_name.setText(p.getProjectName());
+        contractor_name.setText(p.getContractorName());
         //bug: need to figure out how to use our date as a string and place it in the start date field
         //start_date.setText(project.getStartDate());
         shot_number.setText(shotNumber);

@@ -9,19 +9,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class GridCoordinateActivity extends AppCompatActivity {
-
+    public DrillLog drillLog = null;
+    public Project project = null;
+    public GridCoordinate gridCoordinate = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid_coordinate);
 
         Intent process = getIntent();
-        final GridCoordinate gridCoordinate = (GridCoordinate) process.getSerializableExtra("gridCoordinate");
-        final int projectIndex = process.getExtras().getInt("project");
-        final int drillLogIndex = process.getExtras().getInt("drillLog");
-
-        final Project project = ProjectListActivity.projects.get(projectIndex);
-        final DrillLog drillLog = project.getDrillLog(drillLogIndex);
+        gridCoordinate = (GridCoordinate) process.getSerializableExtra("gridCoordinate");
+        project = (Project) process.getSerializableExtra("project");
+        drillLog = (DrillLog) process.getSerializableExtra("drillLog");
 
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
         depth.setText(String.valueOf(gridCoordinate.getDepth()));
@@ -38,9 +37,7 @@ public class GridCoordinateActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     saveDrillCoordinateData(drillLog,gridCoordinate);
                     Intent toDrillLogCoordinates = new Intent(GridCoordinateActivity.this, GridActivity.class);
-                    toDrillLogCoordinates.putExtra("project", projectIndex);
-                    toDrillLogCoordinates.putExtra("drillLog", drillLogIndex);
-                    toDrillLogCoordinates.putExtra("gridCoordinate", gridCoordinate);
+                    toDrillLogCoordinates.putExtra("drillLog", drillLog);
                     startActivity(toDrillLogCoordinates);
                     finish();
                 }

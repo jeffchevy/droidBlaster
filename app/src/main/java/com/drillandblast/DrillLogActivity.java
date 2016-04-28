@@ -13,17 +13,19 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class DrillLogActivity extends AppCompatActivity {
+    public Project project = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drill_log);
 
-        Intent process = getIntent();
-        final int position = process.getExtras().getInt("key");
+        final Intent process = getIntent();
+        project = (Project) process.getSerializableExtra("project");
+        //final int position = process.getExtras().getInt("key");
         Button saveButton = (Button) findViewById(R.id.save_drill_log_button);
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
-        final Project project = ProjectListActivity.projects.get(position);
+        //final Project project = ProjectListActivity.projects.get(position);
         //DrillLog drillLog = new DrillLog(null, 0, new Date(), new ArrayList<GridCoordinate>());
         if(project.getDrillLogs() == null) {
             project.setDrillLogs(new ArrayList<DrillLog>());
@@ -35,9 +37,9 @@ public class DrillLogActivity extends AppCompatActivity {
             saveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    saveDrillLogData(position);
+                    saveDrillLogData(project);
                     Intent toDrillLogList = new Intent(DrillLogActivity.this, DrillLogListActivity.class);
-                    toDrillLogList.putExtra("key", position);
+                    toDrillLogList.putExtra("project", project);
                     startActivity(toDrillLogList);
                     finish();
                 }
@@ -48,10 +50,10 @@ public class DrillLogActivity extends AppCompatActivity {
             gridCoordinatesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    saveDrillLogData(position);
+                    DrillLog dl = saveDrillLogData(project);
                     Intent toDrillLogCoordinates = new Intent(DrillLogActivity.this, GridActivity.class);
-                    toDrillLogCoordinates.putExtra("project", position);
-                    toDrillLogCoordinates.putExtra("drillLog", project.getDrillLogs().size()-1);
+                    toDrillLogCoordinates.putExtra("project", project);
+                    toDrillLogCoordinates.putExtra("drillLog", dl);
                     startActivity(toDrillLogCoordinates);
                     finish();
                 }
@@ -59,10 +61,8 @@ public class DrillLogActivity extends AppCompatActivity {
         }
     }
 
-    public void saveDrillLogData(int position)
+    public DrillLog saveDrillLogData(Project project)
     {
-        Project project = ProjectListActivity.projects.get(position);
-
         EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
         EditText drill_number = (EditText) findViewById(R.id.drill_number_text_field);
         EditText drill_date = (EditText) findViewById(R.id.drill_date_text_field);
@@ -83,8 +83,8 @@ public class DrillLogActivity extends AppCompatActivity {
         //String shotNumber = String.valueOf(project.getShotNumber());
         //String bitSize =String.valueOf(project.getBitSize());
         DrillLog drillLog = new DrillLog(drillerName, drillId, drillDate, new ArrayList<GridCoordinate>());
-        if(project.getDrillLogs() != null)
-            project.getDrillLogs().add(drillLog);
-        //project.addDrillLog(drillLog);
+        project.getDrillLogs().add(drillLog);
+
+        return drillLog;
     }
 }

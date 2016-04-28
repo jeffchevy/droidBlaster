@@ -71,6 +71,7 @@ public class ProjectListActivity extends AppCompatActivity {
                                     int position, long id) {
             Project project = projects.get(position);
             Intent editProject = new Intent(ProjectListActivity.this, ProjectActivity.class);
+            editProject.putExtra("project", project);
             editProject.putExtra("key", position);
             startActivity(editProject);
             finish();

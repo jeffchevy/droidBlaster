@@ -13,17 +13,15 @@ import java.util.List;
 
 public class DrillLogListActivity extends AppCompatActivity {
 
+    public Project project = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drill_log_list);
 
-        //final int position = 0;
-
         Intent process = getIntent();
-        final int position = process.getExtras().getInt("key");
 
-        Project project = ProjectListActivity.projects.get(position);
+        project = (Project) process.getSerializableExtra("project");
         List<DrillLog> drillLogs = project.getDrillLogs();
 
         if(drillLogs == null || drillLogs.size() < 1) {
@@ -42,12 +40,8 @@ public class DrillLogListActivity extends AppCompatActivity {
             newDrillLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    //Intent toDrillLog = new Intent(DrillLogListActivity.this, GridActivity.class);
-                    //startActivity(toDrillLog);
-                    //finish();
                     Intent toDrillLog = new Intent(DrillLogListActivity.this, DrillLogActivity.class);
-                    toDrillLog.putExtra("key", position);
+                    toDrillLog.putExtra("project", project);
                     startActivity(toDrillLog);
                     finish();
                 }
