@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 public class DailyLogActivity extends AppCompatActivity {
     private boolean isEdit = false;
-    public int position = 0;
     public String token = null;
     private Project project = null;
     private DailyLog dailyLog = null;

@@ -46,9 +46,6 @@ public class DailyListActivity extends AppCompatActivity {
         token = process.getStringExtra("token");
         project = (Project) process.getSerializableExtra("project");
 
-        int position = process.getExtras().getInt("key");
-//        project = ProjectListActivity.projects.get(position);
-
         AsyncTaskRunner dailyListTaskRunner = new AsyncTaskRunner();
         dailyListTaskRunner.execute();
         arrayAdapter = new ArrayAdapter<DailyLog>(this, R.layout.simple_row, dailyLogs);
