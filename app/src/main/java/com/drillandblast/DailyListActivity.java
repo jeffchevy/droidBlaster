@@ -5,9 +5,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -100,8 +102,17 @@ public class DailyListActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = NavUtils.getParentActivityIntent(this);
+        intent.putExtra("project", project);
+        //NavUtils.navigateUpTo(this, intent);
+        startActivity(intent);
+        return true;
+    }
+
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
         private String resp;

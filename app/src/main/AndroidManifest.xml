@@ -18,20 +18,55 @@
             </intent-filter>
         </activity>
         <activity android:name=".ProjectListActivity" />
-        <activity android:name=".ProjectActivity" android:parentActivityName=".ProjectListActivity"/>
-        <activity android:name=".GridActivity" />
+        <activity android:name=".ProjectActivity"
+                  android:parentActivityName=".ProjectListActivity">
+                <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.drillandblast.ProjectListActivity"/>
+        </activity>
+        <activity android:name=".GridActivity"
+            android:parentActivityName=".DrillLogActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.drillandblast.DrillLogActivity"/>
+        </activity>
 
-        <activity android:name=".DrillLogListActivity" />
-        <activity android:name=".DailyListActivity" />
+        <activity android:name=".DrillLogListActivity"
+            android:parentActivityName=".ProjectActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.drillandblast.ProjectActivity"/>
+        </activity>
+        <activity android:name=".DailyListActivity"
+            android:parentActivityName=".ProjectActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.drillandblast.ProjectActivity"/>
+        </activity>
         <activity
             android:name=".DailyLogActivity"
             android:label="@string/title_activity_daily_log"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".DailyListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.drillandblast.DailyListActivity"/>
+        </activity>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".DrillLogActivity" />
-        <activity android:name=".GridCoordinateActivity"></activity>
+        <activity android:name=".DrillLogActivity"
+            android:parentActivityName=".DrillLogListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.drillandblast.DrillLogListActivity"/>
+        </activity>
+        <activity android:name=".GridCoordinateActivity"
+            android:parentActivityName=".GridActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.drillandblast.GridActivity"/>
+        </activity>
     </application>
 
 </manifest>

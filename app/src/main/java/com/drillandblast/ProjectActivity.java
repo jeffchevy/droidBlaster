@@ -31,6 +31,7 @@ public class ProjectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent process = getIntent();
         token = process.getStringExtra("token");
@@ -172,6 +173,14 @@ public class ProjectActivity extends AppCompatActivity {
             }
             return result;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                //NavUtils.navigateUpTo(this, intent);
+                startActivity(intent);
+                return true;
     }
 
 }
