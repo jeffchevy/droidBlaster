@@ -5,6 +5,10 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -146,5 +150,12 @@ public class DrillLogListActivity extends AppCompatActivity {
             return result;
         }
     }
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = NavUtils.getParentActivityIntent(this);
+        intent.putExtra("project", project);
+        //NavUtils.navigateUpTo(this, intent);
+        startActivity(intent);
+        return true;
+    }
 }

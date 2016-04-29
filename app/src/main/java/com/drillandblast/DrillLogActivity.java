@@ -2,8 +2,10 @@ package com.drillandblast;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +42,12 @@ public class DrillLogActivity extends AppCompatActivity {
         if(drillLog != null) {
             isEdit = true;
             setDrillLogData(drillLog);
+        }
+        else
+        {
+//            drillLog = new DrillLog()
+//                    drillLog.set
+//            drillLog(new ArrayList<DrillLog>());
         }
 
         if(saveButton != null) {
@@ -119,4 +127,11 @@ public class DrillLogActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = NavUtils.getParentActivityIntent(this);
+        //NavUtils.navigateUpTo(this, intent);
+        startActivity(intent);
+        return true;
+    }
 }
