@@ -1,6 +1,7 @@
 package com.drillandblast;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +11,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.drillandblast.http.SimpleHttpClient;
+
+import org.json.JSONObject;
+
+import java.util.Iterator;
+import java.util.List;
+
 public class GridCoordinateActivity extends AppCompatActivity {
+    private boolean isEdit = false;
+    public String token = null;
     public DrillLog drillLog = null;
     public Project project = null;
     public GridCoordinate gridCoordinate = null;
+    private AsyncTask<String, String, String> asyncTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,8 +33,13 @@ public class GridCoordinateActivity extends AppCompatActivity {
 
         Intent process = getIntent();
         gridCoordinate = (GridCoordinate) process.getSerializableExtra("gridCoordinate");
+        if (gridCoordinate.getId() != null)
+        {
+            isEdit = true;
+        }
         project = (Project) process.getSerializableExtra("project");
         drillLog = (DrillLog) process.getSerializableExtra("drillLog");
+        token = process.getStringExtra("token");
 
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
         depth.setText(String.valueOf(gridCoordinate.getDepth()));
@@ -38,16 +55,12 @@ public class GridCoordinateActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     saveDrillCoordinateData(drillLog,gridCoordinate);
-                    Intent toDrillLogCoordinates = new Intent(GridCoordinateActivity.this, GridActivity.class);
-                    toDrillLogCoordinates.putExtra("drillLog", drillLog);
-                    startActivity(toDrillLogCoordinates);
-                    finish();
                 }
             });
         }
     }
 
-    public void saveDrillCoordinateData(DrillLog drillLog, GridCoordinate gridCoordinate)
+    public String saveDrillCoordinateData(DrillLog drillLog, GridCoordinate gridCoordinate)
     {
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
         TextView bitSize = (TextView) findViewById(R.id.bit_size_text_field);
@@ -57,7 +70,27 @@ public class GridCoordinateActivity extends AppCompatActivity {
         gridCoordinate.setBitSize(Double.parseDouble(bitSize.getText().toString()));
         gridCoordinate.setComment(comment.getText().toString());
 
-        drillLog.getGridCoordinates().add(gridCoordinate);
+        AsyncTaskRunner holeTaskRunner = new AsyncTaskRunner();
+        asyncTask = holeTaskRunner.execute();
+
+        if (isEdit){
+            // find the grid in the list and update it.  normally we could just update the object
+            // but because we are serializing the object the reference is lost
+            List<GridCoordinate> grids = drillLog.getGridCoordinates();
+            for(int i=0; i<grids.size(); i++)
+            {
+                GridCoordinate gc = (GridCoordinate) grids.get(i);
+                if (gc.getId().equalsIgnoreCase(gridCoordinate.getId()))
+                {
+                    drillLog.getGridCoordinates().set(i, gridCoordinate);
+                }
+            }
+        }
+        else
+        {
+            drillLog.getGridCoordinates().add(gridCoordinate);
+        }
+        return asyncTask.getStatus().toString();
 
     }
 
@@ -70,4 +103,47 @@ public class GridCoordinateActivity extends AppCompatActivity {
         startActivity(intent);
         return true;
     }
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... params) {
+
+            String result = null;
+
+            JSONObject json = new JSONObject();
+            String response = null;
+            try {
+                json.put("x", gridCoordinate.getRow());
+                json.put("y", gridCoordinate.getColumn());
+                json.put("z", gridCoordinate.getDepth());
+                json.put("comments", gridCoordinate.getComment());
+                json.put("bitSize", gridCoordinate.getBitSize());
+
+                if (isEdit)
+                {
+                    result = SimpleHttpClient.executeHttpPut("holes/"+project.getId()+"/"+drillLog.getId()+"/"+gridCoordinate.getId(), json, token);
+                }
+                else
+                {
+                    result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, token);
+                    JSONObject jsonobject = new JSONObject(result);
+                    String id = jsonobject.getString("id");
+                    gridCoordinate.setId(id);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                result = e.getMessage();
+            }
+            return result;
+        }
+        protected void onPostExecute(String result) {
+            Intent toDrillLogCoordinates = new Intent(GridCoordinateActivity.this, GridActivity.class);
+            toDrillLogCoordinates.putExtra("drillLog", drillLog);
+            toDrillLogCoordinates.putExtra("project", project);
+            startActivity(toDrillLogCoordinates);
+            finish();
+        }
+
+    }
+
 }
