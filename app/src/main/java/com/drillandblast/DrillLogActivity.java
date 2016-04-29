@@ -130,6 +130,7 @@ public class DrillLogActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
         //NavUtils.navigateUpTo(this, intent);
+        intent.putExtra("project", project);
         startActivity(intent);
         return true;
     }
