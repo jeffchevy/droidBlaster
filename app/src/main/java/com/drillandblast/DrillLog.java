@@ -3,6 +3,7 @@ package com.drillandblast;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Zachary on 4/5/2016.
@@ -12,7 +13,7 @@ public class DrillLog implements Serializable {
     private String id;
     private String drillerName;
     private String name;
-    private ArrayList<GridCoordinate> gridCoordinates;
+    private List<GridCoordinate> gridCoordinates;
 
     public DrillLog() {
         super();
@@ -41,11 +42,11 @@ public class DrillLog implements Serializable {
         this.name = name;
     }
 
-    public ArrayList<GridCoordinate> getGridCoordinates() {
+    public List<GridCoordinate> getGridCoordinates() {
         return gridCoordinates;
     }
 
-    public void setGridCoordinates(ArrayList<GridCoordinate> gridCoordinates) {
+    public void setGridCoordinates(List<GridCoordinate> gridCoordinates) {
         this.gridCoordinates = gridCoordinates;
     }
 

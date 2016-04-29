@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class GridActivity extends AppCompatActivity {
     public Project project = null;
@@ -42,7 +43,7 @@ public class GridActivity extends AppCompatActivity {
             TableRow row = new TableRow(this);
             row.setLayoutParams(tableRowParams);
             for(int j=0; j<colCount; j++) {
-                final GridCoordinate gridCoordinate = new GridCoordinate(i, j, 0, "", 0);
+                final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", 0);
                 TextView textView = new TextView(this);
                 TableRow.LayoutParams tableCellParams = new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
 
@@ -71,7 +72,7 @@ public class GridActivity extends AppCompatActivity {
 
         if(drillLog.getGridCoordinates().size()>0)
         {
-            final ArrayList<GridCoordinate> gridCoordinates = drillLog.getGridCoordinates();
+            final List<GridCoordinate> gridCoordinates = drillLog.getGridCoordinates();
             for(int k = 0; k<gridCoordinates.size(); k++)
             {
                 TableRow tr = (TableRow) tbl.getChildAt(gridCoordinates.get(k).getRow());

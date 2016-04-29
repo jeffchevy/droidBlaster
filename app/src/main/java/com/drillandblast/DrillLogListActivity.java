@@ -125,6 +125,7 @@ public class DrillLogListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             try {
+
                 arrayAdapter.clear();
                 JSONArray jsonarray = new JSONArray(result);
                 for (int i = 0; i < jsonarray.length(); i++) {
@@ -132,8 +133,24 @@ public class DrillLogListActivity extends AppCompatActivity {
                     String id = (String) getValue(jsonobject, "_id");
                     String drillerName = (String) getValue(jsonobject, "drillerName");
                     String name = (String) getValue(jsonobject,"name");
+                    String holesStr = (String)getValue(jsonobject,"holes");
+                    JSONArray holesArray = new JSONArray(holesStr);
+                    List<GridCoordinate> holes = new ArrayList<>();
+                    for (int j = 0; j < holesArray.length(); j++) {
+                        Log.d(TAG, "holes:"+j);
+                        JSONObject holesObject = holesArray.getJSONObject(j);
+                        String holeId = (String) getValue(holesObject, "_id");
+                        String x = (String) getValue(holesObject, "x");
+                        String y = (String) getValue(holesObject, "y");
+                        String z = (String) getValue(holesObject, "z");
+                        String comments = (String) getValue(holesObject, "comments");
+                        String bitSize = (String) getValue(holesObject, "bitSize");
+                        GridCoordinate gridCoordinate = new GridCoordinate(id, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, 0);
+                        holes.add(gridCoordinate);
+                    }
 
                     DrillLog drillLog = new DrillLog(id, drillerName, name);
+                    drillLog.setGridCoordinates(holes);
                     drillLogs.add(drillLog);
                 }
                 arrayAdapter.notifyDataSetChanged();

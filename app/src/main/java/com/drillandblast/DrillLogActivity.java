@@ -45,9 +45,8 @@ public class DrillLogActivity extends AppCompatActivity {
         }
         else
         {
-//            drillLog = new DrillLog()
-//                    drillLog.set
-//            drillLog(new ArrayList<DrillLog>());
+            drillLog = new DrillLog(null,"","" );
+            drillLog.setGridCoordinates( new ArrayList<GridCoordinate>());
         }
 
         if(saveButton != null) {
