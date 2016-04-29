@@ -3,11 +3,9 @@ package com.drillandblast;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Created by Zachary on 4/6/2016.
- */
 public class GridCoordinate implements Serializable {
 
+    private String id;
     private int row;
     private int column;
     private double depth;
@@ -18,12 +16,21 @@ public class GridCoordinate implements Serializable {
         super();
     }
 
-    public GridCoordinate(int row, int column, double depth, String comment, double bitSize) {
+    public GridCoordinate(String id, int row, int column, double depth, String comment, double bitSize) {
+        this.id = id;
         this.row = row;
         this.column = column;
         this.depth = depth;
         this.comment = comment;
         this.bitSize = bitSize;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getRow() {

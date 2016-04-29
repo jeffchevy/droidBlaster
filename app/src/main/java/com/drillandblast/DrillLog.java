@@ -3,27 +3,27 @@ package com.drillandblast;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Zachary on 4/5/2016.
  */
 public class DrillLog implements Serializable {
 
+    private String id;
     private String drillerName;
-    private double drillId;
-    private Date drillDate;
-    private ArrayList<GridCoordinate> gridCoordinates;
+    private String name;
+    private List<GridCoordinate> gridCoordinates;
 
     public DrillLog() {
         super();
     }
 
-    public DrillLog(String drillerName, double drillId, Date drillDate, ArrayList<GridCoordinate> gridCoordinates) {
+    public DrillLog(String id, String drillerName, String name) {
         super();
+        this.id = id;
         this.drillerName = drillerName;
-        this.drillId = drillId;
-        this.drillDate = drillDate;
-        this.gridCoordinates = gridCoordinates;
+        this.name = name;
     }
 
     public String getDrillerName() {
@@ -34,32 +34,32 @@ public class DrillLog implements Serializable {
         this.drillerName = drillerName;
     }
 
-    public double getDrillId() {
-        return drillId;
+    public String getName() {
+        return name;
     }
 
-    public void setDrillId(double drillId) {
-        this.drillId = drillId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Date getDrillDate() {
-        return drillDate;
-    }
-
-    public void setDrillDate(Date drillDate) {
-        this.drillDate = drillDate;
-    }
-
-    public ArrayList<GridCoordinate> getGridCoordinates() {
+    public List<GridCoordinate> getGridCoordinates() {
         return gridCoordinates;
     }
 
-    public void setGridCoordinates(ArrayList<GridCoordinate> gridCoordinates) {
+    public void setGridCoordinates(List<GridCoordinate> gridCoordinates) {
         this.gridCoordinates = gridCoordinates;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
     public String toString() {
-        return this.drillerName + " - " + this.drillId;
+        return this.drillerName + " - " + this.name;
     }
 }

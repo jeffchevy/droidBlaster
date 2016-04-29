@@ -2,8 +2,10 @@ package com.drillandblast;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class GridActivity extends AppCompatActivity {
     public Project project = null;
@@ -40,7 +43,7 @@ public class GridActivity extends AppCompatActivity {
             TableRow row = new TableRow(this);
             row.setLayoutParams(tableRowParams);
             for(int j=0; j<colCount; j++) {
-                final GridCoordinate gridCoordinate = new GridCoordinate(i, j, 0, "", 0);
+                final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", 0);
                 TextView textView = new TextView(this);
                 TableRow.LayoutParams tableCellParams = new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
 
@@ -69,7 +72,7 @@ public class GridActivity extends AppCompatActivity {
 
         if(drillLog.getGridCoordinates().size()>0)
         {
-            final ArrayList<GridCoordinate> gridCoordinates = drillLog.getGridCoordinates();
+            final List<GridCoordinate> gridCoordinates = drillLog.getGridCoordinates();
             for(int k = 0; k<gridCoordinates.size(); k++)
             {
                 TableRow tr = (TableRow) tbl.getChildAt(gridCoordinates.get(k).getRow());
@@ -91,5 +94,15 @@ public class GridActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = NavUtils.getParentActivityIntent(this);
+        intent.putExtra("project", project);
+        intent.putExtra("drillLog", drillLog);
+        //NavUtils.navigateUpTo(this, intent);
+        startActivity(intent);
+        return true;
     }
 }
