@@ -145,7 +145,7 @@ public class DrillLogListActivity extends AppCompatActivity {
                         String z = (String) getValue(holesObject, "z");
                         String comments = (String) getValue(holesObject, "comments");
                         String bitSize = (String) getValue(holesObject, "bitSize");
-                        GridCoordinate gridCoordinate = new GridCoordinate(id, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, 0);
+                        GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, 0);
                         holes.add(gridCoordinate);
                     }
 
