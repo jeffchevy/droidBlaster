@@ -1,6 +1,9 @@
-package com.drillandblast;
+package com.drillandblast.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +18,10 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.view.View.OnClickListener;
 
+import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
+import com.drillandblast.model.Project;
+import com.drillandblast.model.ProjectKeep;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,12 +29,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class ProjectListActivity extends AppCompatActivity {
@@ -45,13 +47,23 @@ public class ProjectListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Starting onCreate");
 
+        ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        Log.d(TAG, "network:"+isConnected);
+
         Intent process = getIntent();
         token = process.getStringExtra("token");
 
         setContentView(R.layout.activity_project_list);
 
-        AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
-        projectListTaskRunner.execute();
+        if (isConnected) {
+            AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
+            projectListTaskRunner.execute();
+        }
         arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, projects);
 
         ListView listView = (ListView) findViewById(R.id.project_list_view);
@@ -64,7 +76,7 @@ public class ProjectListActivity extends AppCompatActivity {
                                     int position, long id) {
             project = projects.get(position);
             Intent editProject = new Intent(ProjectListActivity.this, ProjectActivity.class);
-            editProject.putExtra("project", project);
+            editProject.putExtra("id", project.getId());
             editProject.putExtra("token", token);
             startActivity(editProject);
             finish();
@@ -127,44 +139,9 @@ public class ProjectListActivity extends AppCompatActivity {
          */
         @Override
         protected void onPostExecute(String result) {
-            try {
-                arrayAdapter.clear();
-                JSONArray jsonarray = new JSONArray(result);
-                for (int i = 0; i < jsonarray.length(); i++) {
-                    JSONObject jsonobject = jsonarray.getJSONObject(i);
-                    String id = (String) getValue(jsonobject, "_id");
-                    String customer = (String) getValue(jsonobject, "customer");
-                    String drillersName = (String) getValue(jsonobject,"drillersName");
-                    String shotNumber = (String) getValue(jsonobject,"shotNumber");
-                    String contractorsName = (String) getValue(jsonobject,"contractorsName");
-                    String jobName = (String) getValue(jsonobject, "jobName");
-
-                    Project project = new Project(id, jobName, contractorsName, null, Double.valueOf(shotNumber), drillersName, 13D, null, null);
-                    projects.add(project);
-                }
-                arrayAdapter.notifyDataSetChanged();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        private Object getValue(JSONObject jsonObject, String name){
-            Object result= null;
-            try{
-                result = jsonObject.getString(name);
-            } catch (Exception ex) {}
-            return result;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            // Things to be done before execution of long running operation. For
-            // example showing ProgessDialog
-        }
-        @Override
-        protected void onProgressUpdate(String... text) {
-            // Things to be done while execution of long running operation is in
-            // progress. For example updating ProgessDialog
+            arrayAdapter.clear();
+            List<Project> projects = ProjectKeep.getInstance().fromJson(result);
+            arrayAdapter.addAll(projects);
         }
     }
 

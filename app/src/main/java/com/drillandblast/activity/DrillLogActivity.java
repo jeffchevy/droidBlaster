@@ -1,4 +1,4 @@
-package com.drillandblast;
+package com.drillandblast.activity;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,14 +10,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
+import com.drillandblast.model.DrillLog;
+import com.drillandblast.model.GridCoordinate;
+import com.drillandblast.model.Project;
+import com.drillandblast.model.ProjectKeep;
 
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class DrillLogActivity extends AppCompatActivity {
     private boolean isEdit = false;
@@ -32,8 +34,10 @@ public class DrillLogActivity extends AppCompatActivity {
         setContentView(R.layout.activity_drill_log);
 
         final Intent process = getIntent();
-        project = (Project) process.getSerializableExtra("project");
-        drillLog = (DrillLog) process.getSerializableExtra("drillLog");
+        String id =  process.getStringExtra("id");
+        String drillId =  process.getStringExtra("drillId");
+        project = ProjectKeep.getInstance().findById(id);
+        drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
 
         Button saveButton = (Button) findViewById(R.id.save_drill_log_button);
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
@@ -55,7 +59,7 @@ public class DrillLogActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     saveDrillLogData(project);
                     Intent toDrillLogList = new Intent(DrillLogActivity.this, DrillLogListActivity.class);
-                    toDrillLogList.putExtra("project", project);
+                    toDrillLogList.putExtra("id", project.getId());
                     startActivity(toDrillLogList);
                     finish();
                 }
@@ -67,8 +71,8 @@ public class DrillLogActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent toDrillLogCoordinates = new Intent(DrillLogActivity.this, GridActivity.class);
-                    toDrillLogCoordinates.putExtra("project", project);
-                    toDrillLogCoordinates.putExtra("drillLog", drillLog);
+                    toDrillLogCoordinates.putExtra("id", project.getId());
+                    toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
                     startActivity(toDrillLogCoordinates);
                     finish();
                 }
@@ -130,7 +134,7 @@ public class DrillLogActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
         //NavUtils.navigateUpTo(this, intent);
-        intent.putExtra("project", project);
+        intent.putExtra("id", project.getId());
         startActivity(intent);
         return true;
     }

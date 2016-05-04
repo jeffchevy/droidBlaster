@@ -1,4 +1,4 @@
-package com.drillandblast;
+package com.drillandblast.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.drillandblast.R;
 import com.drillandblast.http.LoginTaskRunner;
 
 import org.json.JSONObject;
-
-import java.util.concurrent.ExecutionException;
 
 public class LoginActivity extends AppCompatActivity {
     EditText userName;
@@ -26,9 +25,14 @@ public class LoginActivity extends AppCompatActivity {
     private String response;
     private static Context context;
 
+
+    private String token = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         LoginActivity.context = getApplicationContext();
@@ -40,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         ok = (Button) findViewById(R.id.btn_login);
         finalResult = (TextView) findViewById(R.id.tv_error);
         Boolean successValue = false;
-        String token = null;
 
         ok.setOnClickListener(new View.OnClickListener() {
 
@@ -56,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                     try {
                         JSONObject json = new JSONObject(asyncResultText);
                         Boolean successValue = (Boolean)json.get("success");
-                        String token = (String)json.get("token");
+                        token = (String)json.get("token");
                         if (!successValue)
                         {
                             result = "Login failed!";
@@ -73,10 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.apply();
                         if (successValue)
                         {
-                            Intent next = new Intent(LoginActivity.this, ProjectListActivity.class);
-                            next.putExtra("token", token);
-                            startActivity(next);
-                            finish();
+                            nextActivity();
                         }
 
                     } catch(Exception ex){
@@ -88,5 +88,12 @@ public class LoginActivity extends AppCompatActivity {
                 finalResult.setText(result);
             }
         });
+    }
+    private void nextActivity(){
+        Intent next = new Intent(LoginActivity.this, ProjectListActivity.class);
+        next.putExtra("token", token);
+        startActivity(next);
+        finish();
+
     }
 }

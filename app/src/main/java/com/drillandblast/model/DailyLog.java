@@ -1,4 +1,4 @@
-package com.drillandblast;
+package com.drillandblast.model;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -44,14 +44,16 @@ public class DailyLog implements Serializable {
     }
 
     public void setDrillNum(String drillNum) {
+
         this.drillNum = drillNum;
     }
 
     public double getGallonsFuel() {
+
         return gallonsFuel;
     }
 
-    public void getGallonsFuel(double gallonsFuel) {
+    public void setGallonsFuel(double gallonsFuel) {
         this.gallonsFuel = gallonsFuel;
     }
 
@@ -66,12 +68,16 @@ public class DailyLog implements Serializable {
     public int getMeterStart() {
         return meterStart;
     }
+    public void setMeterStart(int meterStart) {
+        this.meterStart = meterStart;
+    }
 
     public void setShotNumber(int meterStart) {
         this.meterStart = meterStart;
     }
 
     public int getMeterEnd() {
+
         return meterEnd;
     }
 
@@ -91,7 +97,7 @@ public class DailyLog implements Serializable {
         return percussionTime;
     }
 
-    public void setPercussionTime(Date PercussionTime) {
+    public void setPercussionTime(String PercussionTime) {
         this.percussionTime = percussionTime;
     }
 

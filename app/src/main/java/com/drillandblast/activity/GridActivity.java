@@ -1,7 +1,6 @@
-package com.drillandblast;
+package com.drillandblast.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,9 +10,12 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
+import com.drillandblast.R;
+import com.drillandblast.model.DrillLog;
+import com.drillandblast.model.GridCoordinate;
+import com.drillandblast.model.Project;
+import com.drillandblast.model.ProjectKeep;
+
 import java.util.List;
 
 public class GridActivity extends AppCompatActivity {
@@ -28,8 +30,10 @@ public class GridActivity extends AppCompatActivity {
 
         Intent process = getIntent();
 
-        project = (Project) process.getSerializableExtra("project");
-        drillLog = (DrillLog) process.getSerializableExtra("drillLog");
+        String id =  process.getStringExtra("id");
+        String drillId =  process.getStringExtra("drillId");
+        project = ProjectKeep.getInstance().findById(id);
+        drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
 
         int rowCount = 40;
         int colCount = 40;
@@ -59,8 +63,8 @@ public class GridActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent toGridCoordinate = new Intent(GridActivity.this, GridCoordinateActivity.class);
                         toGridCoordinate.putExtra("gridCoordinate", gridCoordinate);
-                        toGridCoordinate.putExtra("project", project);
-                        toGridCoordinate.putExtra("drillLog", drillLog);
+                        toGridCoordinate.putExtra("id", project.getId());
+                        toGridCoordinate.putExtra("drillId", drillLog.getId());
                         startActivity(toGridCoordinate);
                         finish();
                     }
@@ -85,8 +89,8 @@ public class GridActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent toGridCoordinate = new Intent(GridActivity.this, GridCoordinateActivity.class);
                         toGridCoordinate.putExtra("gridCoordinate", gc);
-                        toGridCoordinate.putExtra("project", project);
-                        toGridCoordinate.putExtra("drillLog", drillLog);
+                        toGridCoordinate.putExtra("id", project.getId());
+                        toGridCoordinate.putExtra("drillId", drillLog.getId());
                         startActivity(toGridCoordinate);
                         finish();
                     }
@@ -99,8 +103,8 @@ public class GridActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
-        intent.putExtra("project", project);
-        intent.putExtra("drillLog", drillLog);
+        intent.putExtra("id", project.getId());
+        intent.putExtra("drillId", drillLog.getId());
         //NavUtils.navigateUpTo(this, intent);
         startActivity(intent);
         return true;

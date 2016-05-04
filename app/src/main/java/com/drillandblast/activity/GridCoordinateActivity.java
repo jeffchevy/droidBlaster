@@ -1,4 +1,4 @@
-package com.drillandblast;
+package com.drillandblast.activity;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -9,13 +9,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
+import com.drillandblast.model.DrillLog;
+import com.drillandblast.model.GridCoordinate;
+import com.drillandblast.model.Project;
+import com.drillandblast.model.ProjectKeep;
 
 import org.json.JSONObject;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class GridCoordinateActivity extends AppCompatActivity {
@@ -37,8 +40,10 @@ public class GridCoordinateActivity extends AppCompatActivity {
         {
             isEdit = true;
         }
-        project = (Project) process.getSerializableExtra("project");
-        drillLog = (DrillLog) process.getSerializableExtra("drillLog");
+        String id =  process.getStringExtra("id");
+        String drillId =  process.getStringExtra("drillId");
+        project = ProjectKeep.getInstance().findById(id);
+        drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         token = process.getStringExtra("token");
 
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
@@ -138,8 +143,8 @@ public class GridCoordinateActivity extends AppCompatActivity {
         }
         protected void onPostExecute(String result) {
             Intent toDrillLogCoordinates = new Intent(GridCoordinateActivity.this, GridActivity.class);
-            toDrillLogCoordinates.putExtra("drillLog", drillLog);
-            toDrillLogCoordinates.putExtra("project", project);
+            toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
+            toDrillLogCoordinates.putExtra("id", project.getId());
             startActivity(toDrillLogCoordinates);
             finish();
         }

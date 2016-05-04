@@ -1,4 +1,4 @@
-package com.drillandblast;
+package com.drillandblast.activity;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,7 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
+import com.drillandblast.model.DailyLog;
+import com.drillandblast.model.Project;
+import com.drillandblast.model.ProjectKeep;
 
 import org.json.JSONObject;
 
@@ -28,8 +32,10 @@ public class DailyLogActivity extends AppCompatActivity {
 
         Intent process = getIntent();
         token = process.getStringExtra("token");
-        project = (Project) process.getSerializableExtra("project");
-        dailyLog = (DailyLog) process.getSerializableExtra("dailyLog");
+        String id =  process.getStringExtra("id");
+        project = ProjectKeep.getInstance().findById(id);
+        String dailyLogId = process.getStringExtra("dailyLogId");
+        dailyLog = ProjectKeep.getInstance().findDailyLogById(project, dailyLogId);
 
         if(dailyLog != null){
             isEdit = true;
@@ -53,7 +59,7 @@ public class DailyLogActivity extends AppCompatActivity {
     public void backToDailyLogList(){
         Intent toDailyLogList = new Intent(DailyLogActivity.this, DailyListActivity.class);
         toDailyLogList.putExtra("token", token);
-        toDailyLogList.putExtra("project", project);
+        toDailyLogList.putExtra("id", project.getId());
 
         startActivity(toDailyLogList);
         finish();
@@ -92,6 +98,18 @@ public class DailyLogActivity extends AppCompatActivity {
         String meterEnd = ((EditText) findViewById(R.id.meter_end_text_field)).getText().toString();
         String bulkTankPumpedFrom = ((EditText) findViewById(R.id.bulk_tank_text_field)).getText().toString();
         String percussionTime = ((EditText) findViewById(R.id.percussion_time_text_field)).getText().toString();
+
+        if (!isEdit) {
+            dailyLog = new DailyLog();
+            project.addDailyLog(dailyLog);
+        }
+        dailyLog.setDrillNum(drillNumber);
+        dailyLog.setGallonsFuel(Double.valueOf(gallonsFuel));
+        dailyLog.setStartDate(dateString);
+        dailyLog.setMeterEnd(Integer.valueOf(meterEnd));
+        dailyLog.setMeterStart(Integer.valueOf(meterStart));
+        dailyLog.setBulkTankPumpedFrom(bulkTankPumpedFrom);
+        dailyLog.setPercussionTime(percussionTime);
 
         AsyncTaskRunner dailyLogSaveRunner = new AsyncTaskRunner();
         asyncTask = dailyLogSaveRunner.execute(drillNumber, gallonsFuel, bulkTankPumpedFrom, meterStart, meterEnd, percussionTime);

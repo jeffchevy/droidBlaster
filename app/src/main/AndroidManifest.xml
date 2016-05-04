@@ -3,69 +3,118 @@
     package="com.drillandblast">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.LoginActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".activity.ProjectListActivity" />
+        <activity
+            android:name=".activity.ProjectActivity"
+            android:parentActivityName=".activity.ProjectListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ProjectListActivity" />
+        </activity>
+        <activity
+            android:name=".activity.GridActivity"
+            android:parentActivityName=".activity.DrillLogActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.DrillLogActivity" />
+        </activity>
+        <activity
+            android:name=".activity.DrillLogListActivity"
+            android:parentActivityName=".activity.ProjectActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ProjectActivity" />
+        </activity>
+        <activity
+            android:name=".activity.DailyListActivity"
+            android:parentActivityName=".activity.ProjectActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ProjectActivity" />
+        </activity>
+        <activity
+            android:name=".activity.DailyLogActivity"
+            android:label="@string/title_activity_daily_log"
+            android:parentActivityName=".activity.DailyListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.DailyListActivity" />
+        </activity>
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".activity.DrillLogActivity"
+            android:parentActivityName=".activity.DrillLogListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.DrillLogListActivity" />
+        </activity>
+        <activity
+            android:name=".activity.GridCoordinateActivity"
+            android:parentActivityName=".activity.GridActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.GridActivity" />
+        </activity>
+
+        <service
+            android:name=".sync.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+        <service android:name=".sync.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <provider
+            android:name=".sync.DrillProvider"
+            android:authorities="com.drillandblast.sync"
+            android:exported="false"
+            android:syncable="true" />
+
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".ProjectListActivity" />
-        <activity android:name=".ProjectActivity"
-                  android:parentActivityName=".ProjectListActivity">
-                <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.drillandblast.ProjectListActivity"/>
-        </activity>
-        <activity android:name=".GridActivity"
-            android:parentActivityName=".DrillLogActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.drillandblast.DrillLogActivity"/>
-        </activity>
-
-        <activity android:name=".DrillLogListActivity"
-            android:parentActivityName=".ProjectActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.drillandblast.ProjectActivity"/>
-        </activity>
-        <activity android:name=".DailyListActivity"
-            android:parentActivityName=".ProjectActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.drillandblast.ProjectActivity"/>
-        </activity>
-        <activity
-            android:name=".DailyLogActivity"
-            android:label="@string/title_activity_daily_log"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".DailyListActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.drillandblast.DailyListActivity"/>
-        </activity>
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".DrillLogActivity"
-            android:parentActivityName=".DrillLogListActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.drillandblast.DrillLogListActivity"/>
-        </activity>
-        <activity android:name=".GridCoordinateActivity"
-            android:parentActivityName=".GridActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.drillandblast.GridActivity"/>
         </activity>
     </application>
 

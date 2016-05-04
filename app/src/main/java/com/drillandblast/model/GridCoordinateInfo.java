@@ -1,4 +1,4 @@
-package com.drillandblast;
+package com.drillandblast.model;
 
 /**
  * Created by Zachary on 4/6/2016.

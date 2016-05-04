@@ -1,4 +1,4 @@
-package com.drillandblast;
+package com.drillandblast.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

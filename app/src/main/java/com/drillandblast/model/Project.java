@@ -1,7 +1,9 @@
-package com.drillandblast;
+package com.drillandblast.model;
+
+import com.drillandblast.model.DailyLog;
+import com.drillandblast.model.DrillLog;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -97,10 +99,6 @@ public class Project implements Serializable {
         drillLogs.add(drillLog);
     }
 
-    public DrillLog getDrillLog(int position) {
-        return drillLogs.get(position);
-    }
-
     @Override
     public String toString() {
         return this.projectName;
@@ -108,10 +106,6 @@ public class Project implements Serializable {
 
     public List<DailyLog> getDailyLogs() {
         return dailyLogs;
-    }
-
-    public DailyLog getDailyLog(int position) {
-        return dailyLogs.get(position);
     }
 
     public void setDailyLogs(List<DailyLog> drillLogs) {

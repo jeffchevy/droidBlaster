@@ -1,4 +1,4 @@
-package com.drillandblast;
+package com.drillandblast.activity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

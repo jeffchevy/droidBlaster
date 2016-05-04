@@ -7,20 +7,12 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.security.KeyStore;
-import java.util.ArrayList;
 
-import javax.net.ssl.HostnameVerifier;
-
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -28,8 +20,6 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -38,14 +28,13 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.json.JSONObject;
 
-import com.drillandblast.LoginActivity;
-
 
 public class SimpleHttpClient {
     //("http://10.0.2.2:1337/api/v1/project");
 
 //    public static final String baseUrl = "http://10.0.2.2:1337/api/v1/";
-    public static final String baseUrl = "http://gunpowder-dev.herokuapp.com/api/v1/";
+//    public static final String baseUrl = "http://gunpowder-dev.herokuapp.com/api/v1/";
+    public static final String baseUrl = "http://192.168.1.16:1337/api/v1/";
 
     /** The time it takes for our client to timeout */
     public static final int HTTP_TIMEOUT = 30 * 1000; // milliseconds

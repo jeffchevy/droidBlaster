@@ -1,24 +1,25 @@
-package com.drillandblast;
+package com.drillandblast.activity;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
+import com.drillandblast.model.Project;
+import com.drillandblast.model.ProjectKeep;
 
 import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class ProjectActivity extends AppCompatActivity {
     public boolean isEdit = false;
@@ -36,12 +37,12 @@ public class ProjectActivity extends AppCompatActivity {
         Intent process = getIntent();
         token = process.getStringExtra("token");
 
-        project = (Project) process.getSerializableExtra("project");
+        String id = process.getStringExtra("id");
+        project = ProjectKeep.getInstance().findById(id);
         if (project != null) {
             isEdit = true;
             setProjectData(project);
         }
-
 
         Button saveButton = (Button) findViewById(R.id.save_project_button);
         Button drillLogButton = (Button) findViewById(R.id.drill_log_button);
@@ -53,7 +54,7 @@ public class ProjectActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent toDrillLogList = new Intent(ProjectActivity.this, DrillLogListActivity.class);
                     toDrillLogList.putExtra("token", token);
-                    toDrillLogList.putExtra("project", project);
+                    toDrillLogList.putExtra("id", project.getId());
                     startActivity(toDrillLogList);
                     finish();
                 }
@@ -66,7 +67,7 @@ public class ProjectActivity extends AppCompatActivity {
                     Intent toDailyLogList = new Intent(ProjectActivity.this, DailyListActivity.class);
                     //toDailyLogList.putExtra("key", position);
                     toDailyLogList.putExtra("token", token);
-                    toDailyLogList.putExtra("project", project);
+                    toDailyLogList.putExtra("id", project.getId());
                     startActivity(toDailyLogList);
                     finish();
                 }
@@ -77,6 +78,8 @@ public class ProjectActivity extends AppCompatActivity {
             saveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+//                    saveProjectToFile(project);
+//                    Project temp = readProjectFromFile();
                     saveProject();
                     backToProjectList();
                 }
@@ -182,5 +185,4 @@ public class ProjectActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
     }
-
 }
