@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
+import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
@@ -94,6 +95,12 @@ public class DrillLogActivity extends AppCompatActivity {
         String name = log_name.getText().toString();
         String drillerName = driller_name.getText().toString();
 
+        if (!isEdit)
+        {
+            project.addDrillLog(drillLog);
+        }
+        drillLog.setName(name);
+        drillLog.setDrillerName(drillerName);
         AsyncTaskRunner drillLogTaskRunner = new AsyncTaskRunner();
         asyncTask = drillLogTaskRunner.execute(name, drillerName);
 
@@ -114,12 +121,13 @@ public class DrillLogActivity extends AppCompatActivity {
                 if (isEdit)
                 {
                     result = SimpleHttpClient.executeHttpPut("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, token);
-                    drillLog.setName(params[0]);
-                    drillLog.setDrillerName(params[1]);
                 }
                 else
                 {
                     result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId(), json, token);
+                    JSONObject jsonobject = new JSONObject(result);
+                    String id = jsonobject.getString("id");
+                    drillLog.setId(id);
                 }
 
             } catch (Exception e) {

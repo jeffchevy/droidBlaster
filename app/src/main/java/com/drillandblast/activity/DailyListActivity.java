@@ -71,19 +71,6 @@ public class DailyListActivity extends AppCompatActivity {
                         ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        Button backButton = (Button) findViewById(R.id.back_button);
-        if (backButton != null) {
-            backButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent next = new Intent(DailyListActivity.this, ProjectListActivity.class);
-                    next.putExtra("id", project.getId());
-                    next.putExtra("token", token);
-                    startActivity(next);
-                    finish();
-                }
-            });
-        }
 
         Button button = (Button) findViewById(R.id.new_daily_log_button);
         if (button != null) {
@@ -104,6 +91,7 @@ public class DailyListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
         intent.putExtra("id", project.getId());
+        intent.putExtra("token", token);
         //NavUtils.navigateUpTo(this, intent);
         startActivity(intent);
         return true;

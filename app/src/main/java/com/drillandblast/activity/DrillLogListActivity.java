@@ -79,7 +79,7 @@ public class DrillLogListActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent toDrillLog = new Intent(DrillLogListActivity.this, DrillLogActivity.class);
-                    toDrillLog.putExtra("project", project);
+                    toDrillLog.putExtra("id", project.getId());
                     startActivity(toDrillLog);
                     finish();
                 }
@@ -90,6 +90,7 @@ public class DrillLogListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
         intent.putExtra("id", project.getId());
+        intent.putExtra("token", token);
         startActivity(intent);
         return true;
     }

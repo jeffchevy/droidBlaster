@@ -141,6 +141,9 @@ public class DailyLogActivity extends AppCompatActivity {
                 else
                 {
                     result = SimpleHttpClient.executeHttpPost("dailyLogs/"+project.getId(), json, token);
+                    JSONObject jsonobject = new JSONObject(result);
+                    String id = jsonobject.getString("id");
+                    dailyLog.setId(id);
                 }
 
             } catch (Exception e) {

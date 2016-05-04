@@ -76,7 +76,7 @@ public class GridActivity extends AppCompatActivity {
                             Intent toGridCoordinate = new Intent(GridActivity.this, GridCoordinateActivity.class);
                             toGridCoordinate.putExtra("gridCoordinate", gridCoordinate);
                             toGridCoordinate.putExtra("id", project.getId());
-                            toGridCoordinate.putExtra("drillLogId", drillLog.getId());
+                            toGridCoordinate.putExtra("drillId", drillLog.getId());
                             startActivity(toGridCoordinate);
                             finish();
                         }
