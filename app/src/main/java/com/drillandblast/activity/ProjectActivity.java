@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +13,8 @@ import android.widget.EditText;
 import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.Project;
-import com.drillandblast.model.ProjectKeep;
+import com.drillandblast.project.ProjectKeep;
+import com.drillandblast.project.ProjectSync;
 
 import org.json.JSONObject;
 
@@ -21,10 +22,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ProjectActivity extends AppCompatActivity {
+public class ProjectActivity extends BaseActivity {
+    private static final String TAG = "ProjectActivity";
     public boolean isEdit = false;
     public int position = 0;
-    public String token;
     public Project project = null;
     private AsyncTask<String, String, String> asyncTask;
 
@@ -35,7 +36,6 @@ public class ProjectActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent process = getIntent();
-        token = process.getStringExtra("token");
 
         String id = process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
@@ -43,17 +43,20 @@ public class ProjectActivity extends AppCompatActivity {
             isEdit = true;
             setProjectData(project);
         }
+        else {
+            project = new Project();
+        }
 
         Button saveButton = (Button) findViewById(R.id.save_project_button);
         Button drillLogButton = (Button) findViewById(R.id.drill_log_button);
         Button dailyLogButton = (Button) findViewById(R.id.daily_log_button);
+        Button syncButton = (Button) findViewById(R.id.project_sync);
 
         if (drillLogButton != null) {
             drillLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent toDrillLogList = new Intent(ProjectActivity.this, DrillLogListActivity.class);
-                    toDrillLogList.putExtra("token", token);
                     toDrillLogList.putExtra("id", project.getId());
                     startActivity(toDrillLogList);
                     finish();
@@ -66,7 +69,6 @@ public class ProjectActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent toDailyLogList = new Intent(ProjectActivity.this, DailyListActivity.class);
                     //toDailyLogList.putExtra("key", position);
-                    toDailyLogList.putExtra("token", token);
                     toDailyLogList.putExtra("id", project.getId());
                     startActivity(toDailyLogList);
                     finish();
@@ -82,6 +84,15 @@ public class ProjectActivity extends AppCompatActivity {
 //                    Project temp = readProjectFromFile();
                     saveProject();
                     backToProjectList();
+                }
+            });
+        }
+        if (syncButton != null) {
+            syncButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "Project Dirty: "+project.isDirty());
+                    ProjectSync.getInstance().sync(project);
                 }
             });
         }
@@ -137,6 +148,18 @@ public class ProjectActivity extends AppCompatActivity {
         catch(Exception e){
 
         }
+        // save project information
+        project.setProjectName(projectName);
+        project.setDrillerName(drillName);
+        project.setContractorName(contractorName);
+        project.setShotNumber(Double.valueOf(shot_number.getText().toString()));
+        try {
+            project.setBitSiZe(Double.valueOf(bit_Size.getText().toString()));
+        }
+        catch (Exception ex) {
+            Log.d("Bitsize: ", bit_Size.getText().toString());
+            ex.printStackTrace();
+        }
 
         AsyncTaskRunner projectSaveRunner = new AsyncTaskRunner();
         asyncTask = projectSaveRunner.execute(projectName, drillName, contractorName, shot_number.getText().toString(), bit_Size.getText().toString());
@@ -149,34 +172,19 @@ public class ProjectActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
-
             String result = null;
 
-            JSONObject json = new JSONObject();
-            String response = null;
-            try {
-                json.put("jobName", params[0]);
-                json.put("drillerName", params[1]);
-                json.put("contractorsName", params[2]);
-                json.put("shotNumber", params[3]);
-                json.put("bitSize", params[4]);
-
-                if (isEdit)
-                {
-                    result = SimpleHttpClient.executeHttpPut("project/"+project.getId(), json, token);
-                }
-                else
-                {
-                    result = SimpleHttpClient.executeHttpPost("project", json, token);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                result = e.getMessage();
+            if (isConnected()) {
+                result = ProjectSync.updateProjectHeader(isEdit, project);
             }
+            else {
+                project.setDirty(true);
+            }
+            ProjectKeep.getInstance().saveProjectToFile(project);
             return result;
         }
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

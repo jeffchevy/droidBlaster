@@ -9,6 +9,8 @@ import android.os.Binder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.drillandblast.project.ProjectKeep;
+
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ProjectKeep.getInstance().setContext(this);
 //        setContentView(R.layout.activity_main);
 
         /* this is used for data sync to android framework
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         token = (String)map.get("token");
         if (token != null)
         {
+            ProjectKeep.getInstance().setToken(token);
             nextActivity(ProjectListActivity.class);
         }
         else
@@ -51,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void nextActivity( Class<?> cls){
         Intent next = new Intent(MainActivity.this, cls);
-        next.putExtra("token", token);
         startActivity(next);
         finish();
     }

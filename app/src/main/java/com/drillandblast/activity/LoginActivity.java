@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.drillandblast.R;
 import com.drillandblast.http.LoginTaskRunner;
+import com.drillandblast.project.ProjectKeep;
 
 import org.json.JSONObject;
 
@@ -69,6 +70,9 @@ public class LoginActivity extends AppCompatActivity {
                             result = "Login successful";
                         }
 
+                        // save off for future use
+                        ProjectKeep.getInstance().setToken(token);
+
                         // MY_PREFS_NAME - a static String variable like:
                         //public static final String MY_PREFS_NAME = "MyPrefsFile";
                         SharedPreferences.Editor editor = getSharedPreferences("file", Context.MODE_PRIVATE).edit();
@@ -91,7 +95,6 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void nextActivity(){
         Intent next = new Intent(LoginActivity.this, ProjectListActivity.class);
-        next.putExtra("token", token);
         startActivity(next);
         finish();
 

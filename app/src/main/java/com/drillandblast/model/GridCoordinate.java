@@ -3,7 +3,7 @@ package com.drillandblast.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class GridCoordinate implements Serializable {
+public class GridCoordinate extends Entity {
 
     private String id;
     private int row;

@@ -1,11 +1,7 @@
 package com.drillandblast.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +17,7 @@ import android.view.View.OnClickListener;
 import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.Project;
-import com.drillandblast.model.ProjectKeep;
+import com.drillandblast.project.ProjectKeep;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -33,13 +29,12 @@ import org.apache.http.util.EntityUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectListActivity extends AppCompatActivity {
+public class ProjectListActivity extends BaseActivity {
     //I don't like the use of static here, but it will work for now.
     private static final String TAG = "ProjectListActivity";
     private ArrayAdapter arrayAdapter = null;
     static List<Project> projects = new ArrayList<>();
     private Project project = null;
-    private String token = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -47,20 +42,13 @@ public class ProjectListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Starting onCreate");
 
-        ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-
-        Log.d(TAG, "network:"+isConnected);
+        Log.d(TAG, "network:"+isConnected());
 
         Intent process = getIntent();
-        token = process.getStringExtra("token");
 
         setContentView(R.layout.activity_project_list);
 
-        if (isConnected) {
+        if (isConnected()) {
             AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
             projectListTaskRunner.execute();
         }
@@ -77,7 +65,6 @@ public class ProjectListActivity extends AppCompatActivity {
             project = projects.get(position);
             Intent editProject = new Intent(ProjectListActivity.this, ProjectActivity.class);
             editProject.putExtra("id", project.getId());
-            editProject.putExtra("token", token);
             startActivity(editProject);
             finish();
             // When clicked, show a toast with the TextView text
@@ -111,7 +98,7 @@ public class ProjectListActivity extends AppCompatActivity {
 //              HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
                 HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
 
-                httpGet.setHeader("token", token);
+                httpGet.setHeader("token", getToken());
                 Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
                 HttpClient httpclient = new DefaultHttpClient();
 

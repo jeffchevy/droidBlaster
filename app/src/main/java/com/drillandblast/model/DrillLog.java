@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Zachary on 4/5/2016.
  */
-public class DrillLog implements Serializable {
+public class DrillLog extends Entity {
 
     private String id;
     private String drillerName;

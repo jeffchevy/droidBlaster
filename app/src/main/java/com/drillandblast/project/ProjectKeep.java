@@ -1,6 +1,11 @@
-package com.drillandblast.model;
+package com.drillandblast.project;
 
 import android.content.Context;
+
+import com.drillandblast.model.DailyLog;
+import com.drillandblast.model.DrillLog;
+import com.drillandblast.model.GridCoordinate;
+import com.drillandblast.model.Project;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,6 +26,8 @@ public class ProjectKeep {
 
     List<Project> projects = null;
     Map<String, Project> projectMap = null;
+    Context context = null;
+    String token = null;
 
     private ProjectKeep(){
         this.projects = new ArrayList<>();
@@ -40,7 +47,7 @@ public class ProjectKeep {
     public DrillLog findDrillLogById(Project project, String drillId) {
         if (project != null) {
             for (DrillLog log : project.getDrillLogs()) {
-                if (log.getId().equalsIgnoreCase(drillId)) {
+                if (log.getId() != null && log.getId().equalsIgnoreCase(drillId)) {
                     return log;
                 }
             }
@@ -50,7 +57,7 @@ public class ProjectKeep {
     public DailyLog findDailyLogById(Project project, String dailyId) {
         if (project != null) {
             for (DailyLog log : project.getDailyLogs()) {
-                if (log.getId().equalsIgnoreCase(dailyId)) {
+                if (log.getId() != null && log.getId().equalsIgnoreCase(dailyId)) {
                     return log;
                 }
             }
@@ -139,11 +146,28 @@ public class ProjectKeep {
         } catch (Exception ex) {}
         return result;
     }
-    public void saveProjectToFile(Project project, Context ctx){
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void saveProjectToFile(Project project){
         ObjectOutputStream os = null;
         FileOutputStream fos = null;
         try {
-            fos = ctx.openFileOutput("testproject", Context.MODE_PRIVATE);
+            fos = context.openFileOutput("testproject", Context.MODE_PRIVATE);
             os = new ObjectOutputStream(fos);
             os.writeObject(project);
         } catch (Exception e) {
@@ -159,12 +183,12 @@ public class ProjectKeep {
             }
         }
     }
-    public Project readProjectFromFile(Context ctx){
+    public Project readProjectFromFile(){
         Project project = null;
         ObjectOutputStream os = null;
         FileOutputStream fos = null;
         try {
-            FileInputStream fis = ctx.openFileInput("testproject");
+            FileInputStream fis = context.openFileInput("testproject");
             ObjectInputStream is = new ObjectInputStream(fis);
             project = (Project) is.readObject();
             is.close();
@@ -183,5 +207,4 @@ public class ProjectKeep {
         }
         return project;
     }
-
 }

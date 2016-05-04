@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Created by Jacoxty on 4/12/2016.
  */
-public class DailyLog implements Serializable {
+public class DailyLog extends Entity {
 
     private String id;
     private String drillNum;

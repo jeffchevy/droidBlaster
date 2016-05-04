@@ -3,7 +3,6 @@ package com.drillandblast.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,15 +14,14 @@ import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
-import com.drillandblast.model.ProjectKeep;
+import com.drillandblast.project.ProjectKeep;
 
 import org.json.JSONObject;
 
 import java.util.List;
 
-public class GridCoordinateActivity extends AppCompatActivity {
+public class GridCoordinateActivity extends BaseActivity {
     private boolean isEdit = false;
-    public String token = null;
     public DrillLog drillLog = null;
     public Project project = null;
     public GridCoordinate gridCoordinate = null;
@@ -44,7 +42,6 @@ public class GridCoordinateActivity extends AppCompatActivity {
         String drillId =  process.getStringExtra("drillId");
         project = ProjectKeep.getInstance().findById(id);
         drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
-        token = process.getStringExtra("token");
 
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
         depth.setText(String.valueOf(gridCoordinate.getDepth()));
@@ -125,11 +122,11 @@ public class GridCoordinateActivity extends AppCompatActivity {
 
                 if (isEdit)
                 {
-                    result = SimpleHttpClient.executeHttpPut("holes/"+project.getId()+"/"+drillLog.getId()+"/"+gridCoordinate.getId(), json, token);
+                    result = SimpleHttpClient.executeHttpPut("holes/"+project.getId()+"/"+drillLog.getId()+"/"+gridCoordinate.getId(), json, getToken());
                 }
                 else
                 {
-                    result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, token);
+                    result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, getToken());
                     JSONObject jsonobject = new JSONObject(result);
                     String id = jsonobject.getString("id");
                     gridCoordinate.setId(id);

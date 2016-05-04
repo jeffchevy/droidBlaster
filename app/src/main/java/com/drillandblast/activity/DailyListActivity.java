@@ -1,11 +1,8 @@
 package com.drillandblast.activity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,27 +13,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
-import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.Project;
-import com.drillandblast.model.ProjectKeep;
+import com.drillandblast.project.ProjectKeep;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class DailyListActivity extends AppCompatActivity {
+public class DailyListActivity extends BaseActivity {
     private static final String TAG = "DailyListActivity";
     private ArrayAdapter arrayAdapter = null;
-    private String token = null;
     private Project project = null;
 
     @Override
@@ -45,7 +28,6 @@ public class DailyListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_daily_list);
 
         Intent process = getIntent();
-        token = process.getStringExtra("token");
         String id =  process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
 
@@ -63,7 +45,6 @@ public class DailyListActivity extends AppCompatActivity {
                 Intent editDailyLog = new Intent(DailyListActivity.this, DailyLogActivity.class);
                 editDailyLog.putExtra("dailyLogId", dailyLog.getId());
                 editDailyLog.putExtra("id", project.getId());
-                editDailyLog.putExtra("token", token);
                 startActivity(editDailyLog);
                 finish();
                 // When clicked, show a toast with the TextView text
@@ -79,7 +60,6 @@ public class DailyListActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent addNewDailyLog = new Intent(DailyListActivity.this, DailyLogActivity.class);
                     addNewDailyLog.putExtra("id", project.getId());
-                    addNewDailyLog.putExtra("token", token);
                     startActivity(addNewDailyLog);
                     finish();
                 }
@@ -91,7 +71,6 @@ public class DailyListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
         intent.putExtra("id", project.getId());
-        intent.putExtra("token", token);
         //NavUtils.navigateUpTo(this, intent);
         startActivity(intent);
         return true;

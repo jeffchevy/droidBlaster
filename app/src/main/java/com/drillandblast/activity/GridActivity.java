@@ -3,7 +3,6 @@ package com.drillandblast.activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -16,11 +15,11 @@ import com.drillandblast.R;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
-import com.drillandblast.model.ProjectKeep;
+import com.drillandblast.project.ProjectKeep;
 
 import java.util.List;
 
-public class GridActivity extends AppCompatActivity {
+public class GridActivity extends BaseActivity {
     public Project project = null;
     public DrillLog drillLog = null;
     @Override

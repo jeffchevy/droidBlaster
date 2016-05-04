@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Zachary on 3/31/2016.
  */
-public class Project implements Serializable {
+public class Project extends Entity {
 
     private String id;
     private String projectName;

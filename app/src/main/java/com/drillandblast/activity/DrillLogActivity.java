@@ -3,7 +3,6 @@ package com.drillandblast.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,17 +11,16 @@ import android.widget.EditText;
 
 import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
-import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
-import com.drillandblast.model.ProjectKeep;
+import com.drillandblast.project.ProjectKeep;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class DrillLogActivity extends AppCompatActivity {
+public class DrillLogActivity extends BaseActivity {
     private boolean isEdit = false;
     public String token = null;
     public Project project = null;
@@ -120,11 +118,11 @@ public class DrillLogActivity extends AppCompatActivity {
 
                 if (isEdit)
                 {
-                    result = SimpleHttpClient.executeHttpPut("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, token);
+                    result = SimpleHttpClient.executeHttpPut("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, getToken());
                 }
                 else
                 {
-                    result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId(), json, token);
+                    result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId(), json, getToken());
                     JSONObject jsonobject = new JSONObject(result);
                     String id = jsonobject.getString("id");
                     drillLog.setId(id);

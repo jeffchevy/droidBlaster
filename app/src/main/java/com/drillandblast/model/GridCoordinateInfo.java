@@ -3,7 +3,7 @@ package com.drillandblast.model;
 /**
  * Created by Zachary on 4/6/2016.
  */
-public class GridCoordinateInfo {
+public class GridCoordinateInfo extends Entity {
 
     private double depth;
     private String comment;

@@ -1,10 +1,7 @@
 package com.drillandblast.activity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,28 +13,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
-import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
-import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
-import com.drillandblast.model.ProjectKeep;
+import com.drillandblast.project.ProjectKeep;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class DrillLogListActivity extends AppCompatActivity {
+public class DrillLogListActivity extends BaseActivity {
     private static final String TAG = "DrillLogListActivity";
     private ArrayAdapter arrayAdapter = null;
-    private String token = null;
     private Project project = null;
 
     @Override
@@ -47,7 +29,6 @@ public class DrillLogListActivity extends AppCompatActivity {
 
         Intent process = getIntent();
 
-        token = process.getStringExtra("token");
         String id =  process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
 
@@ -90,7 +71,6 @@ public class DrillLogListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
         intent.putExtra("id", project.getId());
-        intent.putExtra("token", token);
         startActivity(intent);
         return true;
     }
