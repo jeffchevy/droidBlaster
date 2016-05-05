@@ -18,6 +18,7 @@ import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
+import com.drillandblast.project.ProjectSync;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -48,10 +49,8 @@ public class ProjectListActivity extends BaseActivity {
 
         setContentView(R.layout.activity_project_list);
 
-        if (isConnected()) {
-            AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
-            projectListTaskRunner.execute();
-        }
+        AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
+        projectListTaskRunner.execute();
         arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, projects);
 
         ListView listView = (ListView) findViewById(R.id.project_list_view);
@@ -92,30 +91,33 @@ public class ProjectListActivity extends BaseActivity {
         @Override
         protected String doInBackground(String... params) {
             String data = null;
-            try {
-                //------------------>>
+            if (isConnected()) {
+                try {
+                    //------------------>>
 
 //              HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
-                HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
+                    HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
 
-                httpGet.setHeader("token", getToken());
-                Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
-                HttpClient httpclient = new DefaultHttpClient();
+                    httpGet.setHeader("token", getToken());
+                    Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
+                    HttpClient httpclient = new DefaultHttpClient();
 
-                HttpResponse response = httpclient.execute(httpGet);
+                    HttpResponse response = httpclient.execute(httpGet);
 
-                // StatusLine stat = response.getStatusLine();
-                int status = response.getStatusLine().getStatusCode();
-                Log.d(TAG, "doInBackground: "+status);
+                    // StatusLine stat = response.getStatusLine();
+                    int status = response.getStatusLine().getStatusCode();
+                    Log.d(TAG, "doInBackground: "+status);
 
-                if (status == 200) {
-                    HttpEntity entity = response.getEntity();
-                    data = EntityUtils.toString(entity);
+                    if (status == 200) {
+                        HttpEntity entity = response.getEntity();
+                        data = EntityUtils.toString(entity);
 
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+
             return data;
         }
 
@@ -127,7 +129,13 @@ public class ProjectListActivity extends BaseActivity {
         @Override
         protected void onPostExecute(String result) {
             arrayAdapter.clear();
-            List<Project> projects = ProjectKeep.getInstance().fromJson(result);
+            List<Project> projects = null;
+            if (isConnected()) {
+                 projects = ProjectKeep.getInstance().fromJson(result);
+            }
+            else {
+                projects = ProjectKeep.getInstance().readFiles();
+            }
             arrayAdapter.addAll(projects);
         }
     }

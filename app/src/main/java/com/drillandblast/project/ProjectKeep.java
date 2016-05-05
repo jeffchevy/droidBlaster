@@ -1,6 +1,8 @@
 package com.drillandblast.project;
 
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.util.Log;
 
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
@@ -10,8 +12,10 @@ import com.drillandblast.model.Project;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -54,6 +58,17 @@ public class ProjectKeep {
         }
         return null;
     }
+    public DrillLog findDrillLogByName(Project project, String drillName) {
+        if (project != null) {
+            for (DrillLog log : project.getDrillLogs()) {
+                if (log.getName() != null && log.getName().equalsIgnoreCase(drillName)) {
+                    return log;
+                }
+            }
+        }
+        return null;
+    }
+
     public DailyLog findDailyLogById(Project project, String dailyId) {
         if (project != null) {
             for (DailyLog log : project.getDailyLogs()) {
@@ -123,8 +138,8 @@ public class ProjectKeep {
                             String percussionTime = (String) getValue(dailyLog, "percussionTime");
                             String dateStr = (String) getValue(dailyLog, "date");
 
-                            DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), dateStr, Integer.valueOf(hourMeterStart),
-                                    Integer.valueOf(hourMeterEnd), bulkTankPumpedFrom, percussionTime);
+                            DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), dateStr, Double.valueOf(hourMeterStart),
+                                    Double.valueOf(hourMeterEnd), bulkTankPumpedFrom, percussionTime);
                             project.addDailyLog(daily);
                         }
                     }
@@ -137,6 +152,10 @@ public class ProjectKeep {
             e.printStackTrace();
         }
         return projects;
+    }
+    private void addProject(Project project) {
+        projects.add(project);
+        projectMap.put(project.getId(), project);
     }
 
     private Object getValue(JSONObject jsonObject, String name){
@@ -167,9 +186,11 @@ public class ProjectKeep {
         ObjectOutputStream os = null;
         FileOutputStream fos = null;
         try {
-            fos = context.openFileOutput("testproject", Context.MODE_PRIVATE);
+            Log.d(TAG, "Start writing file:"+project.getId()+"-project");
+            fos = context.openFileOutput(project.getId()+"-project", Context.MODE_PRIVATE);
             os = new ObjectOutputStream(fos);
             os.writeObject(project);
+            Log.d(TAG, "End writing file:"+project.getId()+"-project");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -183,12 +204,12 @@ public class ProjectKeep {
             }
         }
     }
-    public Project readProjectFromFile(){
+    public Project readProjectFromFile(String filename){
         Project project = null;
         ObjectOutputStream os = null;
         FileOutputStream fos = null;
         try {
-            FileInputStream fis = context.openFileInput("testproject");
+            FileInputStream fis = context.openFileInput(filename);
             ObjectInputStream is = new ObjectInputStream(fis);
             project = (Project) is.readObject();
             is.close();
@@ -206,5 +227,21 @@ public class ProjectKeep {
             }
         }
         return project;
+    }
+    public List<Project> readFiles(){
+        FilenameFilter filter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith("-project");
+            }
+        };
+        File file = context.getFilesDir();
+        File files[] = file.listFiles(filter);
+        for (File thefile: files) {
+            Log.d(TAG, "File: "+thefile.getName());
+            Project project = readProjectFromFile(thefile.getName());
+            addProject(project);
+        }
+        return projects;
     }
 }

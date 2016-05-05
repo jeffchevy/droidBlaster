@@ -15,6 +15,7 @@ import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
+import com.drillandblast.project.ProjectSync;
 
 import org.json.JSONObject;
 
@@ -34,9 +35,16 @@ public class DrillLogActivity extends BaseActivity {
 
         final Intent process = getIntent();
         String id =  process.getStringExtra("id");
-        String drillId =  process.getStringExtra("drillId");
         project = ProjectKeep.getInstance().findById(id);
-        drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
+
+        String drillId =  process.getStringExtra("drillId");
+        if (drillId == null) {
+            String drillName =  process.getStringExtra("drill.name");
+            drillLog = ProjectKeep.getInstance().findDrillLogByName(project, drillName);
+        }
+        else {
+            drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
+        }
 
         Button saveButton = (Button) findViewById(R.id.save_drill_log_button);
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
@@ -50,6 +58,7 @@ public class DrillLogActivity extends BaseActivity {
         {
             drillLog = new DrillLog(null,"","" );
             drillLog.setGridCoordinates( new ArrayList<GridCoordinate>());
+            project.addDrillLog(drillLog);
         }
 
         if(saveButton != null) {
@@ -71,7 +80,12 @@ public class DrillLogActivity extends BaseActivity {
                 public void onClick(View v) {
                     Intent toDrillLogCoordinates = new Intent(DrillLogActivity.this, GridActivity.class);
                     toDrillLogCoordinates.putExtra("id", project.getId());
-                    toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
+                    if (drillLog.getId() == null) {
+                        toDrillLogCoordinates.putExtra("drill.name", drillLog.getName());
+                    }
+                    else {
+                        toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
+                    }
                     startActivity(toDrillLogCoordinates);
                     finish();
                 }
@@ -93,10 +107,6 @@ public class DrillLogActivity extends BaseActivity {
         String name = log_name.getText().toString();
         String drillerName = driller_name.getText().toString();
 
-        if (!isEdit)
-        {
-            project.addDrillLog(drillLog);
-        }
         drillLog.setName(name);
         drillLog.setDrillerName(drillerName);
         AsyncTaskRunner drillLogTaskRunner = new AsyncTaskRunner();
@@ -107,30 +117,13 @@ public class DrillLogActivity extends BaseActivity {
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
-
             String result = null;
-
-            JSONObject json = new JSONObject();
-            String response = null;
-            try {
-                json.put("name", params[0]);
-                json.put("drillerName", params[1]);
-
-                if (isEdit)
-                {
-                    result = SimpleHttpClient.executeHttpPut("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, getToken());
-                }
-                else
-                {
-                    result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId(), json, getToken());
-                    JSONObject jsonobject = new JSONObject(result);
-                    String id = jsonobject.getString("id");
-                    drillLog.setId(id);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                result = e.getMessage();
+            if (isConnected()) {
+                result = ProjectSync.getInstance().updateDrillLog(isEdit, project, drillLog);
+            }
+            else {
+                drillLog.setDirty(true);
+                ProjectKeep.getInstance().saveProjectToFile(project);
             }
             return result;
         }

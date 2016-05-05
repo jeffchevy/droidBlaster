@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DailyLog;
+import com.drillandblast.model.DrillLog;
+import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 
 import org.json.JSONObject;
@@ -41,7 +43,24 @@ public class ProjectSync {
                     log.setDirty(false);
                 }
             }
-            return "good";
+            for (DrillLog log: project.getDrillLogs()) {
+                if (log.isDirty())
+                {
+                    boolean drillLogIsEdit = log.getId() != null ? true : false;
+                    updateDrillLog(drillLogIsEdit, project, log);
+                    log.setDirty(false);
+                }
+                for (GridCoordinate gridCoordinate : log.getGridCoordinates()) {
+                    if (gridCoordinate.isDirty())
+                    {
+                        boolean coordinateIsEdit = gridCoordinate.getId() != null ? true : false;
+                        updateDrillCoordinate(coordinateIsEdit, project, log, gridCoordinate);
+                        gridCoordinate.setDirty(false);
+                    }
+                }
+
+            }
+            return "Sync Complete";
         }
     }
 
@@ -73,7 +92,8 @@ public class ProjectSync {
         return result;
     }
     public static String updateDailyLog(boolean isEdit, Project project, DailyLog dailyLog) {
-        String result;JSONObject json = new JSONObject();
+        String result;
+        JSONObject json = new JSONObject();
         try {
             json.put("drillNumber", dailyLog.getDrillNum());
             json.put("gallonsPumped", dailyLog.getGallonsFuel());
@@ -92,6 +112,56 @@ public class ProjectSync {
                 JSONObject jsonobject = new JSONObject(result);
                 String id = jsonobject.getString("id");
                 dailyLog.setId(id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = e.getMessage();
+        }
+        return result;
+    }
+    public static String updateDrillLog(boolean isEdit, Project project, DrillLog drillLog) {
+        String result = null;
+        JSONObject json = new JSONObject();
+        String response = null;
+        try {
+            json.put("name", drillLog.getName());
+            json.put("drillerName", drillLog.getDrillerName());
+
+            if (isEdit) {
+                result = SimpleHttpClient.executeHttpPut("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
+            } else {
+                result = SimpleHttpClient.executeHttpPost("drillLogs/" + project.getId(), json, ProjectKeep.getInstance().getToken());
+                JSONObject jsonobject = new JSONObject(result);
+                String id = jsonobject.getString("id");
+                drillLog.setId(id);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = e.getMessage();
+        }
+        return result;
+    }
+    public static String updateDrillCoordinate(boolean isEdit, Project project, DrillLog drillLog, GridCoordinate gridCoordinate) {
+        String result = null;
+
+        JSONObject json = new JSONObject();
+        String response = null;
+        try {
+            json.put("x", gridCoordinate.getRow());
+            json.put("y", gridCoordinate.getColumn());
+            json.put("z", gridCoordinate.getDepth());
+            json.put("comments", gridCoordinate.getComment());
+            json.put("bitSize", gridCoordinate.getBitSize());
+
+            if (isEdit) {
+                result = SimpleHttpClient.executeHttpPut("holes/" + project.getId() + "/" + drillLog.getId() + "/" + gridCoordinate.getId(), json, ProjectKeep.getInstance().getToken());
+            } else {
+                result = SimpleHttpClient.executeHttpPost("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
+                JSONObject jsonobject = new JSONObject(result);
+                String id = jsonobject.getString("id");
+                gridCoordinate.setId(id);
             }
 
         } catch (Exception e) {

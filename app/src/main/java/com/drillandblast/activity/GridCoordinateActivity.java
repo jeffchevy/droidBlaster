@@ -15,6 +15,7 @@ import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
+import com.drillandblast.project.ProjectSync;
 
 import org.json.JSONObject;
 
@@ -39,9 +40,16 @@ public class GridCoordinateActivity extends BaseActivity {
             isEdit = true;
         }
         String id =  process.getStringExtra("id");
-        String drillId =  process.getStringExtra("drillId");
         project = ProjectKeep.getInstance().findById(id);
-        drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
+        String drillId =  process.getStringExtra("drillId");
+        if (drillId == null) {
+            String drillName =  process.getStringExtra("drill.name");
+            drillLog = ProjectKeep.getInstance().findDrillLogByName(project, drillName);
+        }
+        else {
+            drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
+        }
+
 
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
         depth.setText(String.valueOf(gridCoordinate.getDepth()));
@@ -110,38 +118,24 @@ public class GridCoordinateActivity extends BaseActivity {
         protected String doInBackground(String... params) {
 
             String result = null;
-
-            JSONObject json = new JSONObject();
-            String response = null;
-            try {
-                json.put("x", gridCoordinate.getRow());
-                json.put("y", gridCoordinate.getColumn());
-                json.put("z", gridCoordinate.getDepth());
-                json.put("comments", gridCoordinate.getComment());
-                json.put("bitSize", gridCoordinate.getBitSize());
-
-                if (isEdit)
-                {
-                    result = SimpleHttpClient.executeHttpPut("holes/"+project.getId()+"/"+drillLog.getId()+"/"+gridCoordinate.getId(), json, getToken());
-                }
-                else
-                {
-                    result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, getToken());
-                    JSONObject jsonobject = new JSONObject(result);
-                    String id = jsonobject.getString("id");
-                    gridCoordinate.setId(id);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                result = e.getMessage();
+            if (isConnected()) {
+                result = ProjectSync.getInstance().updateDrillCoordinate(isEdit, project, drillLog, gridCoordinate);
+            }
+            else {
+                gridCoordinate.setDirty(true);
+                ProjectKeep.getInstance().saveProjectToFile(project);
             }
             return result;
         }
         protected void onPostExecute(String result) {
             Intent toDrillLogCoordinates = new Intent(GridCoordinateActivity.this, GridActivity.class);
-            toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
             toDrillLogCoordinates.putExtra("id", project.getId());
+            if (drillLog.getId() == null) {
+                toDrillLogCoordinates.putExtra("drill.name", drillLog.getName());
+            }
+            else{
+                toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
+            }
             startActivity(toDrillLogCoordinates);
             finish();
         }

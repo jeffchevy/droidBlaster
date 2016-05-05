@@ -37,7 +37,7 @@ public class DailyLogActivity extends BaseActivity {
 
         if(dailyLog != null){
             isEdit = true;
-            setDailLogData(dailyLog);
+            setDailyLogData(dailyLog);
         }
 
         Button saveButton = (Button) findViewById(R.id.save_daily_log_button);
@@ -57,12 +57,11 @@ public class DailyLogActivity extends BaseActivity {
     public void backToDailyLogList(){
         Intent toDailyLogList = new Intent(DailyLogActivity.this, DailyListActivity.class);
         toDailyLogList.putExtra("id", project.getId());
-
         startActivity(toDailyLogList);
         finish();
     }
 
-    public void setDailLogData(DailyLog dailyLog){
+    public void setDailyLogData(DailyLog dailyLog){
 
         EditText drillNumber = (EditText) findViewById(R.id.drill_id_text_field);
         EditText gallonsFuel = (EditText) findViewById(R.id.gallons_fuel_text_field);
@@ -103,8 +102,8 @@ public class DailyLogActivity extends BaseActivity {
         dailyLog.setDrillNum(drillNumber);
         dailyLog.setGallonsFuel(Double.valueOf(gallonsFuel));
         dailyLog.setStartDate(dateString);
-        dailyLog.setMeterEnd(Integer.valueOf(meterEnd));
-        dailyLog.setMeterStart(Integer.valueOf(meterStart));
+        dailyLog.setMeterEnd(Double.valueOf(meterEnd));
+        dailyLog.setMeterStart(Double.valueOf(meterStart));
         dailyLog.setBulkTankPumpedFrom(bulkTankPumpedFrom);
         dailyLog.setPercussionTime(percussionTime);
 
@@ -124,6 +123,7 @@ public class DailyLogActivity extends BaseActivity {
             }
             else {
                 dailyLog.setDirty(true);
+                ProjectKeep.getInstance().saveProjectToFile(project);
             }
             return result;
         }

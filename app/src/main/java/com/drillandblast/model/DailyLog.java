@@ -15,18 +15,16 @@ public class DailyLog extends Entity {
     private String drillNum;
     private double gallonsFuel;
     private String date;
-    private int meterStart;
-    private int meterEnd;
+    private double meterStart;
+    private double meterEnd;
     private String bulkTankPumpedFrom;
     private String percussionTime;
-
-
 
     public DailyLog() {
         super();
     }
 
-    public DailyLog(String id, String drillNum, double gallonsFuel, String date, int meterStart, int meterEnd, String bulkTankPumpedFrom, String percussionTime) {
+    public DailyLog(String id, String drillNum, double gallonsFuel, String date, double meterStart, double meterEnd, String bulkTankPumpedFrom, String percussionTime) {
         super();
         this.id = id;
         this.drillNum = drillNum;
@@ -54,6 +52,7 @@ public class DailyLog extends Entity {
     }
 
     public void setGallonsFuel(double gallonsFuel) {
+
         this.gallonsFuel = gallonsFuel;
     }
 
@@ -62,30 +61,31 @@ public class DailyLog extends Entity {
     }
 
     public void setStartDate(String date) {
+
         this.date = date;
     }
 
-    public int getMeterStart() {
+    public double getMeterStart() {
+
         return meterStart;
     }
-    public void setMeterStart(int meterStart) {
+    public void setMeterStart(double meterStart) {
+
         this.meterStart = meterStart;
     }
 
-    public void setShotNumber(int meterStart) {
-        this.meterStart = meterStart;
-    }
-
-    public int getMeterEnd() {
+    public double getMeterEnd() {
 
         return meterEnd;
     }
 
-    public void setMeterEnd(int meterEnd) {
+    public void setMeterEnd(double meterEnd) {
+
         this.meterEnd = meterEnd;
     }
 
     public String getBulkTankPumpedFrom() {
+
         return bulkTankPumpedFrom;
     }
 
@@ -94,6 +94,7 @@ public class DailyLog extends Entity {
     }
 
     public String getPercussionTime() {
+
         return percussionTime;
     }
 
