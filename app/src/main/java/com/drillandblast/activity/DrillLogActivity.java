@@ -14,6 +14,7 @@ import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
+import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
 
@@ -119,10 +120,16 @@ public class DrillLogActivity extends BaseActivity {
         protected String doInBackground(String... params) {
             String result = null;
             if (isConnected()) {
-                result = ProjectSync.getInstance().updateDrillLog(isEdit, project, drillLog);
+                try {
+                    result = ProjectSync.getInstance().updateDrillLog(isEdit, project, drillLog);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             else {
                 drillLog.setDirty(true);
+            }
+            if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
             return result;

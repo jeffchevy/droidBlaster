@@ -8,6 +8,7 @@ import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ProjectSync {
@@ -29,40 +30,48 @@ public class ProjectSync {
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
-            if (project.isDirty()) {
-                boolean projectHeaderIsEdit = project.getId() != null ? true : false;
-                updateProjectHeader(projectHeaderIsEdit, project);
-                project.setDirty(false);
-            }
-            for(DailyLog log : project.getDailyLogs())
-            {
-                if (log.isDirty())
-                {
-                    boolean dailyLogIsEdit = log.getId() != null ? true : false;
-                    updateDailyLog(dailyLogIsEdit, project, log);
-                    log.setDirty(false);
+            String result = "Successful";
+            try {
+                if (project.isDirty()) {
+                    boolean projectHeaderIsEdit = project.getId() != null ? true : false;
+                        updateProjectHeader(projectHeaderIsEdit, project);
+                    project.setDirty(false);
                 }
-            }
-            for (DrillLog log: project.getDrillLogs()) {
-                if (log.isDirty())
+                for(DailyLog log : project.getDailyLogs())
                 {
-                    boolean drillLogIsEdit = log.getId() != null ? true : false;
-                    updateDrillLog(drillLogIsEdit, project, log);
-                    log.setDirty(false);
-                }
-                for (GridCoordinate gridCoordinate : log.getGridCoordinates()) {
-                    if (gridCoordinate.isDirty())
+                    if (log.isDirty())
                     {
-                        boolean coordinateIsEdit = gridCoordinate.getId() != null ? true : false;
-                        updateDrillCoordinate(coordinateIsEdit, project, log, gridCoordinate);
-                        gridCoordinate.setDirty(false);
+                        boolean dailyLogIsEdit = log.getId() != null ? true : false;
+                        updateDailyLog(dailyLogIsEdit, project, log);
+                        log.setDirty(false);
                     }
                 }
+                for (DrillLog log: project.getDrillLogs()) {
+                    if (log.isDirty())
+                    {
+                        boolean drillLogIsEdit = log.getId() != null ? true : false;
+                        updateDrillLog(drillLogIsEdit, project, log);
+                        log.setDirty(false);
+                    }
+                    for (GridCoordinate gridCoordinate : log.getGridCoordinates()) {
+                        if (gridCoordinate.isDirty())
+                        {
+                            boolean coordinateIsEdit = gridCoordinate.getId() != null ? true : false;
+                            updateDrillCoordinate(coordinateIsEdit, project, log, gridCoordinate);
+                            gridCoordinate.setDirty(false);
+                        }
+                    }
+                }
+                // go and get anything that the server has
+                Project latestProject = ProjectKeep.getInstance().getLatestProjectFromServer(project);
+                ProjectKeep.getInstance().saveProjectToFile(project);
             }
-            // go and get anything that the server has
-            Project latestProject = ProjectKeep.getInstance().getLatestProjectFromServer(project);
-            ProjectKeep.getInstance().saveProjectToFile(project);
-            return "Sync Complete";
+            catch (Exception e) {
+                e.printStackTrace();
+                result = e.getMessage();
+            }
+
+            return result;
         }
     }
 
@@ -72,103 +81,80 @@ public class ProjectSync {
         asyncTask = projectSaveRunner.execute();
     }
 
-    public static String updateProjectHeader(boolean isEdit, Project project) {
+    public static String updateProjectHeader(boolean isEdit, Project project) throws Exception {
         String result;JSONObject json = new JSONObject();
-        try {
-            json.put("jobName", project.getProjectName());
-            json.put("drillerName", project.getDrillerName());
-            json.put("contractorsName", project.getContractorName());
-            json.put("shotNumber", project.getShotNumber());
-            json.put("bitSize", project.getBitSize());
+        json.put("jobName", project.getProjectName());
+        json.put("drillerName", project.getDrillerName());
+        json.put("contractorsName", project.getContractorName());
+        json.put("shotNumber", project.getShotNumber());
+        json.put("bitSize", project.getBitSize());
 
-            if (isEdit) {
-                result = SimpleHttpClient.executeHttpPut("project/" + project.getId(), json, ProjectKeep.getInstance().getToken());
-            } else {
-                result = SimpleHttpClient.executeHttpPost("project", json, ProjectKeep.getInstance().getToken());
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = e.getMessage();
+        if (isEdit) {
+            result = SimpleHttpClient.executeHttpPut("project/" + project.getId(), json, ProjectKeep.getInstance().getToken());
+        } else {
+            result = SimpleHttpClient.executeHttpPost("project", json, ProjectKeep.getInstance().getToken());
         }
+
         return result;
     }
-    public static String updateDailyLog(boolean isEdit, Project project, DailyLog dailyLog) {
+    public static String updateDailyLog(boolean isEdit, Project project, DailyLog dailyLog) throws Exception {
         String result;
         JSONObject json = new JSONObject();
-        try {
-            json.put("drillNumber", dailyLog.getDrillNum());
-            json.put("gallonsPumped", dailyLog.getGallonsFuel());
-            json.put("bulkTankPumpedFrom", dailyLog.getBulkTankPumpedFrom());
-            json.put("hourMeterStart", dailyLog.getMeterStart());
-            json.put("hourMeterEnd", dailyLog.getMeterEnd());
-            json.put("percussionTime", dailyLog.getPercussionTime());
+        json.put("drillNumber", dailyLog.getDrillNum());
+        json.put("gallonsPumped", dailyLog.getGallonsFuel());
+        json.put("bulkTankPumpedFrom", dailyLog.getBulkTankPumpedFrom());
+        json.put("hourMeterStart", dailyLog.getMeterStart());
+        json.put("hourMeterEnd", dailyLog.getMeterEnd());
+        json.put("percussionTime", dailyLog.getPercussionTime());
 
-            if (isEdit)
-            {
-                result = SimpleHttpClient.executeHttpPut("dailyLogs/"+project.getId()+"/"+dailyLog.getId(), json, ProjectKeep.getInstance().getToken());
-            }
-            else
-            {
-                result = SimpleHttpClient.executeHttpPost("dailyLogs/"+project.getId(), json, ProjectKeep.getInstance().getToken());
-                JSONObject jsonobject = new JSONObject(result);
-                String id = jsonobject.getString("id");
-                dailyLog.setId(id);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = e.getMessage();
+        if (isEdit)
+        {
+            result = SimpleHttpClient.executeHttpPut("dailyLogs/"+project.getId()+"/"+dailyLog.getId(), json, ProjectKeep.getInstance().getToken());
+        }
+        else
+        {
+            result = SimpleHttpClient.executeHttpPost("dailyLogs/"+project.getId(), json, ProjectKeep.getInstance().getToken());
+            JSONObject jsonobject = new JSONObject(result);
+            String id = jsonobject.getString("id");
+            dailyLog.setId(id);
         }
         return result;
     }
-    public static String updateDrillLog(boolean isEdit, Project project, DrillLog drillLog) {
+    public static String updateDrillLog(boolean isEdit, Project project, DrillLog drillLog) throws Exception {
         String result = null;
         JSONObject json = new JSONObject();
-        String response = null;
-        try {
-            json.put("name", drillLog.getName());
-            json.put("drillerName", drillLog.getDrillerName());
+        json.put("name", drillLog.getName());
+        json.put("drillerName", drillLog.getDrillerName());
 
-            if (isEdit) {
-                result = SimpleHttpClient.executeHttpPut("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
-            } else {
-                result = SimpleHttpClient.executeHttpPost("drillLogs/" + project.getId(), json, ProjectKeep.getInstance().getToken());
-                JSONObject jsonobject = new JSONObject(result);
-                String id = jsonobject.getString("id");
-                drillLog.setId(id);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = e.getMessage();
+        if (isEdit) {
+            result = SimpleHttpClient.executeHttpPut("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
+        } else {
+            result = SimpleHttpClient.executeHttpPost("drillLogs/" + project.getId(), json, ProjectKeep.getInstance().getToken());
+            JSONObject jsonobject = new JSONObject(result);
+            String id = jsonobject.getString("id");
+            drillLog.setId(id);
         }
+
         return result;
     }
-    public static String updateDrillCoordinate(boolean isEdit, Project project, DrillLog drillLog, GridCoordinate gridCoordinate) {
+    public static String updateDrillCoordinate(boolean isEdit, Project project, DrillLog drillLog, GridCoordinate gridCoordinate) throws Exception {
         String result = null;
 
         JSONObject json = new JSONObject();
         String response = null;
-        try {
-            json.put("x", gridCoordinate.getRow());
-            json.put("y", gridCoordinate.getColumn());
-            json.put("z", gridCoordinate.getDepth());
-            json.put("comments", gridCoordinate.getComment());
-            json.put("bitSize", gridCoordinate.getBitSize());
+        json.put("x", gridCoordinate.getRow());
+        json.put("y", gridCoordinate.getColumn());
+        json.put("z", gridCoordinate.getDepth());
+        json.put("comments", gridCoordinate.getComment());
+        json.put("bitSize", gridCoordinate.getBitSize());
 
-            if (isEdit) {
-                result = SimpleHttpClient.executeHttpPut("holes/" + project.getId() + "/" + drillLog.getId() + "/" + gridCoordinate.getId(), json, ProjectKeep.getInstance().getToken());
-            } else {
-                result = SimpleHttpClient.executeHttpPost("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
-                JSONObject jsonobject = new JSONObject(result);
-                String id = jsonobject.getString("id");
-                gridCoordinate.setId(id);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = e.getMessage();
+        if (isEdit) {
+            result = SimpleHttpClient.executeHttpPut("holes/" + project.getId() + "/" + drillLog.getId() + "/" + gridCoordinate.getId(), json, ProjectKeep.getInstance().getToken());
+        } else {
+            result = SimpleHttpClient.executeHttpPost("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
+            JSONObject jsonobject = new JSONObject(result);
+            String id = jsonobject.getString("id");
+            gridCoordinate.setId(id);
         }
         return result;
     }

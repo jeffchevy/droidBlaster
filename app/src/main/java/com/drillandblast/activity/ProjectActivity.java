@@ -80,8 +80,6 @@ public class ProjectActivity extends BaseActivity {
             saveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    saveProjectToFile(project);
-//                    Project temp = readProjectFromFile();
                     saveProject();
                     backToProjectList();
                 }
@@ -191,12 +189,18 @@ public class ProjectActivity extends BaseActivity {
             String result = null;
 
             if (isConnected()) {
-                result = ProjectSync.updateProjectHeader(isEdit, project);
+                try {
+                    result = ProjectSync.updateProjectHeader(isEdit, project);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             else {
                 project.setDirty(true);
             }
-            ProjectKeep.getInstance().saveProjectToFile(project);
+            if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
+                ProjectKeep.getInstance().saveProjectToFile(project);
+            }
             return result;
         }
     }

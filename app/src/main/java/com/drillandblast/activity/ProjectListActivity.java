@@ -25,6 +25,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,9 +128,16 @@ public class ProjectListActivity extends BaseActivity {
          */
         @Override
         protected void onPostExecute(String result) {
+
             if (isConnected()) {
                 arrayAdapter.clear();
-                List<Project> projects = ProjectKeep.getInstance().getAllProjectsfromJson(result);
+                List<Project> projects = null;
+                try {
+                    projects = ProjectKeep.getInstance().getAllProjectsfromJson(result);
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(),
+                            e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 arrayAdapter.addAll(projects);
             }
             else {

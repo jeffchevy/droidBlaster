@@ -13,6 +13,7 @@ import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.Project;
+import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
 
@@ -119,12 +120,19 @@ public class DailyLogActivity extends BaseActivity {
         protected String doInBackground(String... params) {
             String result = null;
             if (isConnected()) {
-                result = ProjectSync.getInstance().updateDailyLog(isEdit, project, dailyLog);
+                try {
+                    result = ProjectSync.getInstance().updateDailyLog(isEdit, project, dailyLog);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             else {
                 dailyLog.setDirty(true);
+            }
+            if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
+
             return result;
         }
     }

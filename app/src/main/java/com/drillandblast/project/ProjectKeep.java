@@ -92,10 +92,9 @@ public class ProjectKeep {
         return null;
     }
 
-    public List<Project> getAllProjectsfromJson(String json) {
+    public List<Project> getAllProjectsfromJson(String json) throws JSONException {
         projects.clear();
         projectMap.clear();
-        try {
             JSONArray jsonarray = new JSONArray(json);
             if (jsonarray != null) {
                 for (int i = 0; i < jsonarray.length(); i++) {
@@ -105,10 +104,6 @@ public class ProjectKeep {
                     projectMap.put(project.getId(), project);
                 }
             }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
         return projects;
     }
 
@@ -173,11 +168,9 @@ public class ProjectKeep {
         }
         return project;
     }
-    Project getLatestProjectFromServer(Project project)
-    {
+    Project getLatestProjectFromServer(Project project) throws Exception {
         Project latestProject = null;
         String jsonData = null;
-        try {
             //------------------>>
 //              HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
             HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project/"+project.getId());
@@ -212,9 +205,6 @@ public class ProjectKeep {
 
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return latestProject;
     }
     private void addProject(Project project) {
@@ -313,8 +303,12 @@ public class ProjectKeep {
         for (File thefile: files) {
             Log.d(TAG, "File: "+thefile.getName());
             Project project = readProjectFromFile(thefile.getName());
-            if(projectMap.get(project.getId()) == null) {
-                addProject(project);
+
+            // make sure we got a project and that it is not already added
+            if (project != null) {
+                if (projectMap.get(project.getId()) == null) {
+                    addProject(project);
+                }
             }
         }
         return projects;

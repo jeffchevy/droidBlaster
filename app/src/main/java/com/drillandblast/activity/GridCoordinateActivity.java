@@ -14,6 +14,7 @@ import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
+import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
 
@@ -107,8 +108,13 @@ public class GridCoordinateActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
-        intent.putExtra("project", project);
-        intent.putExtra("drillLog", drillLog);
+        intent.putExtra("id", project.getId());
+        if (drillLog.getId() == null) {
+            intent.putExtra("drill.name", drillLog.getName());
+        }
+        else {
+            intent.putExtra("drillId", drillLog.getId());
+        }
         //NavUtils.navigateUpTo(this, intent);
         startActivity(intent);
         return true;
@@ -119,10 +125,16 @@ public class GridCoordinateActivity extends BaseActivity {
 
             String result = null;
             if (isConnected()) {
-                result = ProjectSync.getInstance().updateDrillCoordinate(isEdit, project, drillLog, gridCoordinate);
+                try {
+                    result = ProjectSync.getInstance().updateDrillCoordinate(isEdit, project, drillLog, gridCoordinate);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             else {
                 gridCoordinate.setDirty(true);
+            }
+            if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
             return result;
