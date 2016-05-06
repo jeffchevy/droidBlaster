@@ -58,8 +58,10 @@ public class ProjectSync {
                         gridCoordinate.setDirty(false);
                     }
                 }
-
             }
+            // go and get anything that the server has
+            Project latestProject = ProjectKeep.getInstance().getLatestProjectFromServer(project);
+            ProjectKeep.getInstance().saveProjectToFile(project);
             return "Sync Complete";
         }
     }

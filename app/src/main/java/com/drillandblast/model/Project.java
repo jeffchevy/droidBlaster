@@ -16,9 +16,9 @@ public class Project extends Entity {
     private String projectName;
     private String contractorName;
     private Date startDate;
-    private double shotNumber;
+    private Double shotNumber;
     private String drillerName;
-    private double bitSize;
+    private Double bitSize;
     private List<DrillLog> drillLogs;
     private List<DailyLog> dailyLogs;
 
@@ -26,7 +26,7 @@ public class Project extends Entity {
         super();
     }
 
-    public Project(String id,String projectName, String contractorName, Date startDate, double shotNumber, String drillerName, double bitSize, List<DrillLog> drillLogs ,List<DailyLog> dailyLogs ){
+    public Project(String id,String projectName, String contractorName, Date startDate, Double shotNumber, String drillerName, Double bitSize, List<DrillLog> drillLogs ,List<DailyLog> dailyLogs ){
         super();
         this.id = id;
         this.projectName = projectName;
@@ -65,10 +65,10 @@ public class Project extends Entity {
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
-    public double getShotNumber() {
+    public Double getShotNumber() {
         return shotNumber;
     }
-    public void setShotNumber(double shotNumber) {
+    public void setShotNumber(Double shotNumber) {
         this.shotNumber = shotNumber;
     }
 
@@ -83,7 +83,7 @@ public class Project extends Entity {
     public double getBitSize(){
         return bitSize;
     }
-    public void setBitSiZe(double bitSiZe){
+    public void setBitSiZe(Double bitSiZe){
         this.bitSize=bitSiZe;
     }
 

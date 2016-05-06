@@ -18,7 +18,6 @@ import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
-import com.drillandblast.project.ProjectSync;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -128,15 +127,18 @@ public class ProjectListActivity extends BaseActivity {
          */
         @Override
         protected void onPostExecute(String result) {
-            arrayAdapter.clear();
-            List<Project> projects = null;
             if (isConnected()) {
-                 projects = ProjectKeep.getInstance().fromJson(result);
+                arrayAdapter.clear();
+                List<Project> projects = ProjectKeep.getInstance().getAllProjectsfromJson(result);
+                arrayAdapter.addAll(projects);
             }
             else {
-                projects = ProjectKeep.getInstance().readFiles();
+                // when we are offline we don't need to see if anything new has come in
+                if (ProjectKeep.getInstance().size() <= 0) {
+                    List<Project> projects = ProjectKeep.getInstance().readFiles();
+                    arrayAdapter.addAll(projects);
+                }
             }
-            arrayAdapter.addAll(projects);
         }
     }
 

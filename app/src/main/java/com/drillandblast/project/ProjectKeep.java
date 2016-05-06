@@ -1,15 +1,23 @@
 package com.drillandblast.project;
 
 import android.content.Context;
-import android.content.ContextWrapper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -21,6 +29,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +52,9 @@ public class ProjectKeep {
             instance = new ProjectKeep();
         }
         return instance;
+    }
+    public int size() {
+        return projects.size();
     }
     public Project findById(String id){
         return projectMap.get(id);
@@ -80,7 +92,7 @@ public class ProjectKeep {
         return null;
     }
 
-    public List<Project> fromJson(String json) {
+    public List<Project> getAllProjectsfromJson(String json) {
         projects.clear();
         projectMap.clear();
         try {
@@ -88,61 +100,7 @@ public class ProjectKeep {
             if (jsonarray != null) {
                 for (int i = 0; i < jsonarray.length(); i++) {
                     JSONObject jsonobject = jsonarray.getJSONObject(i);
-                    String id = (String) getValue(jsonobject, "_id");
-                    String customer = (String) getValue(jsonobject, "customer");
-                    String drillersName = (String) getValue(jsonobject, "drillersName");
-                    String shotNumber = (String) getValue(jsonobject, "shotNumber");
-                    String contractorsName = (String) getValue(jsonobject, "contractorsName");
-                    String jobName = (String) getValue(jsonobject, "jobName");
-
-                    Project project = new Project(id, jobName, contractorsName, null, Double.valueOf(shotNumber), drillersName, 13D, new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
-
-                    if (jsonobject.get("drillLogs") instanceof JSONArray) {
-                        JSONArray drillLogArray = jsonobject.getJSONArray("drillLogs");
-                        for (int j = 0; j < drillLogArray.length(); j++) {
-                            JSONObject drillLog = drillLogArray.getJSONObject(j);
-                            String drillId = (String) getValue(drillLog, "_id");
-                            String drillerName = (String) getValue(drillLog, "drillerName");
-                            String name = (String) getValue(drillLog,"name");
-                            String holesStr = (String)getValue(drillLog,"holes");
-                            JSONArray holesArray = new JSONArray(holesStr);
-                            List<GridCoordinate> holes = new ArrayList<>();
-                            for (int k = 0; k < holesArray.length(); k++) {
-                                JSONObject holesObject = holesArray.getJSONObject(k);
-                                String holeId = (String) getValue(holesObject, "_id");
-                                String x = (String) getValue(holesObject, "x");
-                                String y = (String) getValue(holesObject, "y");
-                                String z = (String) getValue(holesObject, "z");
-                                String comments = (String) getValue(holesObject, "comments");
-                                String bitSize = (String) getValue(holesObject, "bitSize");
-                                GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, 0);
-                                holes.add(gridCoordinate);
-                            }
-
-                            DrillLog drill = new DrillLog(drillId, drillerName, name);
-                            drill.setGridCoordinates(holes);
-                            project.addDrillLog(drill);
-                        }
-                    }
-                    if (jsonobject.get("dailyLogs") instanceof JSONArray) {
-                        JSONArray dailyLogArray = jsonobject.getJSONArray("dailyLogs");
-                        for (int m = 0; m < dailyLogArray.length(); m++) {
-                            JSONObject dailyLog = dailyLogArray.getJSONObject(m);
-
-                            String dailyId = (String) getValue(dailyLog, "_id");
-                            String drillNumber = (String) getValue(dailyLog, "drillNumber");
-                            String gallonsPumped = (String) getValue(dailyLog, "gallonsPumped");
-                            String bulkTankPumpedFrom = (String) getValue(dailyLog, "bulkTankPumpedFrom");
-                            String hourMeterStart = (String) getValue(dailyLog, "hourMeterStart");
-                            String hourMeterEnd = (String) getValue(dailyLog, "hourMeterEnd");
-                            String percussionTime = (String) getValue(dailyLog, "percussionTime");
-                            String dateStr = (String) getValue(dailyLog, "date");
-
-                            DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), dateStr, Double.valueOf(hourMeterStart),
-                                    Double.valueOf(hourMeterEnd), bulkTankPumpedFrom, percussionTime);
-                            project.addDailyLog(daily);
-                        }
-                    }
+                    Project project = getProjectFromJson(jsonobject);
                     projects.add(project);
                     projectMap.put(project.getId(), project);
                 }
@@ -152,6 +110,112 @@ public class ProjectKeep {
             e.printStackTrace();
         }
         return projects;
+    }
+
+    @NonNull
+    private Project getProjectFromJson(JSONObject jsonobject) throws JSONException {
+        String id = (String) getValue(jsonobject, "_id");
+        String customer = (String) getValue(jsonobject, "customer");
+        String drillersName = (String) getValue(jsonobject, "drillersName");
+        String shotNumber = (String) getValue(jsonobject, "shotNumber");
+        String contractorsName = (String) getValue(jsonobject, "contractorsName");
+        String jobName = (String) getValue(jsonobject, "jobName");
+
+        Double shot = shotNumber == null ? null : Double.valueOf(shotNumber);
+
+        Project project = new Project(id, jobName, contractorsName, null, shot, drillersName, 13D, new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
+
+        if (jsonobject.get("drillLogs") instanceof JSONArray) {
+            JSONArray drillLogArray = jsonobject.getJSONArray("drillLogs");
+            for (int j = 0; j < drillLogArray.length(); j++) {
+                JSONObject drillLog = drillLogArray.getJSONObject(j);
+                String drillId = (String) getValue(drillLog, "_id");
+                String drillerName = (String) getValue(drillLog, "drillerName");
+                String name = (String) getValue(drillLog,"name");
+                String holesStr = (String)getValue(drillLog,"holes");
+                JSONArray holesArray = new JSONArray(holesStr);
+                List<GridCoordinate> holes = new ArrayList<>();
+                for (int k = 0; k < holesArray.length(); k++) {
+                    JSONObject holesObject = holesArray.getJSONObject(k);
+                    String holeId = (String) getValue(holesObject, "_id");
+                    String x = (String) getValue(holesObject, "x");
+                    String y = (String) getValue(holesObject, "y");
+                    String z = (String) getValue(holesObject, "z");
+                    String comments = (String) getValue(holesObject, "comments");
+                    String bitSize = (String) getValue(holesObject, "bitSize");
+                    GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, 0);
+                    holes.add(gridCoordinate);
+                }
+
+                DrillLog drill = new DrillLog(drillId, drillerName, name);
+                drill.setGridCoordinates(holes);
+                project.addDrillLog(drill);
+            }
+        }
+        if (jsonobject.get("dailyLogs") instanceof JSONArray) {
+            JSONArray dailyLogArray = jsonobject.getJSONArray("dailyLogs");
+            for (int m = 0; m < dailyLogArray.length(); m++) {
+                JSONObject dailyLog = dailyLogArray.getJSONObject(m);
+
+                String dailyId = (String) getValue(dailyLog, "_id");
+                String drillNumber = (String) getValue(dailyLog, "drillNumber");
+                String gallonsPumped = (String) getValue(dailyLog, "gallonsPumped");
+                String bulkTankPumpedFrom = (String) getValue(dailyLog, "bulkTankPumpedFrom");
+                String hourMeterStart = (String) getValue(dailyLog, "hourMeterStart");
+                String hourMeterEnd = (String) getValue(dailyLog, "hourMeterEnd");
+                String percussionTime = (String) getValue(dailyLog, "percussionTime");
+                String dateStr = (String) getValue(dailyLog, "date");
+
+                DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), dateStr, Double.valueOf(hourMeterStart),
+                        Double.valueOf(hourMeterEnd), bulkTankPumpedFrom, percussionTime);
+                project.addDailyLog(daily);
+            }
+        }
+        return project;
+    }
+    Project getLatestProjectFromServer(Project project)
+    {
+        Project latestProject = null;
+        String jsonData = null;
+        try {
+            //------------------>>
+//              HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
+            HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project/"+project.getId());
+
+            httpGet.setHeader("token", getToken());
+            Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
+            HttpClient httpclient = new DefaultHttpClient();
+
+            HttpResponse response = httpclient.execute(httpGet);
+
+            // StatusLine stat = response.getStatusLine();
+            int status = response.getStatusLine().getStatusCode();
+
+            if (status == 200) {
+                HttpEntity entity = response.getEntity();
+                jsonData = EntityUtils.toString(entity);
+
+            }
+            JSONObject projectJson = new JSONObject(jsonData);
+            // replace out the project ref for the object we just got from the server
+            // this will give us any updates from the server
+            latestProject = getProjectFromJson(projectJson);
+
+            // make sure the new project is referenced in the list
+            for (Iterator<Project> iter = projects.iterator(); iter.hasNext();) {
+                Project checkProject = iter.next();
+                if (latestProject.getId().equalsIgnoreCase(checkProject.getId())) {
+                    iter.remove();
+                    projects.add(latestProject);
+                    projectMap.put(latestProject.getId(), latestProject);
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return latestProject;
     }
     private void addProject(Project project) {
         projects.add(project);
@@ -228,6 +292,15 @@ public class ProjectKeep {
         }
         return project;
     }
+    public void removeFile(Project project)
+    {
+        try {
+            boolean deleted = context.deleteFile(project.getId()+"-project");
+            Log.d(TAG, "Delete File: "+project.getId()+"-project"+"  was deleted: "+deleted);
+        } catch( Exception ex) {
+            ex.printStackTrace();
+        }
+    }
     public List<Project> readFiles(){
         FilenameFilter filter = new FilenameFilter() {
             @Override
@@ -240,7 +313,9 @@ public class ProjectKeep {
         for (File thefile: files) {
             Log.d(TAG, "File: "+thefile.getName());
             Project project = readProjectFromFile(thefile.getName());
-            addProject(project);
+            if(projectMap.get(project.getId()) == null) {
+                addProject(project);
+            }
         }
         return projects;
     }

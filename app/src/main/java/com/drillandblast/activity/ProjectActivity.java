@@ -8,15 +8,15 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import com.drillandblast.R;
-import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.Project;
+import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
-
-import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -96,6 +96,22 @@ public class ProjectActivity extends BaseActivity {
                 }
             });
         }
+        Switch mySwitch = (Switch) findViewById(R.id.project_offline);
+
+        //set the switch to ON
+        mySwitch.setChecked(ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId()));
+        //attach a listener to check for changes in state
+        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    ProjectKeep.getInstance().saveProjectToFile(project);
+                }else{
+                    ProjectKeep.getInstance().removeFile(project);
+                }
+                ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), isChecked);
+            }
+        });
     }
 
     public void backToProjectList(){
