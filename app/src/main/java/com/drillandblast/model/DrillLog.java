@@ -11,17 +11,22 @@ public class DrillLog extends Entity {
     private String id;
     private String drillerName;
     private String name;
+    private String pattern;
+    private Integer shotNumber;
+    private String bitSize;
     private List<GridCoordinate> gridCoordinates;
 
     public DrillLog() {
         super();
     }
 
-    public DrillLog(String id, String drillerName, String name) {
-        super();
+    public DrillLog(String id, String drillerName, String name, String pattern, Integer shotNumber, String bitSize) {
         this.id = id;
         this.drillerName = drillerName;
         this.name = name;
+        this.pattern = pattern;
+        this.shotNumber = shotNumber;
+        this.bitSize = bitSize;
     }
 
     public String getDrillerName() {
@@ -46,6 +51,30 @@ public class DrillLog extends Entity {
 
     public void setGridCoordinates(List<GridCoordinate> gridCoordinates) {
         this.gridCoordinates = gridCoordinates;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    public Integer getShotNumber() {
+        return shotNumber;
+    }
+
+    public void setShotNumber(Integer shotNumber) {
+        this.shotNumber = shotNumber;
+    }
+
+    public String getBitSize() {
+        return bitSize;
+    }
+
+    public void setBitSize(String bitSize) {
+        this.bitSize = bitSize;
     }
 
     public String getId() {

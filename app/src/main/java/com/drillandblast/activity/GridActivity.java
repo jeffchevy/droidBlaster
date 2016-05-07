@@ -72,7 +72,7 @@ public class GridActivity extends BaseActivity {
                     textView.setBackgroundColor(Color.parseColor("#cccccc"));
                 }
                 else {
-                    final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", 0);
+                    final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", "");
                     textView.setText("     ");
 
                     textView.setOnClickListener(new View.OnClickListener() {

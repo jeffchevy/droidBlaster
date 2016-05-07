@@ -57,7 +57,7 @@ public class DrillLogActivity extends BaseActivity {
         }
         else
         {
-            drillLog = new DrillLog(null,"","" );
+            drillLog = new DrillLog();
             drillLog.setGridCoordinates( new ArrayList<GridCoordinate>());
             project.addDrillLog(drillLog);
         }
@@ -96,22 +96,38 @@ public class DrillLogActivity extends BaseActivity {
     public void setDrillLogData(DrillLog drillLog){
         EditText log_name = (EditText) findViewById(R.id.drill_log_name_text_field);
         EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
+        EditText pattern_name = (EditText) findViewById(R.id.pattern_name_text_field);
+        EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
+        EditText bit_size = (EditText) findViewById(R.id.bit_size_text_field);
 
         log_name.setText(drillLog.getName());
         driller_name.setText(drillLog.getDrillerName());
+        pattern_name.setText(drillLog.getPattern());
+        shot_number.setText(drillLog.getShotNumber().toString());
+        bit_size.setText(drillLog.getBitSize());
     }
 
     public String saveDrillLogData(Project project)
     {
         EditText log_name = (EditText) findViewById(R.id.drill_log_name_text_field);
         EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
+        EditText pattern_name = (EditText) findViewById(R.id.pattern_name_text_field);
+        EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
+        EditText bit_size = (EditText) findViewById(R.id.bit_size_text_field);
+
         String name = log_name.getText().toString();
         String drillerName = driller_name.getText().toString();
+        String patternName = pattern_name.getText().toString();
+        String shotNumberString = shot_number.getText().toString();
+        String bitSize = bit_size.getText().toString();
 
         drillLog.setName(name);
         drillLog.setDrillerName(drillerName);
+        drillLog.setPattern(patternName);
+        drillLog.setShotNumber(Integer.valueOf(shotNumberString));
+        drillLog.setBitSize(bitSize);
         AsyncTaskRunner drillLogTaskRunner = new AsyncTaskRunner();
-        asyncTask = drillLogTaskRunner.execute(name, drillerName);
+        asyncTask = drillLogTaskRunner.execute();
 
         return asyncTask.getStatus().toString();
     }

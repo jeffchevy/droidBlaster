@@ -13,18 +13,18 @@ public class DailyLog extends Entity {
 
     private String id;
     private String drillNum;
-    private double gallonsFuel;
+    private Double gallonsFuel;
     private String date;
-    private double meterStart;
-    private double meterEnd;
+    private Double meterStart;
+    private Double meterEnd;
     private String bulkTankPumpedFrom;
-    private String percussionTime;
+    private Double percussionTime;
 
     public DailyLog() {
         super();
     }
 
-    public DailyLog(String id, String drillNum, double gallonsFuel, String date, double meterStart, double meterEnd, String bulkTankPumpedFrom, String percussionTime) {
+    public DailyLog(String id, String drillNum, Double gallonsFuel, String date, Double meterStart, Double meterEnd, String bulkTankPumpedFrom, Double percussionTime) {
         super();
         this.id = id;
         this.drillNum = drillNum;
@@ -46,12 +46,12 @@ public class DailyLog extends Entity {
         this.drillNum = drillNum;
     }
 
-    public double getGallonsFuel() {
+    public Double getGallonsFuel() {
 
         return gallonsFuel;
     }
 
-    public void setGallonsFuel(double gallonsFuel) {
+    public void setGallonsFuel(Double gallonsFuel) {
 
         this.gallonsFuel = gallonsFuel;
     }
@@ -65,21 +65,21 @@ public class DailyLog extends Entity {
         this.date = date;
     }
 
-    public double getMeterStart() {
+    public Double getMeterStart() {
 
         return meterStart;
     }
-    public void setMeterStart(double meterStart) {
+    public void setMeterStart(Double meterStart) {
 
         this.meterStart = meterStart;
     }
 
-    public double getMeterEnd() {
+    public Double getMeterEnd() {
 
         return meterEnd;
     }
 
-    public void setMeterEnd(double meterEnd) {
+    public void setMeterEnd(Double meterEnd) {
 
         this.meterEnd = meterEnd;
     }
@@ -93,12 +93,12 @@ public class DailyLog extends Entity {
         this.bulkTankPumpedFrom = bulkTankPumpedFrom;
     }
 
-    public String getPercussionTime() {
+    public Double getPercussionTime() {
 
         return percussionTime;
     }
 
-    public void setPercussionTime(String PercussionTime) {
+    public void setPercussionTime(Double percussionTime) {
         this.percussionTime = percussionTime;
     }
 

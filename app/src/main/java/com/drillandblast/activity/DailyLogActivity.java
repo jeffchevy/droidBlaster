@@ -77,12 +77,11 @@ public class DailyLogActivity extends BaseActivity {
 
         drillNumber.setText(dailyLog.getDrillNum());
         gallonsFuel.setText(gallons_Fuel);
-        percussionTime.setText(dailyLog.getPercussionTime());
         date.setText(dateString);
         meterStart.setText(String.valueOf(dailyLog.getMeterStart()));
         meterEnd.setText(String.valueOf(dailyLog.getMeterEnd()));
         bulkTankPumpedFrom.setText(dailyLog.getBulkTankPumpedFrom());
-        percussionTime.setText(dailyLog.getPercussionTime());
+        percussionTime.setText(dailyLog.getPercussionTime().toString());
 
 
     }
@@ -106,10 +105,10 @@ public class DailyLogActivity extends BaseActivity {
         dailyLog.setMeterEnd(Double.valueOf(meterEnd));
         dailyLog.setMeterStart(Double.valueOf(meterStart));
         dailyLog.setBulkTankPumpedFrom(bulkTankPumpedFrom);
-        dailyLog.setPercussionTime(percussionTime);
+        dailyLog.setPercussionTime(Double.valueOf(percussionTime));
 
         AsyncTaskRunner dailyLogSaveRunner = new AsyncTaskRunner();
-        asyncTask = dailyLogSaveRunner.execute(drillNumber, gallonsFuel, bulkTankPumpedFrom, meterStart, meterEnd, percussionTime);
+        asyncTask = dailyLogSaveRunner.execute();
         return asyncTask.getStatus().toString();
     }
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {

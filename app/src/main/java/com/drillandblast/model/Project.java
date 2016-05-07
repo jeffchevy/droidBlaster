@@ -15,10 +15,6 @@ public class Project extends Entity {
     private String id;
     private String projectName;
     private String contractorName;
-    private Date startDate;
-    private Double shotNumber;
-    private String drillerName;
-    private Double bitSize;
     private List<DrillLog> drillLogs;
     private List<DailyLog> dailyLogs;
 
@@ -26,15 +22,11 @@ public class Project extends Entity {
         super();
     }
 
-    public Project(String id,String projectName, String contractorName, Date startDate, Double shotNumber, String drillerName, Double bitSize, List<DrillLog> drillLogs ,List<DailyLog> dailyLogs ){
+    public Project(String id,String projectName, String contractorName, List<DrillLog> drillLogs ,List<DailyLog> dailyLogs ){
         super();
         this.id = id;
         this.projectName = projectName;
         this.contractorName = contractorName;
-        this.startDate = startDate;
-        this.shotNumber = shotNumber;
-        this.drillerName = drillerName;
-        this.bitSize = bitSize;
         this.drillLogs = drillLogs;
         this.dailyLogs = dailyLogs;
     }
@@ -58,33 +50,6 @@ public class Project extends Entity {
     }
     public void setContractorName(String contractorName) {
         this.contractorName = contractorName;
-    }
-    public Date getStartDate() {
-        return startDate;
-    }
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-    public Double getShotNumber() {
-        return shotNumber;
-    }
-    public void setShotNumber(Double shotNumber) {
-        this.shotNumber = shotNumber;
-    }
-
-    public String getDrillerName() {
-        return drillerName;
-    }
-
-    public void setDrillerName(String drillerName){
-        this.drillerName = drillerName;
-    }
-
-    public double getBitSize(){
-        return bitSize;
-    }
-    public void setBitSiZe(Double bitSiZe){
-        this.bitSize=bitSiZe;
     }
 
     public List<DrillLog> getDrillLogs() {
@@ -115,7 +80,4 @@ public class Project extends Entity {
     public void addDailyLog(DailyLog dailyLog) {
         dailyLogs.add(dailyLog);
     }
-
-
-
 }

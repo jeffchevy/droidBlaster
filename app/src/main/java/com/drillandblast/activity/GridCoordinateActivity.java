@@ -78,7 +78,7 @@ public class GridCoordinateActivity extends BaseActivity {
         TextView comment = (TextView) findViewById(R.id.comment_text_field);
 
         gridCoordinate.setDepth(Double.parseDouble(depth.getText().toString()));
-        gridCoordinate.setBitSize(Double.parseDouble(bitSize.getText().toString()));
+        gridCoordinate.setBitSize(bitSize.getText().toString());
         gridCoordinate.setComment(comment.getText().toString());
 
         AsyncTaskRunner holeTaskRunner = new AsyncTaskRunner();
@@ -86,7 +86,7 @@ public class GridCoordinateActivity extends BaseActivity {
 
         if (isEdit){
             // find the grid in the list and update it.  normally we could just update the object
-            // but because we are serializing the object the reference is lost
+            // but because we are serializiOffng the object the reference is lost
             List<GridCoordinate> grids = drillLog.getGridCoordinates();
             for(int i=0; i<grids.size(); i++)
             {

@@ -95,13 +95,15 @@ public class ProjectKeep {
     public List<Project> getAllProjectsfromJson(String json) throws JSONException {
         projects.clear();
         projectMap.clear();
-            JSONArray jsonarray = new JSONArray(json);
-            if (jsonarray != null) {
-                for (int i = 0; i < jsonarray.length(); i++) {
-                    JSONObject jsonobject = jsonarray.getJSONObject(i);
-                    Project project = getProjectFromJson(jsonobject);
-                    projects.add(project);
-                    projectMap.put(project.getId(), project);
+            if (json != null) {
+                JSONArray jsonarray = new JSONArray(json);
+                if (jsonarray != null) {
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        JSONObject jsonobject = jsonarray.getJSONObject(i);
+                        Project project = getProjectFromJson(jsonobject);
+                        projects.add(project);
+                        projectMap.put(project.getId(), project);
+                    }
                 }
             }
         return projects;
@@ -110,15 +112,11 @@ public class ProjectKeep {
     @NonNull
     private Project getProjectFromJson(JSONObject jsonobject) throws JSONException {
         String id = (String) getValue(jsonobject, "_id");
-        String customer = (String) getValue(jsonobject, "customer");
-        String drillersName = (String) getValue(jsonobject, "drillersName");
-        String shotNumber = (String) getValue(jsonobject, "shotNumber");
-        String contractorsName = (String) getValue(jsonobject, "contractorsName");
-        String jobName = (String) getValue(jsonobject, "jobName");
+        String contractorName = (String) getValue(jsonobject, "contractorName");
+        String projectName = (String) getValue(jsonobject, "projectName");
 
-        Double shot = shotNumber == null ? null : Double.valueOf(shotNumber);
-
-        Project project = new Project(id, jobName, contractorsName, null, shot, drillersName, 13D, new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
+        Project project = new Project(id, projectName, contractorName,new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
+        project.setDirty(false);
 
         if (jsonobject.get("drillLogs") instanceof JSONArray) {
             JSONArray drillLogArray = jsonobject.getJSONArray("drillLogs");
@@ -126,7 +124,11 @@ public class ProjectKeep {
                 JSONObject drillLog = drillLogArray.getJSONObject(j);
                 String drillId = (String) getValue(drillLog, "_id");
                 String drillerName = (String) getValue(drillLog, "drillerName");
-                String name = (String) getValue(drillLog,"name");
+                String drillName = (String) getValue(drillLog, "drillerName");
+                String pattern = (String) getValue(drillLog,"pattern");
+                String shotNumber = (String) getValue(drillLog,"shotNumber");
+                String bitSize = (String) getValue(drillLog,"bitSize");
+
                 String holesStr = (String)getValue(drillLog,"holes");
                 JSONArray holesArray = new JSONArray(holesStr);
                 List<GridCoordinate> holes = new ArrayList<>();
@@ -137,12 +139,14 @@ public class ProjectKeep {
                     String y = (String) getValue(holesObject, "y");
                     String z = (String) getValue(holesObject, "z");
                     String comments = (String) getValue(holesObject, "comments");
-                    String bitSize = (String) getValue(holesObject, "bitSize");
-                    GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, 0);
+                    String holeBitSize = (String) getValue(holesObject, "bitSize");
+                    GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize);
+                    gridCoordinate.setDirty(false);
                     holes.add(gridCoordinate);
                 }
 
-                DrillLog drill = new DrillLog(drillId, drillerName, name);
+                DrillLog drill = new DrillLog(drillId, drillerName, drillName, pattern, Integer.valueOf(shotNumber), bitSize);
+                drill.setDirty(false);
                 drill.setGridCoordinates(holes);
                 project.addDrillLog(drill);
             }
@@ -162,7 +166,8 @@ public class ProjectKeep {
                 String dateStr = (String) getValue(dailyLog, "date");
 
                 DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), dateStr, Double.valueOf(hourMeterStart),
-                        Double.valueOf(hourMeterEnd), bulkTankPumpedFrom, percussionTime);
+                        Double.valueOf(hourMeterEnd), bulkTankPumpedFrom, Double.valueOf(percussionTime));
+                daily.setDirty(false);
                 project.addDailyLog(daily);
             }
         }

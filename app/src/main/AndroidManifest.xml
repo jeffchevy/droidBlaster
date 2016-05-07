@@ -109,13 +109,11 @@
             android:exported="false"
             android:syncable="true" />
 
-        <activity android:name=".activity.MainActivity">
+        <receiver android:name=".http.NetworkStateReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
-        </activity>
+        </receiver>
     </application>
 
 </manifest>
