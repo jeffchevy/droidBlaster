@@ -9,11 +9,14 @@ import android.os.Binder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
+import com.drillandblast.project.ProjectSync;
 
+import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     // The authority for the sync adapter's content provider
     public static final String AUTHORITY = "com.drillandblast.sync";
     // An account type, in the form of a domain name
@@ -37,7 +40,12 @@ public class MainActivity extends AppCompatActivity {
         mResolver = getContentResolver();
         ContentResolver.addPeriodicSync( mAccount,AUTHORITY,Bundle.EMPTY, 60L);
         */
-
+        if (isConnected()) {
+            List<Project> projects = ProjectKeep.getInstance().readFiles();
+            for (Project project : projects) {
+                ProjectSync.getInstance().sync(project);
+            }
+        }
         // if we already have a valid login just use that and move on
         Map<String, ?> map = getSharedPreferences("file", Context.MODE_PRIVATE).getAll();
         token = (String)map.get("token");

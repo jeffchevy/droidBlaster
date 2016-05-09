@@ -5,19 +5,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.util.Log;
 
+import com.drillandblast.model.Project;
+import com.drillandblast.project.ProjectKeep;
+import com.drillandblast.project.ProjectSync;
+
+import java.util.List;
+import java.util.Set;
+
 public class NetworkStateReceiver extends BroadcastReceiver {
+    static Boolean online = new Boolean(true);
     public void onReceive(Context context, Intent intent) {
         Log.d("app","Network connectivity change");
-        if(intent.getExtras()!=null) {
-            NetworkInfo ni=(NetworkInfo) intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);
-            if(ni!=null && ni.getState()==NetworkInfo.State.CONNECTED) {
-                Log.i("app","Network "+ni.getTypeName()+" connected");
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        Boolean isConnected = (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
+        Log.d("app", "status="+isConnected);
+        if  (online == false && isConnected) {
+            Log.d("app", "*************************************  SYNC **************************************************");
+            List<Project> projects = ProjectKeep.getInstance().readFiles();
+            for (Project project : projects) {
+                ProjectSync.getInstance().sync(project);
             }
+            online = true;
         }
-        if(intent.getExtras().getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY,Boolean.FALSE)) {
-            Log.d("app","There's no network connectivity");
+        else {
+            online = isConnected;
         }
     }
 }
