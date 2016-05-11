@@ -33,8 +33,8 @@ public class SimpleHttpClient {
     //("http://10.0.2.2:1337/api/v1/project");
 
 //    public static final String baseUrl = "http://10.0.2.2:1337/api/v1/";
-//    public static final String baseUrl = "http://gunpowder-dev.herokuapp.com/api/v1/";
-    public static final String baseUrl = "http://192.168.1.16:1337/api/v1/";
+    public static final String baseUrl = "http://gunpowder-dev.herokuapp.com/api/v1/";
+//    public static final String baseUrl = "http://192.168.1.16:1337/api/v1/";
 
     /** The time it takes for our client to timeout */
     public static final int HTTP_TIMEOUT = 30 * 1000; // milliseconds

@@ -129,7 +129,7 @@ public class ProjectKeep {
                 JSONObject drillLog = drillLogArray.getJSONObject(j);
                 String drillId = (String) getValue(drillLog, "_id");
                 String drillerName = (String) getValue(drillLog, "drillerName");
-                String drillName = (String) getValue(drillLog, "drillerName");
+                String name = (String) getValue(drillLog, "name");
                 String pattern = (String) getValue(drillLog,"pattern");
                 String shotNumber = (String) getValue(drillLog,"shotNumber");
                 String bitSize = (String) getValue(drillLog,"bitSize");
@@ -150,7 +150,7 @@ public class ProjectKeep {
                     holes.add(gridCoordinate);
                 }
 
-                DrillLog drill = new DrillLog(drillId, drillerName, drillName, pattern, Integer.valueOf(shotNumber), bitSize);
+                DrillLog drill = new DrillLog(drillId, drillerName, name, pattern, Integer.valueOf(shotNumber), bitSize);
                 drill.setDirty(false);
                 drill.setGridCoordinates(holes);
                 project.addDrillLog(drill);
