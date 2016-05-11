@@ -58,7 +58,7 @@ public class DrillLogActivity extends BaseActivity {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
 
-        setTitle(String.valueOf(drillLog.getName())+" "+String.valueOf(drillLog.getDrillerName()));
+        setTitle(String.valueOf(drillLog.getName())+" - "+String.valueOf(drillLog.getDrillerName()));
 
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
         //final Project project = ProjectListActivity.projects.get(position);
