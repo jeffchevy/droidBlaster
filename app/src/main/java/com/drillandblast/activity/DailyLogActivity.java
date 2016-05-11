@@ -27,6 +27,9 @@ import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Required;
 
 import org.json.JSONObject;
 
@@ -34,17 +37,47 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DailyLogActivity extends BaseActivity {
+public class DailyLogActivity extends BaseActivity implements Validator.ValidationListener{
+    Validator validator;
+
     private boolean isEdit = false;
     private Project project = null;
     private DailyLog dailyLog = null;
     private AsyncTask<String, String, String> asyncTask;
     SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
 
+    @Required(order=1)
+    EditText drillNumber;
+
+    @Required(order=1)
+    EditText gallonsFuel;
+
+    @Required(order=1)
+    EditText meterStart;
+
+    @Required(order=1)
+    EditText meterEnd;
+
+    @Required(order=1)
+    EditText bulkTankPumpedFrom;
+
+    @Required(order=1)
+    EditText percussionTime;
+
+    @Required(order=1)
+    TextView date;
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_log);
+
+        validator = new Validator(this);
+        validator.setValidationListener(this);
 
         Intent process = getIntent();
         String id =  process.getStringExtra("id");
@@ -77,15 +110,17 @@ public class DailyLogActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.menu_save:
                 // Here we might start a background refresh task
+
+                validator.validate();
                 Log.d("app", "Save clicked");
-                Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
-                saveDailyLog();
-                backToDailyLogList();
+
                 return true;
 
             default:
+                validator.validate();
                 Intent intent = NavUtils.getParentActivityIntent(this);
                 intent.putExtra("id", project.getId());
                 startActivity(intent);
@@ -106,13 +141,15 @@ public class DailyLogActivity extends BaseActivity {
     }
     public void setDailyLogData(DailyLog dailyLog){
 
-        EditText drillNumber = (EditText) findViewById(R.id.drill_id_text_field);
-        EditText gallonsFuel = (EditText) findViewById(R.id.gallons_fuel_text_field);
-        TextView date = (TextView) findViewById(R.id.daily_log_date_text_field);
-        EditText meterStart = (EditText) findViewById(R.id.meter_start_text_field);
-        EditText meterEnd = (EditText) findViewById(R.id.meter_end_text_field);
-        EditText bulkTankPumpedFrom = (EditText) findViewById(R.id.bulk_tank_text_field);
-        EditText percussionTime = (EditText) findViewById(R.id.percussion_time_text_field);
+
+        drillNumber = (EditText) findViewById(R.id.drill_id_text_field);
+
+        gallonsFuel = (EditText) findViewById(R.id.gallons_fuel_text_field);
+        date = (TextView) findViewById(R.id.daily_log_date_text_field);
+        meterStart = (EditText) findViewById(R.id.meter_start_text_field);
+        meterEnd = (EditText) findViewById(R.id.meter_end_text_field);
+        bulkTankPumpedFrom = (EditText) findViewById(R.id.bulk_tank_text_field);
+        percussionTime = (EditText) findViewById(R.id.percussion_time_text_field);
 
         String gallons_Fuel =String.valueOf(dailyLog.getGallonsFuel());
 
@@ -204,4 +241,25 @@ public class DailyLogActivity extends BaseActivity {
             setDate();
         }
     }
+    public void onValidationSucceeded() {
+        Toast.makeText(this, "Validation Succeeded", Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+        saveDailyLog();
+        backToDailyLogList();
+
+    }
+
+    public void onValidationFailed(View view, Rule<?> rule) {
+
+        final String failureMessage = rule.getFailureMessage();
+        if (view instanceof EditText) {
+            EditText failed = (EditText) view;
+            failed.requestFocus();
+            failed.setError(failureMessage);
+        } else {
+            Toast.makeText(getApplicationContext(), failureMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
