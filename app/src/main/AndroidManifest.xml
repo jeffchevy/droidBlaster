@@ -25,38 +25,47 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.ProjectListActivity" />
+        <activity
+            android:name=".activity.ProjectListActivity"
+            android:label="@string/projectList">
+        </activity>
+
         <activity
             android:name=".activity.ProjectActivity"
-            android:parentActivityName=".activity.ProjectListActivity">
+            android:parentActivityName=".activity.ProjectListActivity"
+            android:label="@string/projectActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.ProjectListActivity" />
         </activity>
         <activity
             android:name=".activity.GridActivity"
-            android:parentActivityName=".activity.DrillLogActivity">
+            android:parentActivityName=".activity.DrillLogActivity"
+            android:label="@string/gridActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.DrillLogActivity" />
         </activity>
         <activity
             android:name=".activity.DrillLogListActivity"
-            android:parentActivityName=".activity.ProjectActivity">
+            android:parentActivityName=".activity.ProjectActivity"
+            android:label="@string/drillList">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.ProjectActivity" />
         </activity>
         <activity
             android:name=".activity.DailyListActivity"
-            android:parentActivityName=".activity.ProjectActivity">
+            android:parentActivityName=".activity.ProjectActivity"
+            android:label="@string/dailyLogList">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.ProjectActivity" />
         </activity>
         <activity
             android:name=".activity.DailyLogActivity"
-            android:parentActivityName=".activity.DailyListActivity">
+            android:parentActivityName=".activity.DailyListActivity"
+            android:label="@string/dailyList">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.DailyListActivity" />
@@ -66,14 +75,16 @@
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".activity.DrillLogActivity"
-            android:parentActivityName=".activity.DrillLogListActivity">
+            android:parentActivityName=".activity.DrillLogListActivity"
+            android:label="@string/drillLog">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.DrillLogListActivity" />
         </activity>
         <activity
             android:name=".activity.GridCoordinateActivity"
-            android:parentActivityName=".activity.GridActivity">
+            android:parentActivityName=".activity.GridActivity"
+            android:label="@string/drillInfo">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.GridActivity" />

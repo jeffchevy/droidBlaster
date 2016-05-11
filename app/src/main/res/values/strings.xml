@@ -85,5 +85,13 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_save">Save</string>
     <string name="menu_settings">Settings</string>
+    <string name="projectList">Project List</string>
+    <string name="gridActivity">Drilling Grid</string>
+    <string name="drillList">Drill Log List</string>
+    <string name="dailyList">Daily Log</string>
+    <string name="drillLog">Drill Log</string>
+    <string name="dailyLogList">Daily Log List</string>
+    <string name="projectActivity">Project</string>
+    <string name="drillInfo">Hole Information</string>
 
 </resources>
