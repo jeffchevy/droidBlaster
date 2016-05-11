@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,25 +12,36 @@
     tools:context=".activity.DailyListActivity"
     tools:showIn="@layout/activity_daily_list">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/new_daily_log_button"
-        android:layout_gravity="center"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:text="@string/new_daily_log_button"
-        android:drawableRight="@mipmap/ic_add_black_24dp"
-        />
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/new_daily_log_button"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:text="@string/new_daily_log_button"-->
+        <!--android:drawableRight="@mipmap/ic_add_black_24dp"-->
+        <!--/>-->
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/daily_list_view"
-        android:layout_below="@+id/new_daily_log_button"
+
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@mipmap/ic_add_black_24dp"
+        android:id="@+id/new_daily_log_button"
+
+        app:layout_anchorGravity="bottom|right|end" />
+
 
     Button
         style="?android:attr/buttonStyleSmall"
@@ -43,4 +54,4 @@
         android:layout_alignEnd="@+id/daily_list_view" />
 
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
