@@ -39,7 +39,7 @@
         android:layout_margin="16dp"
         android:src="@mipmap/ic_add_black_24dp"
         android:id="@+id/new_project_button"
-        app:layout_anchor="@+id/project_list_view"
+
         app:layout_anchorGravity="bottom|right|end" />
 
 
