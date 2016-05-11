@@ -14,7 +14,9 @@ import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
+import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
+import com.drillandblast.project.ProjectSync;
 
 import org.json.JSONObject;
 
@@ -34,9 +36,16 @@ public class DrillLogActivity extends BaseActivity {
 
         final Intent process = getIntent();
         String id =  process.getStringExtra("id");
-        String drillId =  process.getStringExtra("drillId");
         project = ProjectKeep.getInstance().findById(id);
-        drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
+
+        String drillId =  process.getStringExtra("drillId");
+        if (drillId == null) {
+            String drillName =  process.getStringExtra("drill.name");
+            drillLog = ProjectKeep.getInstance().findDrillLogByName(project, drillName);
+        }
+        else {
+            drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
+        }
 
         Button saveButton = (Button) findViewById(R.id.save_drill_log_button);
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
@@ -48,8 +57,9 @@ public class DrillLogActivity extends BaseActivity {
         }
         else
         {
-            drillLog = new DrillLog(null,"","" );
+            drillLog = new DrillLog();
             drillLog.setGridCoordinates( new ArrayList<GridCoordinate>());
+            project.addDrillLog(drillLog);
         }
 
         if(saveButton != null) {
@@ -71,7 +81,12 @@ public class DrillLogActivity extends BaseActivity {
                 public void onClick(View v) {
                     Intent toDrillLogCoordinates = new Intent(DrillLogActivity.this, GridActivity.class);
                     toDrillLogCoordinates.putExtra("id", project.getId());
-                    toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
+                    if (drillLog.getId() == null) {
+                        toDrillLogCoordinates.putExtra("drill.name", drillLog.getName());
+                    }
+                    else {
+                        toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
+                    }
                     startActivity(toDrillLogCoordinates);
                     finish();
                 }
@@ -81,56 +96,57 @@ public class DrillLogActivity extends BaseActivity {
     public void setDrillLogData(DrillLog drillLog){
         EditText log_name = (EditText) findViewById(R.id.drill_log_name_text_field);
         EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
+        EditText pattern_name = (EditText) findViewById(R.id.pattern_name_text_field);
+        EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
+        EditText bit_size = (EditText) findViewById(R.id.bit_size_text_field);
 
         log_name.setText(drillLog.getName());
         driller_name.setText(drillLog.getDrillerName());
+        pattern_name.setText(drillLog.getPattern());
+        shot_number.setText(drillLog.getShotNumber().toString());
+        bit_size.setText(drillLog.getBitSize());
     }
 
     public String saveDrillLogData(Project project)
     {
         EditText log_name = (EditText) findViewById(R.id.drill_log_name_text_field);
         EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
+        EditText pattern_name = (EditText) findViewById(R.id.pattern_name_text_field);
+        EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
+        EditText bit_size = (EditText) findViewById(R.id.bit_size_text_field);
+
         String name = log_name.getText().toString();
         String drillerName = driller_name.getText().toString();
+        String patternName = pattern_name.getText().toString();
+        String shotNumberString = shot_number.getText().toString();
+        String bitSize = bit_size.getText().toString();
 
-        if (!isEdit)
-        {
-            project.addDrillLog(drillLog);
-        }
         drillLog.setName(name);
         drillLog.setDrillerName(drillerName);
+        drillLog.setPattern(patternName);
+        drillLog.setShotNumber(Integer.valueOf(shotNumberString));
+        drillLog.setBitSize(bitSize);
         AsyncTaskRunner drillLogTaskRunner = new AsyncTaskRunner();
-        asyncTask = drillLogTaskRunner.execute(name, drillerName);
+        asyncTask = drillLogTaskRunner.execute();
 
         return asyncTask.getStatus().toString();
     }
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
-
             String result = null;
-
-            JSONObject json = new JSONObject();
-            String response = null;
-            try {
-                json.put("name", params[0]);
-                json.put("drillerName", params[1]);
-
-                if (isEdit)
-                {
-                    result = SimpleHttpClient.executeHttpPut("drillLogs/"+project.getId()+"/"+drillLog.getId(), json, getToken());
+            if (isConnected()) {
+                try {
+                    result = ProjectSync.getInstance().updateDrillLog(isEdit, project, drillLog);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                else
-                {
-                    result = SimpleHttpClient.executeHttpPost("drillLogs/"+project.getId(), json, getToken());
-                    JSONObject jsonobject = new JSONObject(result);
-                    String id = jsonobject.getString("id");
-                    drillLog.setId(id);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                result = e.getMessage();
+            }
+            else {
+                drillLog.setDirty(true);
+            }
+            if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
+                ProjectKeep.getInstance().saveProjectToFile(project);
             }
             return result;
         }

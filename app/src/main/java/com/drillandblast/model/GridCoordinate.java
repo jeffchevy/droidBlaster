@@ -10,13 +10,13 @@ public class GridCoordinate extends Entity {
     private int column;
     private double depth;
     private String comment;
-    private double bitSize;
+    private String bitSize;
 
     public GridCoordinate() {
         super();
     }
 
-    public GridCoordinate(String id, int row, int column, double depth, String comment, double bitSize) {
+    public GridCoordinate(String id, int row, int column, double depth, String comment, String bitSize) {
         this.id = id;
         this.row = row;
         this.column = column;
@@ -65,11 +65,11 @@ public class GridCoordinate extends Entity {
         this.comment = comment;
     }
 
-    public double getBitSize() {
+    public String getBitSize() {
         return bitSize;
     }
 
-    public void setBitSize(double bitSize) {
+    public void setBitSize(String bitSize) {
         this.bitSize = bitSize;
     }
 

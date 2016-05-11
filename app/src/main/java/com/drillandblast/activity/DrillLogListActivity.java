@@ -43,7 +43,13 @@ public class DrillLogListActivity extends BaseActivity {
                                     int position, long id) {
                 DrillLog drillLog = project.getDrillLogs().get(position);
                 Intent editDrillLog = new Intent(DrillLogListActivity.this, DrillLogActivity.class);
-                editDrillLog.putExtra("drillId", drillLog.getId());
+                if (drillLog.getId() == null)
+                {
+                    editDrillLog.putExtra("drill.name", drillLog.getName());
+                }
+                else {
+                    editDrillLog.putExtra("drillId", drillLog.getId());
+                }
                 editDrillLog.putExtra("id", project.getId());
                 startActivity(editDrillLog);
                 finish();

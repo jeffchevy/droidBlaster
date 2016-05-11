@@ -26,6 +26,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +50,8 @@ public class ProjectListActivity extends BaseActivity {
 
         setContentView(R.layout.activity_project_list);
 
-        if (isConnected()) {
-            AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
-            projectListTaskRunner.execute();
-        }
+        AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
+        projectListTaskRunner.execute();
         arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, projects);
 
         ListView listView = (ListView) findViewById(R.id.project_list_view);
@@ -93,30 +92,33 @@ public class ProjectListActivity extends BaseActivity {
         @Override
         protected String doInBackground(String... params) {
             String data = null;
-            try {
-                //------------------>>
+            if (isConnected()) {
+                try {
+                    //------------------>>
 
 //              HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
-                HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
+                    HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
 
-                httpGet.setHeader("token", getToken());
-                Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
-                HttpClient httpclient = new DefaultHttpClient();
+                    httpGet.setHeader("token", getToken());
+                    Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
+                    HttpClient httpclient = new DefaultHttpClient();
 
-                HttpResponse response = httpclient.execute(httpGet);
+                    HttpResponse response = httpclient.execute(httpGet);
 
-                // StatusLine stat = response.getStatusLine();
-                int status = response.getStatusLine().getStatusCode();
-                Log.d(TAG, "doInBackground: "+status);
+                    // StatusLine stat = response.getStatusLine();
+                    int status = response.getStatusLine().getStatusCode();
+                    Log.d(TAG, "doInBackground: "+status);
 
-                if (status == 200) {
-                    HttpEntity entity = response.getEntity();
-                    data = EntityUtils.toString(entity);
+                    if (status == 200) {
+                        HttpEntity entity = response.getEntity();
+                        data = EntityUtils.toString(entity);
 
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+
             return data;
         }
 
@@ -127,9 +129,25 @@ public class ProjectListActivity extends BaseActivity {
          */
         @Override
         protected void onPostExecute(String result) {
-            arrayAdapter.clear();
-            List<Project> projects = ProjectKeep.getInstance().fromJson(result);
-            arrayAdapter.addAll(projects);
+
+            if (isConnected()) {
+                arrayAdapter.clear();
+                List<Project> projects = null;
+                try {
+                    projects = ProjectKeep.getInstance().getAllProjectsfromJson(result);
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(),
+                            e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                arrayAdapter.addAll(projects);
+            }
+            else {
+                // when we are offline we don't need to see if anything new has come in
+                if (ProjectKeep.getInstance().size() <= 0) {
+                    List<Project> projects = ProjectKeep.getInstance().readFiles();
+                    arrayAdapter.addAll(projects);
+                }
+            }
         }
     }
 

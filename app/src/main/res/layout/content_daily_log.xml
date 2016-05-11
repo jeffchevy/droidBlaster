@@ -75,7 +75,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
+            android:inputType="date"
             android:ems="10"
             android:id="@+id/daily_log_date_text_field"
             android:layout_below="@+id/daily_log_date_label"
@@ -166,7 +166,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="text"
+        android:inputType="numberDecimal"
         android:ems="10"
         android:id="@+id/percussion_time_text_field"
         android:layout_below="@+id/percussion_time_label"

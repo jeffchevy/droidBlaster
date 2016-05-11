@@ -13,20 +13,18 @@ public class DailyLog extends Entity {
 
     private String id;
     private String drillNum;
-    private double gallonsFuel;
+    private Double gallonsFuel;
     private String date;
-    private int meterStart;
-    private int meterEnd;
+    private Double meterStart;
+    private Double meterEnd;
     private String bulkTankPumpedFrom;
-    private String percussionTime;
-
-
+    private Double percussionTime;
 
     public DailyLog() {
         super();
     }
 
-    public DailyLog(String id, String drillNum, double gallonsFuel, String date, int meterStart, int meterEnd, String bulkTankPumpedFrom, String percussionTime) {
+    public DailyLog(String id, String drillNum, Double gallonsFuel, String date, Double meterStart, Double meterEnd, String bulkTankPumpedFrom, Double percussionTime) {
         super();
         this.id = id;
         this.drillNum = drillNum;
@@ -48,12 +46,13 @@ public class DailyLog extends Entity {
         this.drillNum = drillNum;
     }
 
-    public double getGallonsFuel() {
+    public Double getGallonsFuel() {
 
         return gallonsFuel;
     }
 
-    public void setGallonsFuel(double gallonsFuel) {
+    public void setGallonsFuel(Double gallonsFuel) {
+
         this.gallonsFuel = gallonsFuel;
     }
 
@@ -62,30 +61,31 @@ public class DailyLog extends Entity {
     }
 
     public void setStartDate(String date) {
+
         this.date = date;
     }
 
-    public int getMeterStart() {
+    public Double getMeterStart() {
+
         return meterStart;
     }
-    public void setMeterStart(int meterStart) {
+    public void setMeterStart(Double meterStart) {
+
         this.meterStart = meterStart;
     }
 
-    public void setShotNumber(int meterStart) {
-        this.meterStart = meterStart;
-    }
-
-    public int getMeterEnd() {
+    public Double getMeterEnd() {
 
         return meterEnd;
     }
 
-    public void setMeterEnd(int meterEnd) {
+    public void setMeterEnd(Double meterEnd) {
+
         this.meterEnd = meterEnd;
     }
 
     public String getBulkTankPumpedFrom() {
+
         return bulkTankPumpedFrom;
     }
 
@@ -93,11 +93,12 @@ public class DailyLog extends Entity {
         this.bulkTankPumpedFrom = bulkTankPumpedFrom;
     }
 
-    public String getPercussionTime() {
+    public Double getPercussionTime() {
+
         return percussionTime;
     }
 
-    public void setPercussionTime(String PercussionTime) {
+    public void setPercussionTime(Double percussionTime) {
         this.percussionTime = percussionTime;
     }
 

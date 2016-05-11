@@ -13,6 +13,7 @@ import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.Project;
+import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
 
@@ -37,7 +38,7 @@ public class DailyLogActivity extends BaseActivity {
 
         if(dailyLog != null){
             isEdit = true;
-            setDailLogData(dailyLog);
+            setDailyLogData(dailyLog);
         }
 
         Button saveButton = (Button) findViewById(R.id.save_daily_log_button);
@@ -57,12 +58,11 @@ public class DailyLogActivity extends BaseActivity {
     public void backToDailyLogList(){
         Intent toDailyLogList = new Intent(DailyLogActivity.this, DailyListActivity.class);
         toDailyLogList.putExtra("id", project.getId());
-
         startActivity(toDailyLogList);
         finish();
     }
 
-    public void setDailLogData(DailyLog dailyLog){
+    public void setDailyLogData(DailyLog dailyLog){
 
         EditText drillNumber = (EditText) findViewById(R.id.drill_id_text_field);
         EditText gallonsFuel = (EditText) findViewById(R.id.gallons_fuel_text_field);
@@ -77,12 +77,11 @@ public class DailyLogActivity extends BaseActivity {
 
         drillNumber.setText(dailyLog.getDrillNum());
         gallonsFuel.setText(gallons_Fuel);
-        percussionTime.setText(dailyLog.getPercussionTime());
         date.setText(dateString);
         meterStart.setText(String.valueOf(dailyLog.getMeterStart()));
         meterEnd.setText(String.valueOf(dailyLog.getMeterEnd()));
         bulkTankPumpedFrom.setText(dailyLog.getBulkTankPumpedFrom());
-        percussionTime.setText(dailyLog.getPercussionTime());
+        percussionTime.setText(dailyLog.getPercussionTime().toString());
 
 
     }
@@ -103,13 +102,13 @@ public class DailyLogActivity extends BaseActivity {
         dailyLog.setDrillNum(drillNumber);
         dailyLog.setGallonsFuel(Double.valueOf(gallonsFuel));
         dailyLog.setStartDate(dateString);
-        dailyLog.setMeterEnd(Integer.valueOf(meterEnd));
-        dailyLog.setMeterStart(Integer.valueOf(meterStart));
+        dailyLog.setMeterEnd(Double.valueOf(meterEnd));
+        dailyLog.setMeterStart(Double.valueOf(meterStart));
         dailyLog.setBulkTankPumpedFrom(bulkTankPumpedFrom);
-        dailyLog.setPercussionTime(percussionTime);
+        dailyLog.setPercussionTime(Double.valueOf(percussionTime));
 
         AsyncTaskRunner dailyLogSaveRunner = new AsyncTaskRunner();
-        asyncTask = dailyLogSaveRunner.execute(drillNumber, gallonsFuel, bulkTankPumpedFrom, meterStart, meterEnd, percussionTime);
+        asyncTask = dailyLogSaveRunner.execute();
         return asyncTask.getStatus().toString();
     }
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
@@ -120,11 +119,19 @@ public class DailyLogActivity extends BaseActivity {
         protected String doInBackground(String... params) {
             String result = null;
             if (isConnected()) {
-                result = ProjectSync.getInstance().updateDailyLog(isEdit, project, dailyLog);
+                try {
+                    result = ProjectSync.getInstance().updateDailyLog(isEdit, project, dailyLog);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             else {
                 dailyLog.setDirty(true);
             }
+            if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
+                ProjectKeep.getInstance().saveProjectToFile(project);
+            }
+
             return result;
         }
     }
