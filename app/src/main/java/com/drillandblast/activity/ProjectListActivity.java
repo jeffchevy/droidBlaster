@@ -3,6 +3,7 @@ package com.drillandblast.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -73,7 +74,7 @@ public class ProjectListActivity extends BaseActivity {
         }
         });
 
-        Button button = (Button) findViewById(R.id.new_project_button);
+        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.new_project_button);
 
         if (button != null) {
             button.setOnClickListener(new OnClickListener() {
