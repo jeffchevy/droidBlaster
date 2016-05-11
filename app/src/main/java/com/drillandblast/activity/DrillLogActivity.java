@@ -9,11 +9,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
@@ -55,7 +58,6 @@ public class DrillLogActivity extends BaseActivity {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
 
-        Button saveButton = (Button) findViewById(R.id.save_drill_log_button);
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
         //final Project project = ProjectListActivity.projects.get(position);
         //DrillLog drillLog = new DrillLog(null, 0, new Date(), new ArrayList<GridCoordinate>());
@@ -70,18 +72,6 @@ public class DrillLogActivity extends BaseActivity {
             project.addDrillLog(drillLog);
         }
 
-        if(saveButton != null) {
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    saveDrillLogData(project);
-                    Intent toDrillLogList = new Intent(DrillLogActivity.this, DrillLogListActivity.class);
-                    toDrillLogList.putExtra("id", project.getId());
-                    startActivity(toDrillLogList);
-                    finish();
-                }
-            });
-        }
 
         if(gridCoordinatesButton !=null) {
             gridCoordinatesButton.setOnClickListener(new View.OnClickListener() {
@@ -101,6 +91,40 @@ public class DrillLogActivity extends BaseActivity {
             });
         }
     }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate our menu from the resources by using the menu inflater.
+        getMenuInflater().inflate(R.menu.save, menu);
+
+        return true;
+    }
+
+    /**
+     * This method is called when one of the menu items to selected. These items
+     * can be on the Action Bar, the overflow menu, or the standard options menu. You
+     * should return true if you handle the selection.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_save:
+                // Here we might start a background refresh task
+                Log.d("app", "Save clicked");
+                Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+                saveDrillLogData(project);
+                Intent toDrillLogList = new Intent(DrillLogActivity.this, DrillLogListActivity.class);
+                toDrillLogList.putExtra("id", project.getId());
+                startActivity(toDrillLogList);
+                finish();
+                return true;
+
+            default:
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                intent.putExtra("id", project.getId());
+                startActivity(intent);
+                return true;
+        }
+    }
+
     public void setDrillLogData(DrillLog drillLog){
         EditText log_name = (EditText) findViewById(R.id.drill_log_name_text_field);
         EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
@@ -160,13 +184,5 @@ public class DrillLogActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = NavUtils.getParentActivityIntent(this);
-        //NavUtils.navigateUpTo(this, intent);
-        intent.putExtra("id", project.getId());
-        startActivity(intent);
-        return true;
-    }
 
 }
