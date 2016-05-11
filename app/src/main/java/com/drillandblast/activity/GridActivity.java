@@ -24,6 +24,8 @@ public class GridActivity extends BaseActivity {
     public DrillLog drillLog = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
 
@@ -45,7 +47,7 @@ public class GridActivity extends BaseActivity {
         int rowCount = 40;
         int colCount = 40;
 
-
+        setTitle("Drill Log "+String.valueOf(drillLog.getName())+" Driller Name "+String.valueOf(drillLog.getDrillerName()));
         TableLayout.LayoutParams tableRowParams=
                 new TableLayout.LayoutParams
                         (TableLayout.LayoutParams.FILL_PARENT,TableLayout.LayoutParams.WRAP_CONTENT);
