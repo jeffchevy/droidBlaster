@@ -62,6 +62,7 @@ public class GridCoordinateActivity extends BaseActivity {
         TextView comment = (TextView) findViewById(R.id.comment_text_field);
         comment.setText(gridCoordinate.getComment().toString());
 
+
         Button saveButton = (Button) findViewById(R.id.save_coordinate_button);
 
         if(saveButton !=null) {
