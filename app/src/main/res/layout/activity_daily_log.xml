@@ -18,7 +18,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/daily_log_date_label"
+        android:layout_below="@+id/imageButton"
         android:editable="false"
         android:text="@string/drill_id_label"/>
 
@@ -65,7 +65,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:text="@string/daily_log_date_label"/>
+        android:text="@string/daily_log_date_label"
+        android:layout_alignBottom="@+id/daily_log_date_text_field"
+        android:gravity="center_vertical" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -74,9 +76,12 @@
         android:id="@+id/daily_log_date_text_field"
         android:onClick="showDatePickerDialog"
         android:text="12/12/12"
-        android:layout_above="@+id/drill_id_label"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="false" />
+        android:layout_alignTop="@+id/imageButton"
+        android:layout_alignBottom="@+id/imageButton"
+        android:gravity="center_vertical|right"
+        android:layout_toLeftOf="@+id/imageButton"
+        android:layout_toRightOf="@+id/percussion_time_label"
+        android:layout_toEndOf="@+id/percussion_time_label" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -168,5 +173,15 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton"
+        android:src="@mipmap/ic_event_black_24dp"
+        android:onClick="showDatePickerDialog"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/drill_id_label"
+        android:layout_alignEnd="@+id/drill_id_label" />
 
 </RelativeLayout>
