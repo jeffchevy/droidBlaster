@@ -56,9 +56,7 @@
         </activity>
         <activity
             android:name=".activity.DailyLogActivity"
-            android:label="@string/title_activity_daily_log"
-            android:parentActivityName=".activity.DailyListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:parentActivityName=".activity.DailyListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.DailyListActivity" />

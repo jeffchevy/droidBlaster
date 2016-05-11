@@ -10,6 +10,9 @@ import com.drillandblast.model.Project;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ProjectSync {
     private static final String TAG = "ProjectKeep";
     private static ProjectSync instance;
@@ -108,6 +111,8 @@ public class ProjectSync {
         json.put("bulkTankPumpedFrom", dailyLog.getBulkTankPumpedFrom());
         json.put("hourMeterStart", dailyLog.getMeterStart());
         json.put("hourMeterEnd", dailyLog.getMeterEnd());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        json.put("date", sdf.format(dailyLog.getDate()));
         json.put("percussionTime", dailyLog.getPercussionTime());
 
         if (isEdit)

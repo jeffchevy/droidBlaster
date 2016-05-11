@@ -1,12 +1,18 @@
 package com.drillandblast.activity;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.drillandblast.R;
@@ -21,6 +27,8 @@ import com.drillandblast.project.ProjectSync;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class DrillLogActivity extends BaseActivity {
     private boolean isEdit = false;
@@ -160,4 +168,5 @@ public class DrillLogActivity extends BaseActivity {
         startActivity(intent);
         return true;
     }
+
 }

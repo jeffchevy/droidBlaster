@@ -27,15 +27,20 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class ProjectKeep {
     private static final String TAG = "ProjectKeep";
     private static ProjectKeep instance;
+    public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     List<Project> projects = null;
     Map<String, Project> projectMap = null;
@@ -92,7 +97,7 @@ public class ProjectKeep {
         return null;
     }
 
-    public List<Project> getAllProjectsfromJson(String json) throws JSONException {
+    public List<Project> getAllProjectsfromJson(String json) throws Exception {
         projects.clear();
         projectMap.clear();
             if (json != null) {
@@ -110,7 +115,7 @@ public class ProjectKeep {
     }
 
     @NonNull
-    private Project getProjectFromJson(JSONObject jsonobject) throws JSONException {
+    private Project getProjectFromJson(JSONObject jsonobject) throws Exception {
         String id = (String) getValue(jsonobject, "_id");
         String contractorName = (String) getValue(jsonobject, "contractorName");
         String projectName = (String) getValue(jsonobject, "projectName");
@@ -165,7 +170,11 @@ public class ProjectKeep {
                 String percussionTime = (String) getValue(dailyLog, "percussionTime");
                 String dateStr = (String) getValue(dailyLog, "date");
 
-                DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), dateStr, Double.valueOf(hourMeterStart),
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(UTC);
+                Date date = sdf.parse(dateStr);
+
+                DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), date, Double.valueOf(hourMeterStart),
                         Double.valueOf(hourMeterEnd), bulkTankPumpedFrom, Double.valueOf(percussionTime));
                 daily.setDirty(false);
                 project.addDailyLog(daily);
