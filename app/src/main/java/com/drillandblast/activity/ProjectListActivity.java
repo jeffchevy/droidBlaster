@@ -79,6 +79,8 @@ public class ProjectListActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+
+
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Starting onCreate");
 
