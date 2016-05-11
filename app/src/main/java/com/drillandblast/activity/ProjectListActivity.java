@@ -66,6 +66,9 @@ public class ProjectListActivity extends BaseActivity {
                 return true;
 
             case R.id.menu_settings:
+                Intent settings = new Intent(ProjectListActivity.this, SettingsActivity.class);
+                startActivity(settings);
+                finish();
                 // Here we would open up our settings activity
                 return true;
         }
