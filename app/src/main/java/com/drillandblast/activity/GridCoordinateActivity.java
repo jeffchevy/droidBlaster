@@ -77,7 +77,7 @@ public class GridCoordinateActivity extends BaseActivity {
         TextView comment = (TextView) findViewById(R.id.comment_text_field);
         comment.setText(gridCoordinate.getComment().toString());
         TextView date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
-        date.setText(format.format(gridCoordinate.getDepth()));
+        date.setText(format.format(gridCoordinate.getDate()));
 
 
         Button saveButton = (Button) findViewById(R.id.save_coordinate_button);

@@ -126,9 +126,9 @@ public class GridActivity extends BaseActivity {
                 TextView tv = (TextView) tr.getChildAt(gridCoordinates.get(k).getColumn());
 
                 final GridCoordinate gc = gridCoordinates.get(k);
-                if(k>2) {
+                /*if(k>2) {
                     gc.setDate(fiveDayOld);
-                }
+                }*/
 
                 if(gc.getDate().before(date) && gc.getDate().after(oneDayOld)) {
                     tv.setBackgroundColor(Color.parseColor("#33c33c"));
