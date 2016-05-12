@@ -34,12 +34,7 @@ public class ProjectActivity extends BaseActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate our menu from the resources by using the menu inflater.
-        getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem saveItem = menu.add(0, R.id.menu_save, 0, R.string.menu_save);
-        saveItem.setIcon(R.drawable.ic_cloud_upload_white_36px);
-
-        // Need to use MenuItemCompat methods to call any action item related methods
-        MenuItemCompat.setShowAsAction(saveItem, MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        getMenuInflater().inflate(R.menu.save, menu);
 
         return true;
     }
@@ -47,17 +42,10 @@ public class ProjectActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_refresh:
-                // Here we might start a background refresh task
-                Toast.makeText(getApplicationContext(), "Synchronizing", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "Project Dirty: "+project.isDirty());
-                ProjectSync.getInstance().sync(project);
-                Log.d("app", "Sync");
-                return true;
-
             case R.id.menu_save:
                 // Here we would open up our settings activity
                 saveProject();
+                ProjectSync.getInstance().sync(project);
                 backToProjectList();
                 return true;
             default:
