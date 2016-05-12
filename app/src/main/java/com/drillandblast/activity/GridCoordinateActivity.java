@@ -56,7 +56,12 @@ public class GridCoordinateActivity extends BaseActivity {
 
         setTitle("Drill Hole Row "+String.valueOf(gridCoordinate.getRow())+" Column "+String.valueOf(gridCoordinate.getColumn()));
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
-        depth.setText(String.valueOf(gridCoordinate.getDepth()));
+        if(gridCoordinate.getDepth() != 0) {
+            depth.setText(String.valueOf(gridCoordinate.getDepth()));
+        }
+        else {
+            depth.setText("");
+        }
         TextView bitSize = (TextView) findViewById(R.id.bit_size_text_field);
         bitSize.setText(String.valueOf(gridCoordinate.getBitSize()));
         TextView comment = (TextView) findViewById(R.id.comment_text_field);

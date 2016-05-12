@@ -76,7 +76,7 @@ public class GridActivity extends BaseActivity {
                     textView.setBackgroundColor(Color.parseColor("#cccccc"));
                 }
                 else {
-                    final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", "", new Date());
+                    final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", drillLog.getBitSize(), new Date());
                     textView.setText("     ");
 
                     textView.setOnClickListener(new View.OnClickListener() {
