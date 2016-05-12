@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class GridCoordinateActivity extends BaseActivity {
@@ -37,7 +38,9 @@ public class GridCoordinateActivity extends BaseActivity {
     public Project project = null;
     public GridCoordinate gridCoordinate = null;
     private AsyncTask<String, String, String> asyncTask;
-    SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy");
+    SimpleDateFormat format = new SimpleDateFormat("MM dd yyyy");
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -20,15 +20,48 @@ import com.drillandblast.project.ProjectKeep;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class GridActivity extends BaseActivity {
     public Project project = null;
     public DrillLog drillLog = null;
     SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy");
+    HashMap hm = new HashMap();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        hm.put(1, "#33cc33");
+        hm.put(2, "#ff0000");
+        hm.put(3, "#0066ff");
+        hm.put(4, "#ff9900");
+        hm.put(5, "#ffff00");
+        hm.put(6, "#cc33ff");
+        hm.put(7, "#9966ff");
+        hm.put(8, "#33cc33");
+        hm.put(9, "#ff0000");
+        hm.put(10, "#0066ff");
+        hm.put(11, "#ff9900");
+        hm.put(12, "#ffff00");
+        hm.put(13, "#cc33ff");
+        hm.put(14, "#9966ff");
+        hm.put(15, "#33cc33");
+        hm.put(16, "#ff0000");
+        hm.put(17, "#0066ff");
+        hm.put(18, "#ff9900");
+        hm.put(19, "#ffff00");
+        hm.put(20, "#cc33ff");
+        hm.put(21, "#9966ff");
+        hm.put(22, "#33cc33");
+        hm.put(23, "#ff0000");
+        hm.put(24, "#0066ff");
+        hm.put(25, "#ff9900");
+        hm.put(26, "#ffff00");
+        hm.put(27, "#cc33ff");
+        hm.put(28, "#9966ff");
+        hm.put(29, "#ff9900");
+        hm.put(30, "#ffff00");
+        hm.put(31, "#cc33ff");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
@@ -109,15 +142,6 @@ public class GridActivity extends BaseActivity {
         if(drillLog.getGridCoordinates().size()>0)
         {
             Date date = new Date();
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            cal.add(Calendar.DATE, -1);
-            Date oneDayOld = cal.getTime();
-
-            cal.setTime(date);
-            cal.add(Calendar.DATE, -5);
-
-            Date fiveDayOld = cal.getTime();
 
             final List<GridCoordinate> gridCoordinates = drillLog.getGridCoordinates();
             for(int k = 0; k<gridCoordinates.size(); k++)
@@ -126,16 +150,16 @@ public class GridActivity extends BaseActivity {
                 TextView tv = (TextView) tr.getChildAt(gridCoordinates.get(k).getColumn());
 
                 final GridCoordinate gc = gridCoordinates.get(k);
-                /*if(k>2) {
-                    gc.setDate(fiveDayOld);
-                }*/
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(gc.getDate());
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
 
-                if(gc.getDate().before(date) && gc.getDate().after(oneDayOld)) {
-                    tv.setBackgroundColor(Color.parseColor("#33c33c"));
+                if(hm.containsKey(day)) {
+                    tv.setBackgroundColor(Color.parseColor(hm.get(day).toString()));
                 }
-                else {
-                    tv.setBackgroundColor(Color.parseColor("#ffff66"));
-                }
+
                 tv.setText(String.valueOf(gridCoordinates.get(k).getDepth()));
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override
