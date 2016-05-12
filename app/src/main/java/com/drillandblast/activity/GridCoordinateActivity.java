@@ -31,7 +31,10 @@ public class GridCoordinateActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_grid_coordinate);
 
         Intent process = getIntent();
@@ -51,13 +54,14 @@ public class GridCoordinateActivity extends BaseActivity {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
 
-
+        setTitle("Drill Hole Row "+String.valueOf(gridCoordinate.getRow())+" Column "+String.valueOf(gridCoordinate.getColumn()));
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
         depth.setText(String.valueOf(gridCoordinate.getDepth()));
         TextView bitSize = (TextView) findViewById(R.id.bit_size_text_field);
         bitSize.setText(String.valueOf(gridCoordinate.getBitSize()));
         TextView comment = (TextView) findViewById(R.id.comment_text_field);
         comment.setText(gridCoordinate.getComment().toString());
+
 
         Button saveButton = (Button) findViewById(R.id.save_coordinate_button);
 

@@ -1,6 +1,7 @@
 package com.drillandblast.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -11,6 +12,7 @@ public class DrillLog extends Entity {
     private String id;
     private String drillerName;
     private String name;
+    private Date date;
     private String pattern;
     private Integer shotNumber;
     private String bitSize;
@@ -83,6 +85,14 @@ public class DrillLog extends Entity {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.drillandblast.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,7 +60,7 @@ public class DrillLogListActivity extends BaseActivity {
             }
         });
 
-        Button newDrillLogButton = (Button) findViewById(R.id.new_drill_log_button);
+        FloatingActionButton newDrillLogButton = (FloatingActionButton) findViewById(R.id.new_drill_log_button);
 
         if (newDrillLogButton != null) {
             newDrillLogButton.setOnClickListener(new View.OnClickListener() {

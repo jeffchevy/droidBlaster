@@ -7,27 +7,43 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.drillandblast.R;
 import com.drillandblast.http.LoginTaskRunner;
 import com.drillandblast.project.ProjectKeep;
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.Required;
+import com.mobsandgeeks.saripaar.annotation.TextRule;
 
 import org.json.JSONObject;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements Validator.ValidationListener{
+
+    Validator validator;
+
+    @Required(order = 1)
     EditText userName;
+
+
+    @Required(order = 1)
     EditText password;
+
     TextView finalResult;
     Button ok;
     private AsyncTask<String, String, String> asyncTask;
     private String response;
     private static Context context;
-
-
     private String token = null;
+
+
+
 
 
     @Override
@@ -46,10 +62,14 @@ public class LoginActivity extends AppCompatActivity {
         finalResult = (TextView) findViewById(R.id.tv_error);
         Boolean successValue = false;
 
+        validator =new Validator(this);
+        validator.setValidationListener(this);
+
         ok.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                validator.validate();
                 String result = null;
                 LoginTaskRunner runner = new LoginTaskRunner();
                 String userName = LoginActivity.this.userName.getText().toString();
@@ -92,7 +112,32 @@ public class LoginActivity extends AppCompatActivity {
                 finalResult.setText(result);
             }
         });
+
+
     }
+
+    //Validation
+    //To perform the operation, when all input field satisfy the validation rule.
+    @Override
+    public void onValidationSucceeded() {
+        Toast.makeText(this, "Validation Succeeded", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onValidationFailed(View view, Rule<?> rule) {
+
+        final String failureMessage = rule.getFailureMessage();
+        if (view instanceof EditText) {
+            EditText failed = (EditText) view;
+            failed.requestFocus();
+            failed.setError(failureMessage);
+        } else {
+            Toast.makeText(getApplicationContext(), failureMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+
     private void nextActivity(){
         Intent next = new Intent(LoginActivity.this, ProjectListActivity.class);
         startActivity(next);

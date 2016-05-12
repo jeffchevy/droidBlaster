@@ -4,13 +4,16 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.drillandblast.R;
 import com.drillandblast.model.Project;
@@ -28,6 +31,30 @@ public class ProjectActivity extends BaseActivity {
     public int position = 0;
     public Project project = null;
     private AsyncTask<String, String, String> asyncTask;
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate our menu from the resources by using the menu inflater.
+        getMenuInflater().inflate(R.menu.save, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_save:
+                // Here we would open up our settings activity
+                saveProject();
+                ProjectSync.getInstance().sync(project);
+                backToProjectList();
+                return true;
+            default:
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                startActivity(intent);
+                return true;
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +74,8 @@ public class ProjectActivity extends BaseActivity {
             project = new Project();
         }
 
-        Button saveButton = (Button) findViewById(R.id.save_project_button);
         Button drillLogButton = (Button) findViewById(R.id.drill_log_button);
         Button dailyLogButton = (Button) findViewById(R.id.daily_log_button);
-        Button syncButton = (Button) findViewById(R.id.project_sync);
 
         if (drillLogButton != null) {
             drillLogButton.setOnClickListener(new View.OnClickListener() {
@@ -72,25 +97,6 @@ public class ProjectActivity extends BaseActivity {
                     toDailyLogList.putExtra("id", project.getId());
                     startActivity(toDailyLogList);
                     finish();
-                }
-            });
-        }
-
-        if (saveButton != null) {
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    saveProject();
-                    backToProjectList();
-                }
-            });
-        }
-        if (syncButton != null) {
-            syncButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "Project Dirty: "+project.isDirty());
-                    ProjectSync.getInstance().sync(project);
                 }
             });
         }
@@ -171,11 +177,4 @@ public class ProjectActivity extends BaseActivity {
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-                Intent intent = NavUtils.getParentActivityIntent(this);
-                //NavUtils.navigateUpTo(this, intent);
-                startActivity(intent);
-                return true;
-    }
 }

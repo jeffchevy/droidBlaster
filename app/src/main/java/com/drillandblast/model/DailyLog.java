@@ -14,7 +14,7 @@ public class DailyLog extends Entity {
     private String id;
     private String drillNum;
     private Double gallonsFuel;
-    private String date;
+    private Date date;
     private Double meterStart;
     private Double meterEnd;
     private String bulkTankPumpedFrom;
@@ -24,7 +24,7 @@ public class DailyLog extends Entity {
         super();
     }
 
-    public DailyLog(String id, String drillNum, Double gallonsFuel, String date, Double meterStart, Double meterEnd, String bulkTankPumpedFrom, Double percussionTime) {
+    public DailyLog(String id, String drillNum, Double gallonsFuel, Date date, Double meterStart, Double meterEnd, String bulkTankPumpedFrom, Double percussionTime) {
         super();
         this.id = id;
         this.drillNum = drillNum;
@@ -56,11 +56,11 @@ public class DailyLog extends Entity {
         this.gallonsFuel = gallonsFuel;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setStartDate(String date) {
+    public void setStartDate(Date date) {
 
         this.date = date;
     }
@@ -111,9 +111,12 @@ public class DailyLog extends Entity {
     }
 
     public String toString() {
-//        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-//        return formatter.format(this.getDate())+"- Drill#: "+this.drillNum;
-        return this.getDate()+"- Drill#: "+this.drillNum;
+        String result = "";
+        if (this.getDate() != null) {
+            DateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+            result = formatter.format(this.getDate())+"- Drill#: "+this.drillNum;
+        }
+        return result;
     }
 
 

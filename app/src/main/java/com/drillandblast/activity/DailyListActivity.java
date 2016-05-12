@@ -2,6 +2,7 @@ package com.drillandblast.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,7 +54,7 @@ public class DailyListActivity extends BaseActivity {
             }
         });
 
-        Button button = (Button) findViewById(R.id.new_daily_log_button);
+        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.new_daily_log_button);
         if (button != null) {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -71,7 +72,6 @@ public class DailyListActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
         intent.putExtra("id", project.getId());
-        //NavUtils.navigateUpTo(this, intent);
         startActivity(intent);
         return true;
     }
