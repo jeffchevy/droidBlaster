@@ -159,6 +159,7 @@ public class ProjectKeep {
             is.close();
 
         } catch (Exception e) {
+            context.deleteFile(filename);
             e.printStackTrace();
         }
         finally {
@@ -194,7 +195,9 @@ public class ProjectKeep {
         for (File thefile: files) {
             Log.d(TAG, "File: "+thefile.getName());
             Project project = readProjectFromFile(thefile.getName());
-            results.add(project);
+            if (project != null) {
+                results.add(project);
+            }
         }
         return results;
     }
