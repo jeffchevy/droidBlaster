@@ -1,24 +1,11 @@
 package com.drillandblast.project;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
-import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,20 +14,14 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class ProjectKeep {
     private static final String TAG = "ProjectKeep";
     private static ProjectKeep instance;
-    public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     List<Project> projects = null;
     Map<String, Project> projectMap = null;
@@ -63,6 +44,10 @@ public class ProjectKeep {
     }
     public Project findById(String id){
         return projectMap.get(id);
+    }
+
+    public List<Project> findAll() {
+        return this.projects;
     }
 
     public DrillLog findDrillLogById(Project project, String drillId) {
@@ -96,144 +81,32 @@ public class ProjectKeep {
         }
         return null;
     }
+    public DailyLog findDailyLogByNum(Project project, String num) {
+        if (project != null) {
+            for (DailyLog log : project.getDailyLogs()) {
+                if (log.getDrillNum() != null && log.getDrillNum().equalsIgnoreCase(num)) {
+                    return log;
+                }
+            }
+        }
+        return null;
+    }
 
-    public List<Project> getAllProjectsfromJson(String json) throws Exception {
-        projects.clear();
+    public void refreshProjectData(List<Project> projects) {
+        // set the new list
+        this.projects = projects;
+        // clean out old map
         projectMap.clear();
-            if (json != null) {
-                JSONArray jsonarray = new JSONArray(json);
-                if (jsonarray != null) {
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        Project project = getProjectFromJson(jsonobject);
-                        projects.add(project);
-                        projectMap.put(project.getId(), project);
-                    }
-                }
-            }
-        return projects;
-    }
-
-    @NonNull
-    private Project getProjectFromJson(JSONObject jsonobject) throws Exception {
-        String id = (String) getValue(jsonobject, "_id");
-        String contractorName = (String) getValue(jsonobject, "contractorName");
-        String projectName = (String) getValue(jsonobject, "projectName");
-
-        Project project = new Project(id, projectName, contractorName,new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
-        project.setDirty(false);
-
-        if (jsonobject.get("drillLogs") instanceof JSONArray) {
-            JSONArray drillLogArray = jsonobject.getJSONArray("drillLogs");
-            for (int j = 0; j < drillLogArray.length(); j++) {
-                JSONObject drillLog = drillLogArray.getJSONObject(j);
-                String drillId = (String) getValue(drillLog, "_id");
-                String drillerName = (String) getValue(drillLog, "drillerName");
-                String name = (String) getValue(drillLog, "name");
-                String pattern = (String) getValue(drillLog,"pattern");
-                String shotNumber = (String) getValue(drillLog,"shotNumber");
-                String bitSize = (String) getValue(drillLog,"bitSize");
-
-                String holesStr = (String)getValue(drillLog,"holes");
-                JSONArray holesArray = new JSONArray(holesStr);
-                List<GridCoordinate> holes = new ArrayList<>();
-                for (int k = 0; k < holesArray.length(); k++) {
-                    JSONObject holesObject = holesArray.getJSONObject(k);
-                    String holeId = (String) getValue(holesObject, "_id");
-                    String x = (String) getValue(holesObject, "x");
-                    String y = (String) getValue(holesObject, "y");
-                    String z = (String) getValue(holesObject, "z");
-                    String comments = (String) getValue(holesObject, "comments");
-                    String holeBitSize = (String) getValue(holesObject, "bitSize");
-                    GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize);
-                    gridCoordinate.setDirty(false);
-                    holes.add(gridCoordinate);
-                }
-
-                DrillLog drill = new DrillLog(drillId, drillerName, name, pattern, Integer.valueOf(shotNumber), bitSize);
-                drill.setDirty(false);
-                drill.setGridCoordinates(holes);
-                project.addDrillLog(drill);
+        for ( Project project: this.projects) {
+            if (project.getId() != null) {
+                projectMap.put(project.getId(), project);
             }
         }
-        if (jsonobject.get("dailyLogs") instanceof JSONArray) {
-            JSONArray dailyLogArray = jsonobject.getJSONArray("dailyLogs");
-            for (int m = 0; m < dailyLogArray.length(); m++) {
-                JSONObject dailyLog = dailyLogArray.getJSONObject(m);
-
-                String dailyId = (String) getValue(dailyLog, "_id");
-                String drillNumber = (String) getValue(dailyLog, "drillNumber");
-                String gallonsPumped = (String) getValue(dailyLog, "gallonsPumped");
-                String bulkTankPumpedFrom = (String) getValue(dailyLog, "bulkTankPumpedFrom");
-                String hourMeterStart = (String) getValue(dailyLog, "hourMeterStart");
-                String hourMeterEnd = (String) getValue(dailyLog, "hourMeterEnd");
-                String percussionTime = (String) getValue(dailyLog, "percussionTime");
-                String dateStr = (String) getValue(dailyLog, "date");
-
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                sdf.setTimeZone(UTC);
-                Date date = sdf.parse(dateStr);
-
-                DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), date, Double.valueOf(hourMeterStart),
-                        Double.valueOf(hourMeterEnd), bulkTankPumpedFrom, Double.valueOf(percussionTime));
-                daily.setDirty(false);
-                project.addDailyLog(daily);
-            }
-        }
-        return project;
     }
-    Project getLatestProjectFromServer(Project project) throws Exception {
-        Project latestProject = null;
-        String jsonData = null;
-            //------------------>>
-//              HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
-            HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project/"+project.getId());
-
-            httpGet.setHeader("token", getToken());
-            Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
-            HttpClient httpclient = new DefaultHttpClient();
-
-            HttpResponse response = httpclient.execute(httpGet);
-
-            // StatusLine stat = response.getStatusLine();
-            int status = response.getStatusLine().getStatusCode();
-
-            if (status == 200) {
-                HttpEntity entity = response.getEntity();
-                jsonData = EntityUtils.toString(entity);
-
-            }
-            JSONObject projectJson = new JSONObject(jsonData);
-            // replace out the project ref for the object we just got from the server
-            // this will give us any updates from the server
-            latestProject = getProjectFromJson(projectJson);
-
-            // make sure the new project is referenced in the list
-            for (Iterator<Project> iter = projects.iterator(); iter.hasNext();) {
-                Project checkProject = iter.next();
-                if (latestProject.getId().equalsIgnoreCase(checkProject.getId())) {
-                    iter.remove();
-                    projects.add(latestProject);
-                    projectMap.put(latestProject.getId(), latestProject);
-                }
-
-            }
-
-        return latestProject;
-    }
-    private void addProject(Project project) {
+    public void addProject(Project project) {
         projects.add(project);
         projectMap.put(project.getId(), project);
     }
-
-    private Object getValue(JSONObject jsonObject, String name){
-        Object result= null;
-        try{
-            result = jsonObject.getString(name);
-        } catch (Exception ex) {}
-        return result;
-    }
-
     public Context getContext() {
         return context;
     }
@@ -251,6 +124,9 @@ public class ProjectKeep {
     }
 
     public void saveProjectToFile(Project project){
+        if (project.getId() == null) {
+            return;
+        }
         ObjectOutputStream os = null;
         FileOutputStream fos = null;
         try {
@@ -306,6 +182,7 @@ public class ProjectKeep {
         }
     }
     public List<Project> readFiles(){
+        List<Project> results = new ArrayList<>();
         FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -317,14 +194,8 @@ public class ProjectKeep {
         for (File thefile: files) {
             Log.d(TAG, "File: "+thefile.getName());
             Project project = readProjectFromFile(thefile.getName());
-
-            // make sure we got a project and that it is not already added
-            if (project != null) {
-                if (projectMap.get(project.getId()) == null) {
-                    addProject(project);
-                }
-            }
+            results.add(project);
         }
-        return projects;
+        return results;
     }
 }

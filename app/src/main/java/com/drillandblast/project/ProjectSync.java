@@ -1,6 +1,8 @@
 package com.drillandblast.project;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DailyLog;
@@ -8,18 +10,30 @@ import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 public class ProjectSync {
-    private static final String TAG = "ProjectKeep";
+    private static final String TAG = "ProjectSync";
     private static ProjectSync instance;
     AsyncTask<String, String, String> asyncTask;
-    private Project project = null;
+    public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+    private Object updateMutex;
 
     private ProjectSync(){
+        updateMutex = new Object();
     }
 
     public static synchronized ProjectSync getInstance(){
@@ -29,61 +43,83 @@ public class ProjectSync {
         return instance;
     }
 
-    public synchronized void sync(Project project) {
-        this.project = project;
-        AsyncTaskRunner projectSaveRunner = new AsyncTaskRunner();
-        asyncTask = projectSaveRunner.execute();
-    }
+    public void push()
+    {
+        List<Project> projects = ProjectKeep.getInstance().readFiles();
 
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            String result = "Successful";
+        for (Project project: projects) {
             try {
-                checkAndUpdate();
-                // go and get anything that the server has
-                Project latestProject = ProjectKeep.getInstance().getLatestProjectFromServer(project);
-            }
-            catch (Exception e) {
+                // update cloud
+                checkAndUpdate(project);
+                // remove file
+                ProjectKeep.getInstance().removeFile(project);
+            } catch (Exception e) {
                 e.printStackTrace();
-                result = e.getMessage();
             }
-            finally {
-                // no matter what happens make sure to save off what has already been done
-                ProjectKeep.getInstance().saveProjectToFile(project);
-            }
-
-            return result;
         }
     }
-    private void checkAndUpdate() throws Exception {
+    public void pull()
+    {
+        // get new data from cloud
+        List<Project> projects = getProjectData();
+
+        // update our in memory storage
+        ProjectKeep.getInstance().refreshProjectData(projects);
+
+        // write out data to local disk if it is an offline project
+        for(Project project: projects) {
+            if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
+                ProjectKeep.getInstance().saveProjectToFile(project);
+            }
+        }
+    }
+    public void readFromDisk() {
+        List<Project> projects = ProjectKeep.getInstance().readFiles();
+
+        // update our in memory storage
+        ProjectKeep.getInstance().refreshProjectData(projects);
+    }
+
+    public void sync() {
+        Log.i(TAG, "Starting Sync");
+        synchronized (updateMutex) {
+            push();
+            pull();
+        }
+        Log.i(TAG, "Finished Sync");
+    }
+
+    private void checkAndUpdate(Project project) throws Exception {
         if (project.isDirty()) {
             boolean projectHeaderIsEdit = project.getId() != null ? true : false;
             updateProjectHeader(projectHeaderIsEdit, project);
             project.setDirty(false);
         }
-        for(DailyLog log : project.getDailyLogs())
-        {
-            if (log.isDirty())
-            {
-                boolean dailyLogIsEdit = log.getId() != null ? true : false;
-                updateDailyLog(dailyLogIsEdit, project, log);
-                log.setDirty(false);
+        if (project.getDailyLogs() != null) {
+            for (DailyLog log : project.getDailyLogs()) {
+                if (log.isDirty()) {
+                    boolean dailyLogIsEdit = log.getId() != null ? true : false;
+                    updateDailyLog(dailyLogIsEdit, project, log);
+                    log.setDirty(false);
+                }
             }
         }
-        for (DrillLog log: project.getDrillLogs()) {
-            if (log.isDirty())
-            {
-                boolean drillLogIsEdit = log.getId() != null ? true : false;
-                updateDrillLog(drillLogIsEdit, project, log);
-                log.setDirty(false);
-            }
-            for (GridCoordinate gridCoordinate : log.getGridCoordinates()) {
-                if (gridCoordinate.isDirty())
+        if (project.getDrillLogs() != null)
+        {
+            for (DrillLog log: project.getDrillLogs()) {
+                if (log.isDirty())
                 {
-                    boolean coordinateIsEdit = gridCoordinate.getId() != null ? true : false;
-                    updateDrillCoordinate(coordinateIsEdit, project, log, gridCoordinate);
-                    gridCoordinate.setDirty(false);
+                    boolean drillLogIsEdit = log.getId() != null ? true : false;
+                    updateDrillLog(drillLogIsEdit, project, log);
+                    log.setDirty(false);
+                }
+                for (GridCoordinate gridCoordinate : log.getGridCoordinates()) {
+                    if (gridCoordinate.isDirty())
+                    {
+                        boolean coordinateIsEdit = gridCoordinate.getId() != null ? true : false;
+                        updateDrillCoordinate(coordinateIsEdit, project, log, gridCoordinate);
+                        gridCoordinate.setDirty(false);
+                    }
                 }
             }
         }
@@ -169,4 +205,132 @@ public class ProjectSync {
         }
         return result;
     }
+    public List<Project> getProjectData() {
+        Log.i(TAG, "Starting getProjectData()");
+        List<Project> projects = new ArrayList<>();
+        try {
+            HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
+
+            httpGet.setHeader("token", ProjectKeep.getInstance().getToken());
+            HttpClient httpclient = new DefaultHttpClient();
+
+            HttpResponse response = httpclient.execute(httpGet);
+
+            // StatusLine stat = response.getStatusLine();
+            int status = response.getStatusLine().getStatusCode();
+            Log.d(TAG, "getProjectData - url: " + httpGet.getURI().toString()+ " status="+status);
+
+            if (status == 200) {
+                HttpEntity entity = response.getEntity();
+                String json = EntityUtils.toString(entity);
+
+                if (json != null) {
+                    JSONArray jsonarray = new JSONArray(json);
+                    if (jsonarray != null) {
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            JSONObject jsonobject = jsonarray.getJSONObject(i);
+                            Project project = null;
+
+                            // read from json and only add project if it does not error out
+                            try {
+                                project = getProjectFromJson(jsonobject);
+                                projects.add(project);
+                            } catch (Exception ex)
+                            {
+                                Log.e(TAG, ex.getMessage());
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG, "Finished getProjectData()");
+        return projects;
+    }
+    @NonNull
+    private Project getProjectFromJson(JSONObject jsonobject) throws Exception {
+        String id = (String) getValue(jsonobject, "_id");
+        String contractorName = (String) getValue(jsonobject, "contractorName");
+        String projectName = (String) getValue(jsonobject, "projectName");
+
+        Project project = new Project(id, projectName, contractorName,new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
+        project.setDirty(false);
+
+        String drillLogs = (String) getValue(jsonobject, "drillLogs");
+        if (drillLogs != null)
+        {
+            if (jsonobject.get("drillLogs") instanceof JSONArray) {
+                JSONArray drillLogArray = jsonobject.getJSONArray("drillLogs");
+                for (int j = 0; j < drillLogArray.length(); j++) {
+                    JSONObject drillLog = drillLogArray.getJSONObject(j);
+                    String drillId = (String) getValue(drillLog, "_id");
+                    String drillerName = (String) getValue(drillLog, "drillerName");
+                    String name = (String) getValue(drillLog, "name");
+                    String pattern = (String) getValue(drillLog,"pattern");
+                    String shotNumber = (String) getValue(drillLog,"shotNumber");
+                    String bitSize = (String) getValue(drillLog,"bitSize");
+
+                    String holesStr = (String)getValue(drillLog,"holes");
+                    JSONArray holesArray = new JSONArray(holesStr);
+                    List<GridCoordinate> holes = new ArrayList<>();
+                    for (int k = 0; k < holesArray.length(); k++) {
+                        JSONObject holesObject = holesArray.getJSONObject(k);
+                        String holeId = (String) getValue(holesObject, "_id");
+                        String x = (String) getValue(holesObject, "x");
+                        String y = (String) getValue(holesObject, "y");
+                        String z = (String) getValue(holesObject, "z");
+                        String comments = (String) getValue(holesObject, "comments");
+                        String holeBitSize = (String) getValue(holesObject, "bitSize");
+                        GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize);
+                        gridCoordinate.setDirty(false);
+                        holes.add(gridCoordinate);
+                    }
+
+                    DrillLog drill = new DrillLog(drillId, drillerName, name, pattern, Integer.valueOf(shotNumber), bitSize);
+                    drill.setDirty(false);
+                    drill.setGridCoordinates(holes);
+                    project.addDrillLog(drill);
+                }
+            }
+        }
+        String dailyLogs = (String) getValue(jsonobject, "dailyLogs");
+        if (dailyLogs != null) {
+            if (jsonobject.get("dailyLogs") instanceof JSONArray) {
+                JSONArray dailyLogArray = jsonobject.getJSONArray("dailyLogs");
+                for (int m = 0; m < dailyLogArray.length(); m++) {
+                    JSONObject dailyLog = dailyLogArray.getJSONObject(m);
+
+                    String dailyId = (String) getValue(dailyLog, "_id");
+                    String drillNumber = (String) getValue(dailyLog, "drillNumber");
+                    String gallonsPumped = (String) getValue(dailyLog, "gallonsPumped");
+                    String bulkTankPumpedFrom = (String) getValue(dailyLog, "bulkTankPumpedFrom");
+                    String hourMeterStart = (String) getValue(dailyLog, "hourMeterStart");
+                    String hourMeterEnd = (String) getValue(dailyLog, "hourMeterEnd");
+                    String percussionTime = (String) getValue(dailyLog, "percussionTime");
+                    String dateStr = (String) getValue(dailyLog, "date");
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                    sdf.setTimeZone(UTC);
+                    Date date = sdf.parse(dateStr);
+
+                    DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), date, Double.valueOf(hourMeterStart),
+                            Double.valueOf(hourMeterEnd), bulkTankPumpedFrom, Double.valueOf(percussionTime));
+                    daily.setDirty(false);
+                    project.addDailyLog(daily);
+                }
+            }
+        }
+        return project;
+    }
+    private Object getValue(JSONObject jsonObject, String name){
+        Object result= null;
+        try{
+            result = jsonObject.getString(name);
+        } catch (Exception ex) {}
+        return result;
+    }
+
 }

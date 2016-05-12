@@ -78,7 +78,13 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
         String id =  process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
         String dailyLogId = process.getStringExtra("dailyLogId");
-        dailyLog = ProjectKeep.getInstance().findDailyLogById(project, dailyLogId);
+        if (dailyLogId == null) {
+            String drillNumber = process.getStringExtra("daily.num");
+            dailyLog = ProjectKeep.getInstance().findDailyLogByNum(project, drillNumber);
+        }
+        else {
+            dailyLog = ProjectKeep.getInstance().findDailyLogById(project, dailyLogId);
+        }
 
         if(dailyLog != null){
             isEdit = true;
@@ -117,7 +123,6 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
                 return true;
 
             default:
-                validator.validate();
                 Intent intent = NavUtils.getParentActivityIntent(this);
                 intent.putExtra("id", project.getId());
                 startActivity(intent);

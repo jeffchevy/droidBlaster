@@ -22,6 +22,7 @@ import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
+import com.drillandblast.project.ProjectSync;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -39,7 +40,6 @@ public class ProjectListActivity extends BaseActivity {
     //I don't like the use of static here, but it will work for now.
     private static final String TAG = "ProjectListActivity";
     private ArrayAdapter arrayAdapter = null;
-    static List<Project> projects = new ArrayList<>();
     private Project project = null;
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -87,9 +87,16 @@ public class ProjectListActivity extends BaseActivity {
         Intent process = getIntent();
         setContentView(R.layout.activity_project_list);
 
-        AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
-        projectListTaskRunner.execute();
-        arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, projects);
+        // check to see if we need to get data
+        if (ProjectKeep.getInstance().size() <= 0) {
+            arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, new ArrayList<Project>());
+            AsyncTaskRunner projectListTaskRunner = new AsyncTaskRunner();
+            projectListTaskRunner.execute();
+        }
+        else{
+            arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, ProjectKeep.getInstance().findAll());
+        }
+
 
         ListView listView = (ListView) findViewById(R.id.project_list_view);
         listView.setAdapter(arrayAdapter);
@@ -99,7 +106,7 @@ public class ProjectListActivity extends BaseActivity {
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-            project = projects.get(position);
+            project = (Project)arrayAdapter.getItem(position);
             Intent editProject = new Intent(ProjectListActivity.this, ProjectActivity.class);
             editProject.putExtra("id", project.getId());
             startActivity(editProject);
@@ -116,7 +123,14 @@ public class ProjectListActivity extends BaseActivity {
             button.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    createNewProject();
+                    if (isConnected()) {
+                        createNewProject();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(),
+                                "No connectivity!", Toast.LENGTH_SHORT).show();
+
+                    }
                     //arrayAdapter.add(new Project("Yellowstone", "Jeff", new Date(), 1));
                 }
             });
@@ -130,32 +144,10 @@ public class ProjectListActivity extends BaseActivity {
         protected String doInBackground(String... params) {
             String data = null;
             if (isConnected()) {
-                try {
-                    //------------------>>
-
-//              HttpGet httpGet = new HttpGet("http://10.0.2.2:1337/api/v1/project");
-                    HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
-
-                    httpGet.setHeader("token", getToken());
-                    Log.d(TAG, "doInBackground: " + httpGet.getURI().toString());
-                    HttpClient httpclient = new DefaultHttpClient();
-
-                    HttpResponse response = httpclient.execute(httpGet);
-
-                    // StatusLine stat = response.getStatusLine();
-                    int status = response.getStatusLine().getStatusCode();
-                    Log.d(TAG, "doInBackground: "+status);
-
-                    if (status == 200) {
-                        HttpEntity entity = response.getEntity();
-                        data = EntityUtils.toString(entity);
-
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                ProjectSync.getInstance().sync();
+            } else {
+                ProjectSync.getInstance().readFromDisk();
             }
-
             return data;
         }
 
@@ -166,25 +158,8 @@ public class ProjectListActivity extends BaseActivity {
          */
         @Override
         protected void onPostExecute(String result) {
-
-            if (isConnected()) {
-                arrayAdapter.clear();
-                List<Project> projects = null;
-                try {
-                    projects = ProjectKeep.getInstance().getAllProjectsfromJson(result);
-                } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(),
-                            e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                arrayAdapter.addAll(projects);
-            }
-            else {
-                // when we are offline we don't need to see if anything new has come in
-                if (ProjectKeep.getInstance().size() <= 0) {
-                    List<Project> projects = ProjectKeep.getInstance().readFiles();
-                    arrayAdapter.addAll(projects);
-                }
-            }
+            arrayAdapter.clear();
+            arrayAdapter.addAll(ProjectKeep.getInstance().findAll());
             Log.d(TAG, "onPostExecute: Finished");
         }
     }

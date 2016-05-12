@@ -45,7 +45,6 @@ public class ProjectActivity extends BaseActivity {
             case R.id.menu_save:
                 // Here we would open up our settings activity
                 saveProject();
-                ProjectSync.getInstance().sync(project);
                 backToProjectList();
                 return true;
             default:
@@ -108,10 +107,12 @@ public class ProjectActivity extends BaseActivity {
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    ProjectKeep.getInstance().saveProjectToFile(project);
-                }else{
-                    ProjectKeep.getInstance().removeFile(project);
+                if (project.getId() != null) {
+                    if (isChecked) {
+                        ProjectKeep.getInstance().saveProjectToFile(project);
+                    } else {
+                        ProjectKeep.getInstance().removeFile(project);
+                    }
                 }
                 ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), isChecked);
             }
@@ -175,6 +176,4 @@ public class ProjectActivity extends BaseActivity {
             return result;
         }
     }
-
-
 }

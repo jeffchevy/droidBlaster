@@ -58,7 +58,8 @@ public class DrillLogActivity extends BaseActivity {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
 
-        setTitle(String.valueOf(drillLog.getName())+" - "+String.valueOf(drillLog.getDrillerName()));
+        setTitle(project.getProjectName());
+//                String.valueOf(drillLog.getName())+" - "+String.valueOf(drillLog.getDrillerName()));
 
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
         //final Project project = ProjectListActivity.projects.get(position);
@@ -71,7 +72,6 @@ public class DrillLogActivity extends BaseActivity {
         {
             drillLog = new DrillLog();
             drillLog.setGridCoordinates( new ArrayList<GridCoordinate>());
-            project.addDrillLog(drillLog);
         }
 
 
@@ -160,6 +160,10 @@ public class DrillLogActivity extends BaseActivity {
         drillLog.setPattern(patternName);
         drillLog.setShotNumber(Integer.valueOf(shotNumberString));
         drillLog.setBitSize(bitSize);
+        if (!isEdit){
+            project.addDrillLog(drillLog);
+        }
+
         AsyncTaskRunner drillLogTaskRunner = new AsyncTaskRunner();
         asyncTask = drillLogTaskRunner.execute();
 

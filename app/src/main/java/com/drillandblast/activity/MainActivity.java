@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.drillandblast.R;
+import com.drillandblast.http.NetworkStateReceiver;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
@@ -45,12 +46,9 @@ public class MainActivity extends BaseActivity {
         mResolver = getContentResolver();
         ContentResolver.addPeriodicSync( mAccount,AUTHORITY,Bundle.EMPTY, 60L);
         */
-        if (isConnected()) {
-            List<Project> projects = ProjectKeep.getInstance().readFiles();
-            for (Project project : projects) {
-                ProjectSync.getInstance().sync(project);
-            }
-        }
+        // so we know if we are connected
+        NetworkStateReceiver.setState(isConnected());
+
         // if we already have a valid login just use that and move on
         Map<String, ?> map = getSharedPreferences("file", Context.MODE_PRIVATE).getAll();
         token = (String)map.get("token");

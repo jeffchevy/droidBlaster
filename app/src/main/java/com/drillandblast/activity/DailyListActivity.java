@@ -44,7 +44,12 @@ public class DailyListActivity extends BaseActivity {
                                     int position, long id) {
                 DailyLog dailyLog = project.getDailyLogs().get(position);
                 Intent editDailyLog = new Intent(DailyListActivity.this, DailyLogActivity.class);
-                editDailyLog.putExtra("dailyLogId", dailyLog.getId());
+                if (dailyLog.getId() == null) {
+                    editDailyLog.putExtra("daily.num", dailyLog.getDrillNum());
+                }
+                else {
+                    editDailyLog.putExtra("dailyLogId", dailyLog.getId());
+                }
                 editDailyLog.putExtra("id", project.getId());
                 startActivity(editDailyLog);
                 finish();
