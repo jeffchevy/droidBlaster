@@ -87,11 +87,11 @@
         android:layout_height="wrap_content"
         android:text="Save"
         android:id="@+id/save_coordinate_button"
-        android:layout_below="@+id/drill_coordinate_date_button"
+        android:layout_below="@+id/drill_coordinate_date_text_field"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/drill_coordinate_date_button"
-        android:layout_alignEnd="@+id/drill_coordinate_date_button" />
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -107,20 +107,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/drill_coordinate_date_text_field"
-        android:layout_alignBottom="@+id/drill_coordinate_date_button"
-        android:layout_below="@+id/comment_text_field"
-        android:layout_toLeftOf="@+id/drill_coordinate_date_button"
         android:width="150dp"
-        android:minWidth="50dp" />
+        android:minWidth="50dp"
+        android:layout_below="@+id/comment_text_field"
+        android:layout_toLeftOf="@+id/imageButton"
+        android:layout_toStartOf="@+id/imageButton" />
 
-    <Button
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Date"
-        android:id="@+id/drill_coordinate_date_button"
+        android:id="@+id/imageButton"
+        android:src="@mipmap/ic_event_black_24dp"
         android:layout_below="@+id/comment_text_field"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_alignRight="@+id/comment_text_field"
+        android:layout_alignEnd="@+id/comment_text_field"
         android:onClick="showDatePickerDialog" />
 
 </RelativeLayout>
