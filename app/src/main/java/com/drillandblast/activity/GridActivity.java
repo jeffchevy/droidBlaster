@@ -17,6 +17,8 @@ import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class GridActivity extends BaseActivity {
@@ -72,7 +74,7 @@ public class GridActivity extends BaseActivity {
                     textView.setBackgroundColor(Color.parseColor("#cccccc"));
                 }
                 else {
-                    final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", "");
+                    final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", "", new Date());
                     textView.setText("     ");
 
                     textView.setOnClickListener(new View.OnClickListener() {
@@ -102,14 +104,35 @@ public class GridActivity extends BaseActivity {
 
         if(drillLog.getGridCoordinates().size()>0)
         {
+            Date date = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            cal.add(Calendar.DATE, -1);
+            Date oneDayOld = cal.getTime();
+
+            cal.setTime(date);
+            cal.add(Calendar.DATE, -5);
+
+            Date fiveDayOld = cal.getTime();
+
             final List<GridCoordinate> gridCoordinates = drillLog.getGridCoordinates();
             for(int k = 0; k<gridCoordinates.size(); k++)
             {
                 TableRow tr = (TableRow) tbl.getChildAt(gridCoordinates.get(k).getRow());
                 TextView tv = (TextView) tr.getChildAt(gridCoordinates.get(k).getColumn());
 
-                tv.setText(String.valueOf(gridCoordinates.get(k).getDepth()));
                 final GridCoordinate gc = gridCoordinates.get(k);
+                if(k>2) {
+                    gc.setDate(fiveDayOld);
+                }
+
+                if(gc.getDate().before(date) && gc.getDate().after(oneDayOld)) {
+                    tv.setBackgroundColor(Color.parseColor("#33c33c"));
+                }
+                else {
+                    tv.setBackgroundColor(Color.parseColor("#ffff66"));
+                }
+                tv.setText(String.valueOf(gridCoordinates.get(k).getDepth()));
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

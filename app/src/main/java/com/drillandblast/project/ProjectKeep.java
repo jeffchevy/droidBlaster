@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -140,7 +141,7 @@ public class ProjectKeep {
                     String z = (String) getValue(holesObject, "z");
                     String comments = (String) getValue(holesObject, "comments");
                     String holeBitSize = (String) getValue(holesObject, "bitSize");
-                    GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize);
+                    GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize, new Date());
                     gridCoordinate.setDirty(false);
                     holes.add(gridCoordinate);
                 }
