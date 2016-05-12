@@ -72,7 +72,6 @@ public class DailyListActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = NavUtils.getParentActivityIntent(this);
         intent.putExtra("id", project.getId());
-        //NavUtils.navigateUpTo(this, intent);
         startActivity(intent);
         return true;
     }

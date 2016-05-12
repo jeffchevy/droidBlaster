@@ -9,19 +9,16 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
-import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
@@ -30,8 +27,6 @@ import com.drillandblast.project.ProjectSync;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Required;
-
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -49,22 +44,22 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
     @Required(order=1)
     EditText drillNumber;
 
-    @Required(order=1)
+    @Required(order=2)
     EditText gallonsFuel;
 
-    @Required(order=1)
+    @Required(order=3)
     EditText meterStart;
 
-    @Required(order=1)
+    @Required(order=4)
     EditText meterEnd;
 
-    @Required(order=1)
+    @Required(order=5)
     EditText bulkTankPumpedFrom;
 
-    @Required(order=1)
+    @Required(order=6)
     EditText percussionTime;
 
-    @Required(order=1)
+    @Required(order=7)
     TextView date;
 
 
@@ -91,7 +86,9 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
         }
         else  {
             dailyLog = new DailyLog();
-            project.addDailyLog(dailyLog);
+            dailyLog.setStartDate(new Date());
+            getAndroidFields();
+            date.setText(format.format(dailyLog.getDate()));
         }
 
     }
@@ -142,14 +139,7 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
     public void setDailyLogData(DailyLog dailyLog){
 
 
-        drillNumber = (EditText) findViewById(R.id.drill_id_text_field);
-
-        gallonsFuel = (EditText) findViewById(R.id.gallons_fuel_text_field);
-        date = (TextView) findViewById(R.id.daily_log_date_text_field);
-        meterStart = (EditText) findViewById(R.id.meter_start_text_field);
-        meterEnd = (EditText) findViewById(R.id.meter_end_text_field);
-        bulkTankPumpedFrom = (EditText) findViewById(R.id.bulk_tank_text_field);
-        percussionTime = (EditText) findViewById(R.id.percussion_time_text_field);
+        getAndroidFields();
 
         String gallons_Fuel =String.valueOf(dailyLog.getGallonsFuel());
 
@@ -162,6 +152,16 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
         percussionTime.setText(dailyLog.getPercussionTime().toString());
 
 
+    }
+
+    private void getAndroidFields() {
+        drillNumber = (EditText) findViewById(R.id.drill_id_text_field);
+        gallonsFuel = (EditText) findViewById(R.id.gallons_fuel_text_field);
+        date = (TextView) findViewById(R.id.daily_log_date_text_field);
+        meterStart = (EditText) findViewById(R.id.meter_start_text_field);
+        meterEnd = (EditText) findViewById(R.id.meter_end_text_field);
+        bulkTankPumpedFrom = (EditText) findViewById(R.id.bulk_tank_text_field);
+        percussionTime = (EditText) findViewById(R.id.percussion_time_text_field);
     }
 
     public String saveDailyLog(){
@@ -178,6 +178,10 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
         dailyLog.setMeterStart(Double.valueOf(meterStart));
         dailyLog.setBulkTankPumpedFrom(bulkTankPumpedFrom);
         dailyLog.setPercussionTime(Double.valueOf(percussionTime));
+        if (!isEdit)
+        {
+            project.addDailyLog(dailyLog);
+        }
 
         AsyncTaskRunner dailyLogSaveRunner = new AsyncTaskRunner();
         asyncTask = dailyLogSaveRunner.execute();

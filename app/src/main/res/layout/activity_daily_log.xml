@@ -79,9 +79,7 @@
         android:layout_alignTop="@+id/imageButton"
         android:layout_alignBottom="@+id/imageButton"
         android:gravity="center_vertical|right"
-        android:layout_toLeftOf="@+id/imageButton"
-        android:layout_toRightOf="@+id/percussion_time_label"
-        android:layout_toEndOf="@+id/percussion_time_label" />
+        android:layout_toLeftOf="@+id/imageButton" />
 
     <TextView
         android:layout_width="wrap_content"

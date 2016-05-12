@@ -111,8 +111,12 @@ public class DailyLog extends Entity {
     }
 
     public String toString() {
-        DateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
-        return formatter.format(this.getDate())+"- Drill#: "+this.drillNum;
+        String result = "";
+        if (this.getDate() != null) {
+            DateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+            result = formatter.format(this.getDate())+"- Drill#: "+this.drillNum;
+        }
+        return result;
     }
 
 
