@@ -87,10 +87,40 @@
         android:layout_height="wrap_content"
         android:text="Save"
         android:id="@+id/save_coordinate_button"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/drill_coordinate_date_button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/comment_text_field"
-        android:layout_alignEnd="@+id/comment_text_field" />
+        android:layout_alignRight="@+id/drill_coordinate_date_button"
+        android:layout_alignEnd="@+id/drill_coordinate_date_button" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Date"
+        android:id="@+id/drill_coordinate_date_label"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/comment_text_field" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/drill_coordinate_date_text_field"
+        android:layout_alignBottom="@+id/drill_coordinate_date_button"
+        android:layout_below="@+id/comment_text_field"
+        android:layout_toLeftOf="@+id/drill_coordinate_date_button"
+        android:width="150dp"
+        android:minWidth="50dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:id="@+id/drill_coordinate_date_button"
+        android:layout_below="@+id/comment_text_field"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="showDatePickerDialog" />
 
 </RelativeLayout>

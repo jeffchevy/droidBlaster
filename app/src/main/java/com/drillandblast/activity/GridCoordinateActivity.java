@@ -1,12 +1,18 @@
 package com.drillandblast.activity;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.drillandblast.R;
@@ -20,6 +26,9 @@ import com.drillandblast.project.ProjectSync;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class GridCoordinateActivity extends BaseActivity {
@@ -28,6 +37,7 @@ public class GridCoordinateActivity extends BaseActivity {
     public Project project = null;
     public GridCoordinate gridCoordinate = null;
     private AsyncTask<String, String, String> asyncTask;
+    SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +66,18 @@ public class GridCoordinateActivity extends BaseActivity {
 
         setTitle("Drill Hole Row "+String.valueOf(gridCoordinate.getRow())+" Column "+String.valueOf(gridCoordinate.getColumn()));
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
-        depth.setText(String.valueOf(gridCoordinate.getDepth()));
+        if(gridCoordinate.getDepth() != 0) {
+            depth.setText(String.valueOf(gridCoordinate.getDepth()));
+        }
+        else {
+            depth.setText("");
+        }
         TextView bitSize = (TextView) findViewById(R.id.bit_size_text_field);
         bitSize.setText(String.valueOf(gridCoordinate.getBitSize()));
         TextView comment = (TextView) findViewById(R.id.comment_text_field);
         comment.setText(gridCoordinate.getComment().toString());
+        TextView date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
+        date.setText(format.format(gridCoordinate.getDate()));
 
 
         Button saveButton = (Button) findViewById(R.id.save_coordinate_button);
@@ -80,6 +97,7 @@ public class GridCoordinateActivity extends BaseActivity {
         TextView depth = (TextView) findViewById(R.id.depth_text_field);
         TextView bitSize = (TextView) findViewById(R.id.bit_size_text_field);
         TextView comment = (TextView) findViewById(R.id.comment_text_field);
+        TextView date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
 
         gridCoordinate.setDepth(Double.parseDouble(depth.getText().toString()));
         gridCoordinate.setBitSize(bitSize.getText().toString());
@@ -123,6 +141,47 @@ public class GridCoordinateActivity extends BaseActivity {
         startActivity(intent);
         return true;
     }
+
+    public void showDatePickerDialog(View v) {
+        DialogFragment newFragment = new DatePickerFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        newFragment.show(fm, "datePicker");
+    }
+
+    public void setDate()
+    {
+        TextView date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
+        date.setText(format.format(gridCoordinate.getDate()));
+    }
+
+    @SuppressLint("ValidFragment")
+    public class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar cal = Calendar.getInstance();
+
+            if (gridCoordinate != null){
+                if (gridCoordinate.getDate() != null) {
+                    cal.setTime(gridCoordinate.getDate());
+                }
+            }
+            int year = cal.get(Calendar.YEAR);
+            int month = cal.get(Calendar.MONTH);
+            int day = cal.get(Calendar.DAY_OF_MONTH);
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            final Calendar c = Calendar.getInstance();
+            c.set(year, month, day);
+            gridCoordinate.setDate(new Date(c.getTimeInMillis()));// Do something with the date chosen by the user
+            setDate();
+        }
+    }
+
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {

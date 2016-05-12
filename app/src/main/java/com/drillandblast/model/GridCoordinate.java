@@ -2,6 +2,7 @@ package com.drillandblast.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class GridCoordinate extends Entity {
 
@@ -11,18 +12,20 @@ public class GridCoordinate extends Entity {
     private double depth;
     private String comment;
     private String bitSize;
+    private Date date;
 
     public GridCoordinate() {
         super();
     }
 
-    public GridCoordinate(String id, int row, int column, double depth, String comment, String bitSize) {
+    public GridCoordinate(String id, int row, int column, double depth, String comment, String bitSize, Date date) {
         this.id = id;
         this.row = row;
         this.column = column;
         this.depth = depth;
         this.comment = comment;
         this.bitSize = bitSize;
+        this.date = date;
     }
 
     public String getId() {
@@ -72,6 +75,10 @@ public class GridCoordinate extends Entity {
     public void setBitSize(String bitSize) {
         this.bitSize = bitSize;
     }
+
+    public Date getDate() { return date; }
+
+    public void setDate(Date date){this.date = date;}
 
     @Override
     public String toString() {

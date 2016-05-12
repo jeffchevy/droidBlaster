@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
@@ -29,6 +30,7 @@ import com.drillandblast.project.ProjectSync;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +41,7 @@ public class DrillLogActivity extends BaseActivity {
     public Project project = null;
     public DrillLog drillLog = null;
     private AsyncTask<String, String, String> asyncTask;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +96,9 @@ public class DrillLogActivity extends BaseActivity {
             });
         }
     }
+
+
+
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate our menu from the resources by using the menu inflater.
         getMenuInflater().inflate(R.menu.save, menu);
@@ -169,6 +175,9 @@ public class DrillLogActivity extends BaseActivity {
 
         return asyncTask.getStatus().toString();
     }
+
+
+
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {

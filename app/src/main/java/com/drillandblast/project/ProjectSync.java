@@ -284,7 +284,7 @@ public class ProjectSync {
                         String z = (String) getValue(holesObject, "z");
                         String comments = (String) getValue(holesObject, "comments");
                         String holeBitSize = (String) getValue(holesObject, "bitSize");
-                        GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize);
+                        GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize, new Date());
                         gridCoordinate.setDirty(false);
                         holes.add(gridCoordinate);
                     }
