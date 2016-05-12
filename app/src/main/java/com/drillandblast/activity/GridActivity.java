@@ -17,6 +17,7 @@ import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 public class GridActivity extends BaseActivity {
     public Project project = null;
     public DrillLog drillLog = null;
+    SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
