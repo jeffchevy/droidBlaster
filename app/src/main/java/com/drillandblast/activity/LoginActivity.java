@@ -19,6 +19,7 @@ import com.drillandblast.project.ProjectKeep;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.Password;
 import com.mobsandgeeks.saripaar.annotation.Required;
 import com.mobsandgeeks.saripaar.annotation.TextRule;
 
@@ -28,6 +29,7 @@ public class LoginActivity extends AppCompatActivity implements Validator.Valida
 
     Validator validator;
 
+    @Email(order = 2, message = "Please Check and Enter a valid Email Address")
     @Required(order = 1)
     EditText userName;
 
@@ -70,46 +72,7 @@ public class LoginActivity extends AppCompatActivity implements Validator.Valida
             @Override
             public void onClick(View v) {
                 validator.validate();
-                String result = null;
-                LoginTaskRunner runner = new LoginTaskRunner();
-                String userName = LoginActivity.this.userName.getText().toString();
-                String password = LoginActivity.this.password.getText().toString();
-                asyncTask = runner.execute(userName, password);
-                try {
-                    String asyncResultText = asyncTask.get();
-                    try {
-                        JSONObject json = new JSONObject(asyncResultText);
-                        Boolean successValue = (Boolean)json.get("success");
-                        token = (String)json.get("token");
-                        if (!successValue)
-                        {
-                            result = "Login failed!";
-                        }
-                        else
-                        {
-                            result = "Login successful";
-                        }
 
-                        // save off for future use
-                        ProjectKeep.getInstance().setToken(token);
-
-                        // MY_PREFS_NAME - a static String variable like:
-                        //public static final String MY_PREFS_NAME = "MyPrefsFile";
-                        SharedPreferences.Editor editor = getSharedPreferences("file", Context.MODE_PRIVATE).edit();
-                        editor.putString("token", token);
-                        editor.apply();
-                        if (successValue)
-                        {
-                            nextActivity();
-                        }
-
-                    } catch(Exception ex){
-                        result = asyncResultText;
-                    }
-                } catch (Exception e1) {
-                    result = e1.getMessage();
-                }
-                finalResult.setText(result);
             }
         });
 
@@ -121,6 +84,47 @@ public class LoginActivity extends AppCompatActivity implements Validator.Valida
     @Override
     public void onValidationSucceeded() {
         Toast.makeText(this, "Validation Succeeded", Toast.LENGTH_SHORT).show();
+        String result = null;
+        LoginTaskRunner runner = new LoginTaskRunner();
+        String userName = LoginActivity.this.userName.getText().toString();
+        String password = LoginActivity.this.password.getText().toString();
+        asyncTask = runner.execute(userName, password);
+        try {
+            String asyncResultText = asyncTask.get();
+            try {
+                JSONObject json = new JSONObject(asyncResultText);
+                Boolean successValue = (Boolean)json.get("success");
+                token = (String)json.get("token");
+                if (!successValue)
+                {
+                    result = "Login failed!";
+                }
+                else
+                {
+                    result = "Login successful";
+                }
+
+                // save off for future use
+                ProjectKeep.getInstance().setToken(token);
+
+                // MY_PREFS_NAME - a static String variable like:
+                //public static final String MY_PREFS_NAME = "MyPrefsFile";
+                SharedPreferences.Editor editor = getSharedPreferences("file", Context.MODE_PRIVATE).edit();
+                editor.putString("token", token);
+                editor.apply();
+                if (successValue)
+                {
+                    nextActivity();
+                }
+
+            } catch(Exception ex){
+                result = asyncResultText;
+            }
+        } catch (Exception e1) {
+            result = e1.getMessage();
+        }
+        finalResult.setText(result);
+
     }
 
     public void onValidationFailed(View view, Rule<?> rule) {

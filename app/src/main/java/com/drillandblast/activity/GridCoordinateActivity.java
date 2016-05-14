@@ -3,7 +3,9 @@ package com.drillandblast.activity;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -13,9 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.drillandblast.R;
+import com.drillandblast.http.LoginTaskRunner;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
@@ -23,6 +28,8 @@ import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.Validator;
 
 import org.json.JSONObject;
 
@@ -32,7 +39,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class GridCoordinateActivity extends BaseActivity {
+public class GridCoordinateActivity extends BaseActivity implements Validator.ValidationListener{
+    Validator validator;
+
     private boolean isEdit = false;
     public DrillLog drillLog = null;
     public Project project = null;
@@ -93,6 +102,8 @@ public class GridCoordinateActivity extends BaseActivity {
                 }
             });
         }
+        validator = new Validator(this);
+        validator.setValidationListener(this);
     }
 
     public String saveDrillCoordinateData(DrillLog drillLog, GridCoordinate gridCoordinate)
@@ -218,6 +229,25 @@ public class GridCoordinateActivity extends BaseActivity {
             finish();
         }
 
+    }
+    //Validation
+    //To perform the operation, when all input field satisfy the validation rule.
+    @Override
+    public void onValidationSucceeded() {
+        Toast.makeText(this, "Validation Succeeded", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void onValidationFailed(View view, Rule<?> rule) {
+
+        final String failureMessage = rule.getFailureMessage();
+        if (view instanceof EditText) {
+            EditText failed = (EditText) view;
+            failed.requestFocus();
+            failed.setError(failureMessage);
+        } else {
+            Toast.makeText(getApplicationContext(), failureMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

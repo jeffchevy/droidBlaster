@@ -55,11 +55,13 @@ public class MainActivity extends BaseActivity {
         if (token != null)
         {
             ProjectKeep.getInstance().setToken(token);
-            nextActivity(ProjectListActivity.class);
+            //nextActivity(ProjectListActivity.class);
+            nextActivity(LoginActivity.class);
         }
         else
         {
             nextActivity(LoginActivity.class);
+
         }
 
     }
