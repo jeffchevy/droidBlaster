@@ -3,24 +3,22 @@ package com.drillandblast.activity;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
-import com.drillandblast.http.LoginTaskRunner;
 import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
@@ -28,8 +26,6 @@ import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
-import com.mobsandgeeks.saripaar.Rule;
-import com.mobsandgeeks.saripaar.Validator;
 
 import org.json.JSONObject;
 
@@ -39,15 +35,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class GridCoordinateActivity extends BaseActivity implements Validator.ValidationListener{
-    Validator validator;
-
+public class GridCoordinateActivity extends BaseActivity {
     private boolean isEdit = false;
     public DrillLog drillLog = null;
     public Project project = null;
     public GridCoordinate gridCoordinate = null;
     private AsyncTask<String, String, String> asyncTask;
-    SimpleDateFormat format = new SimpleDateFormat("MM dd yyyy");
+    SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
 
 
 
@@ -90,20 +84,6 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
         comment.setText(gridCoordinate.getComment().toString());
         TextView date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
         date.setText(format.format(gridCoordinate.getDate()));
-
-
-        Button saveButton = (Button) findViewById(R.id.save_coordinate_button);
-
-        if(saveButton !=null) {
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    saveDrillCoordinateData(drillLog,gridCoordinate);
-                }
-            });
-        }
-        validator = new Validator(this);
-        validator.setValidationListener(this);
     }
 
     public String saveDrillCoordinateData(DrillLog drillLog, GridCoordinate gridCoordinate)
@@ -140,20 +120,36 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
         return asyncTask.getStatus().toString();
 
     }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate our menu from the resources by using the menu inflater.
+        getMenuInflater().inflate(R.menu.save, menu);
+
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = NavUtils.getParentActivityIntent(this);
-        intent.putExtra("id", project.getId());
-        if (drillLog.getId() == null) {
-            intent.putExtra("drill.name", drillLog.getName());
+        switch (item.getItemId()) {
+            case R.id.menu_save:
+                // Here we might start a background refresh task
+                Log.d("app", "Save clicked");
+                Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+                saveDrillCoordinateData(drillLog,gridCoordinate);
+                return true;
+
+            default:
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                intent.putExtra("id", project.getId());
+                if (drillLog.getId() == null) {
+                    intent.putExtra("drill.name", drillLog.getName());
+                }
+                else {
+                    intent.putExtra("drillId", drillLog.getId());
+                }
+                //NavUtils.navigateUpTo(this, intent);
+                startActivity(intent);
+                return true;
         }
-        else {
-            intent.putExtra("drillId", drillLog.getId());
-        }
-        //NavUtils.navigateUpTo(this, intent);
-        startActivity(intent);
-        return true;
     }
 
     public void showDatePickerDialog(View v) {
@@ -229,25 +225,6 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
             finish();
         }
 
-    }
-    //Validation
-    //To perform the operation, when all input field satisfy the validation rule.
-    @Override
-    public void onValidationSucceeded() {
-        Toast.makeText(this, "Validation Succeeded", Toast.LENGTH_SHORT).show();
-
-    }
-
-    public void onValidationFailed(View view, Rule<?> rule) {
-
-        final String failureMessage = rule.getFailureMessage();
-        if (view instanceof EditText) {
-            EditText failed = (EditText) view;
-            failed.requestFocus();
-            failed.setError(failureMessage);
-        } else {
-            Toast.makeText(getApplicationContext(), failureMessage, Toast.LENGTH_SHORT).show();
-        }
     }
 
 }

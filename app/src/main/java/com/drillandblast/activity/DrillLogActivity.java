@@ -74,6 +74,9 @@ public class DrillLogActivity extends BaseActivity {
         else
         {
             drillLog = new DrillLog();
+            drillLog.setDrillerName(ProjectKeep.getInstance().getUserName());
+            EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
+            driller_name.setText(drillLog.getDrillerName());
             drillLog.setGridCoordinates( new ArrayList<GridCoordinate>());
         }
 

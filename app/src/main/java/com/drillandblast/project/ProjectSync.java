@@ -31,9 +31,13 @@ public class ProjectSync {
     AsyncTask<String, String, String> asyncTask;
     public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
     private Object updateMutex;
+    SimpleDateFormat serverDateFormat = null;
 
     private ProjectSync(){
+
         updateMutex = new Object();
+        serverDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
     }
 
     public static synchronized ProjectSync getInstance(){
@@ -126,7 +130,7 @@ public class ProjectSync {
     }
 
 
-    public static String updateProjectHeader(boolean isEdit, Project project) throws Exception {
+    public String updateProjectHeader(boolean isEdit, Project project) throws Exception {
         String result;JSONObject json = new JSONObject();
         json.put("projectName", project.getProjectName());
         json.put("contractorName", project.getContractorName());
@@ -135,11 +139,17 @@ public class ProjectSync {
             result = SimpleHttpClient.executeHttpPut("project/" + project.getId(), json, ProjectKeep.getInstance().getToken());
         } else {
             result = SimpleHttpClient.executeHttpPost("project", json, ProjectKeep.getInstance().getToken());
+            JSONObject jsonobject = new JSONObject(result);
+            String projectJson = jsonobject.getString("project");
+            JSONObject proj = new JSONObject(projectJson);
+            String id = proj.getString("_id");
+            project.setId(id);
+            Log.d(TAG, proj.toString());
         }
 
         return result;
     }
-    public static String updateDailyLog(boolean isEdit, Project project, DailyLog dailyLog) throws Exception {
+    public String updateDailyLog(boolean isEdit, Project project, DailyLog dailyLog) throws Exception {
         String result;
         JSONObject json = new JSONObject();
         json.put("drillNumber", dailyLog.getDrillNum());
@@ -147,8 +157,7 @@ public class ProjectSync {
         json.put("bulkTankPumpedFrom", dailyLog.getBulkTankPumpedFrom());
         json.put("hourMeterStart", dailyLog.getMeterStart());
         json.put("hourMeterEnd", dailyLog.getMeterEnd());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        json.put("date", sdf.format(dailyLog.getDate()));
+        json.put("date", serverDateFormat.format(dailyLog.getDate()));
         json.put("percussionTime", dailyLog.getPercussionTime());
 
         if (isEdit)
@@ -164,7 +173,7 @@ public class ProjectSync {
         }
         return result;
     }
-    public static String updateDrillLog(boolean isEdit, Project project, DrillLog drillLog) throws Exception {
+    public String updateDrillLog(boolean isEdit, Project project, DrillLog drillLog) throws Exception {
         String result = null;
         JSONObject json = new JSONObject();
         json.put("name", drillLog.getName());
@@ -184,7 +193,7 @@ public class ProjectSync {
 
         return result;
     }
-    public static String updateDrillCoordinate(boolean isEdit, Project project, DrillLog drillLog, GridCoordinate gridCoordinate) throws Exception {
+    public String updateDrillCoordinate(boolean isEdit, Project project, DrillLog drillLog, GridCoordinate gridCoordinate) throws Exception {
         String result = null;
 
         JSONObject json = new JSONObject();
@@ -192,6 +201,7 @@ public class ProjectSync {
         json.put("x", gridCoordinate.getRow());
         json.put("y", gridCoordinate.getColumn());
         json.put("z", gridCoordinate.getDepth());
+        json.put("date", serverDateFormat.format(gridCoordinate.getDate()));
         json.put("comments", gridCoordinate.getComment());
         json.put("bitSize", gridCoordinate.getBitSize());
 

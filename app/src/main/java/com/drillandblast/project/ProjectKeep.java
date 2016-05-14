@@ -1,23 +1,28 @@
 package com.drillandblast.project;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.Project;
+import com.google.gson.Gson;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 public class ProjectKeep {
     private static final String TAG = "ProjectKeep";
@@ -27,6 +32,7 @@ public class ProjectKeep {
     Map<String, Project> projectMap = null;
     Context context = null;
     String token = null;
+    String userName = null;
 
     private ProjectKeep(){
         this.projects = new ArrayList<>();
@@ -104,8 +110,10 @@ public class ProjectKeep {
         }
     }
     public void addProject(Project project) {
-        projects.add(project);
-        projectMap.put(project.getId(), project);
+        if (project.getId() != null) {
+            projects.add(project);
+            projectMap.put(project.getId(), project);
+        }
     }
     public Context getContext() {
         return context;
@@ -123,6 +131,13 @@ public class ProjectKeep {
         this.token = token;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    public String getUserName() {
+        return userName;
+    }
+
     public void saveProjectToFile(Project project){
         if (project.getId() == null) {
             return;
@@ -130,10 +145,12 @@ public class ProjectKeep {
         ObjectOutputStream os = null;
         FileOutputStream fos = null;
         try {
+            final Gson gson = new Gson();
+            String json = gson.toJson(project);
+
             Log.d(TAG, "Start writing file:"+project.getId()+"-project");
             fos = context.openFileOutput(project.getId()+"-project", Context.MODE_PRIVATE);
-            os = new ObjectOutputStream(fos);
-            os.writeObject(project);
+            fos.write(json.getBytes());
             Log.d(TAG, "End writing file:"+project.getId()+"-project");
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,10 +171,15 @@ public class ProjectKeep {
         FileOutputStream fos = null;
         try {
             FileInputStream fis = context.openFileInput(filename);
-            ObjectInputStream is = new ObjectInputStream(fis);
-            project = (Project) is.readObject();
-            is.close();
-
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            Gson gson = new Gson();
+            project = gson.fromJson(sb.toString(), Project.class);
         } catch (Exception e) {
             context.deleteFile(filename);
             e.printStackTrace();

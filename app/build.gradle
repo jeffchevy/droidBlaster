@@ -31,5 +31,5 @@ dependencies {
     compile 'com.android.support:design:23.2.1'
     compile 'com.android.support:support-v4:23.2.1'
     compile 'com.mobsandgeeks:android-saripaar:1.0.3'
-
+    compile 'com.google.code.gson:gson:2.2.4'
 }

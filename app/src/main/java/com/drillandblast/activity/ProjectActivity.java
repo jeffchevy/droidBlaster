@@ -45,7 +45,6 @@ public class ProjectActivity extends BaseActivity {
             case R.id.menu_save:
                 // Here we would open up our settings activity
                 saveProject();
-                backToProjectList();
                 return true;
             default:
                 Intent intent = NavUtils.getParentActivityIntent(this);
@@ -162,7 +161,10 @@ public class ProjectActivity extends BaseActivity {
 
             if (isConnected()) {
                 try {
-                    result = ProjectSync.updateProjectHeader(isEdit, project);
+                    result = ProjectSync.getInstance().updateProjectHeader(isEdit, project);
+                    if (!isEdit) {
+                        ProjectKeep.getInstance().addProject(project);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -175,5 +177,10 @@ public class ProjectActivity extends BaseActivity {
             }
             return result;
         }
+        @Override
+        protected void onPostExecute(String result) {
+            backToProjectList();
+        }
+
     }
 }
