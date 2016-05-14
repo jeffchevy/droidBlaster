@@ -9,11 +9,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.drillandblast.R;
 import com.drillandblast.http.SimpleHttpClient;
@@ -38,7 +41,7 @@ public class GridCoordinateActivity extends BaseActivity {
     public Project project = null;
     public GridCoordinate gridCoordinate = null;
     private AsyncTask<String, String, String> asyncTask;
-    SimpleDateFormat format = new SimpleDateFormat("MM dd yyyy");
+    SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
 
 
 
@@ -81,18 +84,6 @@ public class GridCoordinateActivity extends BaseActivity {
         comment.setText(gridCoordinate.getComment().toString());
         TextView date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
         date.setText(format.format(gridCoordinate.getDate()));
-
-
-        Button saveButton = (Button) findViewById(R.id.save_coordinate_button);
-
-        if(saveButton !=null) {
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    saveDrillCoordinateData(drillLog,gridCoordinate);
-                }
-            });
-        }
     }
 
     public String saveDrillCoordinateData(DrillLog drillLog, GridCoordinate gridCoordinate)
@@ -129,20 +120,36 @@ public class GridCoordinateActivity extends BaseActivity {
         return asyncTask.getStatus().toString();
 
     }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate our menu from the resources by using the menu inflater.
+        getMenuInflater().inflate(R.menu.save, menu);
+
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = NavUtils.getParentActivityIntent(this);
-        intent.putExtra("id", project.getId());
-        if (drillLog.getId() == null) {
-            intent.putExtra("drill.name", drillLog.getName());
+        switch (item.getItemId()) {
+            case R.id.menu_save:
+                // Here we might start a background refresh task
+                Log.d("app", "Save clicked");
+                Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+                saveDrillCoordinateData(drillLog,gridCoordinate);
+                return true;
+
+            default:
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                intent.putExtra("id", project.getId());
+                if (drillLog.getId() == null) {
+                    intent.putExtra("drill.name", drillLog.getName());
+                }
+                else {
+                    intent.putExtra("drillId", drillLog.getId());
+                }
+                //NavUtils.navigateUpTo(this, intent);
+                startActivity(intent);
+                return true;
         }
-        else {
-            intent.putExtra("drillId", drillLog.getId());
-        }
-        //NavUtils.navigateUpTo(this, intent);
-        startActivity(intent);
-        return true;
     }
 
     public void showDatePickerDialog(View v) {

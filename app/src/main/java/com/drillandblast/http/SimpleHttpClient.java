@@ -103,9 +103,8 @@ public class SimpleHttpClient {
     public static String executeHttpPost(String url, JSONObject json, String token) throws Exception {
         BufferedReader in = null;
         try {
-            Log.d(TAG, "executeHttpPost");
+            Log.d(TAG, "executeHttpPost: url="+url+"  [data="+json+"]");
             HttpClient client = getHttpClient();
-            Log.d(TAG, "executeHttpPost: " + client);
             HttpPost request = new HttpPost(baseUrl+url);
             request.addHeader("Content-Type", "application/json");
             if (token != null) {
@@ -142,9 +141,8 @@ public class SimpleHttpClient {
     public static String executeHttpPut(String url, JSONObject json, String token) throws Exception {
         BufferedReader in = null;
         try {
-            Log.d(TAG, "executeHttpPost");
+            Log.d(TAG, "executeHttpPut: url="+url+"  [data="+json+"]");
             HttpClient client = getHttpClient();
-            Log.d(TAG, "executeHttpPost: " + client);
             HttpPut request = new HttpPut(baseUrl+url);
             request.addHeader("Content-Type", "application/json");
             request.addHeader("x-access-token", token);
@@ -187,6 +185,7 @@ public class SimpleHttpClient {
     public static String executeHttpGet(String url) throws Exception {
         BufferedReader in = null;
         try {
+            Log.d(TAG, "executeHttpGet: url="+url);
             HttpClient client = getHttpClient();
             HttpGet request = new HttpGet();
             request.setURI(new URI(baseUrl+url));

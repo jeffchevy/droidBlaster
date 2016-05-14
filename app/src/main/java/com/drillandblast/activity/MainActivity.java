@@ -34,6 +34,7 @@ public class MainActivity extends BaseActivity {
     // A content resolver for accessing the provider
     ContentResolver mResolver;
     String token = null;
+    String userName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +53,11 @@ public class MainActivity extends BaseActivity {
         // if we already have a valid login just use that and move on
         Map<String, ?> map = getSharedPreferences("file", Context.MODE_PRIVATE).getAll();
         token = (String)map.get("token");
+        userName = (String)map.get("username");
         if (token != null)
         {
             ProjectKeep.getInstance().setToken(token);
+            ProjectKeep.getInstance().setUserName(userName);
             nextActivity(ProjectListActivity.class);
         }
         else
