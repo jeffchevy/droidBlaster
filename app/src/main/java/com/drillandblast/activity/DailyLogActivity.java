@@ -26,6 +26,7 @@ import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NumberRule;
 import com.mobsandgeeks.saripaar.annotation.Required;
 
 import java.text.SimpleDateFormat;
@@ -42,6 +43,7 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
     SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
 
     @Required(order=1)
+    @NumberRule(order = 1, message = "Enter Phone Number in Numeric",type = NumberRule.NumberType.FLOAT)
     EditText drillNumber;
 
     @Required(order=2)
@@ -50,6 +52,7 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
     @Required(order=3)
     EditText meterStart;
 
+    @NumberRule(order = 1, message = "Enter Phone Number in Numeric",type = NumberRule.NumberType.LONG)
     @Required(order=4)
     EditText meterEnd;
 
