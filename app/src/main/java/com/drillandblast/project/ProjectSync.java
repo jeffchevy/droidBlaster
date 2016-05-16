@@ -294,7 +294,13 @@ public class ProjectSync {
                         String z = (String) getValue(holesObject, "z");
                         String comments = (String) getValue(holesObject, "comments");
                         String holeBitSize = (String) getValue(holesObject, "bitSize");
-                        GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize, new Date());
+                        String dateStr = (String) getValue(holesObject, "date");
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                        sdf.setTimeZone(UTC);
+                        Date date = sdf.parse(dateStr);
+
+                        GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize, date);
                         gridCoordinate.setDirty(false);
                         holes.add(gridCoordinate);
                     }
