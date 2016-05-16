@@ -41,6 +41,7 @@ public class ProjectListActivity extends BaseActivity {
     private static final String TAG = "ProjectListActivity";
     private ArrayAdapter arrayAdapter = null;
     private Project project = null;
+    ListView listView = null;
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate our menu from the resources by using the menu inflater.
@@ -87,6 +88,8 @@ public class ProjectListActivity extends BaseActivity {
         Intent process = getIntent();
         setContentView(R.layout.activity_project_list);
 
+        listView = (ListView) findViewById(R.id.project_list_view);
+        listView.setTextFilterEnabled(true);
         // check to see if we need to get data
         if (ProjectKeep.getInstance().size() <= 0) {
             arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, new ArrayList<Project>());
@@ -95,12 +98,10 @@ public class ProjectListActivity extends BaseActivity {
         }
         else{
             arrayAdapter = new ArrayAdapter<Project>(this, R.layout.simple_row, ProjectKeep.getInstance().findAll());
+            listView.setAdapter(arrayAdapter);
         }
 
 
-        ListView listView = (ListView) findViewById(R.id.project_list_view);
-        listView.setAdapter(arrayAdapter);
-        listView.setTextFilterEnabled(true);
 
         //when we click on an item in the list, open to view/edit it
         listView.setOnItemClickListener(new OnItemClickListener() {
@@ -160,6 +161,7 @@ public class ProjectListActivity extends BaseActivity {
         protected void onPostExecute(String result) {
             arrayAdapter.clear();
             arrayAdapter.addAll(ProjectKeep.getInstance().findAll());
+            listView.setAdapter(arrayAdapter);
             Log.d(TAG, "onPostExecute: Finished");
         }
     }

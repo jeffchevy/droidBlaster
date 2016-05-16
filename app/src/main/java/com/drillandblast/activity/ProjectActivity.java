@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.MenuItemCompat;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,9 +19,7 @@ import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.json.JSONObject;
 
 public class ProjectActivity extends BaseActivity {
     private static final String TAG = "ProjectActivity";
@@ -165,7 +161,10 @@ public class ProjectActivity extends BaseActivity {
                     if (!isEdit) {
                         ProjectKeep.getInstance().addProject(project);
                     }
+                    JSONObject jsonobject = new JSONObject(result);
+                    result = jsonobject.getString("message");
                 } catch (Exception e) {
+                    result = e.getMessage();
                     e.printStackTrace();
                 }
             }
@@ -179,6 +178,7 @@ public class ProjectActivity extends BaseActivity {
         }
         @Override
         protected void onPostExecute(String result) {
+            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
             backToProjectList();
         }
 
