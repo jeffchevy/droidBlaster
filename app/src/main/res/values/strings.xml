@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Drill and Blast</string>
+    <string name="app_name">3-Rivers Drill/Blast</string>
     <string name="new_project_button">New Project</string>
     <string name="project_name_label">Project Name</string>
     <string name="contractor_name_label">Contractor Name</string>

@@ -27,41 +27,41 @@ public class GridActivity extends BaseActivity {
     public Project project = null;
     public DrillLog drillLog = null;
     SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
-    HashMap hm = new HashMap();
+    HashMap dayColor = new HashMap();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        hm.put(1, "#33cc33");
-        hm.put(2, "#ff0000");
-        hm.put(3, "#0066ff");
-        hm.put(4, "#ff9900");
-        hm.put(5, "#ffff00");
-        hm.put(6, "#cc33ff");
-        hm.put(7, "#9966ff");
-        hm.put(8, "#33cc33");
-        hm.put(9, "#ff0000");
-        hm.put(10, "#0066ff");
-        hm.put(11, "#ff9900");
-        hm.put(12, "#ffff00");
-        hm.put(13, "#cc33ff");
-        hm.put(14, "#9966ff");
-        hm.put(15, "#33cc33");
-        hm.put(16, "#ff0000");
-        hm.put(17, "#0066ff");
-        hm.put(18, "#ff9900");
-        hm.put(19, "#ffff00");
-        hm.put(20, "#cc33ff");
-        hm.put(21, "#9966ff");
-        hm.put(22, "#33cc33");
-        hm.put(23, "#ff0000");
-        hm.put(24, "#0066ff");
-        hm.put(25, "#ff9900");
-        hm.put(26, "#ffff00");
-        hm.put(27, "#cc33ff");
-        hm.put(28, "#9966ff");
-        hm.put(29, "#ff9900");
-        hm.put(30, "#ffff00");
-        hm.put(31, "#cc33ff");
+        dayColor.put(1, "#33cc33");
+        dayColor.put(2, "#ff0000");
+        dayColor.put(3, "#0066ff");
+        dayColor.put(4, "#ff9900");
+        dayColor.put(5, "#ffff00");
+        dayColor.put(6, "#cc33ff");
+        dayColor.put(7, "#9966ff");
+        dayColor.put(8, "#33cc33");
+        dayColor.put(9, "#ff0000");
+        dayColor.put(10, "#0066ff");
+        dayColor.put(11, "#ff9900");
+        dayColor.put(12, "#ffff00");
+        dayColor.put(13, "#cc33ff");
+        dayColor.put(14, "#9966ff");
+        dayColor.put(15, "#33cc33");
+        dayColor.put(16, "#ff0000");
+        dayColor.put(17, "#0066ff");
+        dayColor.put(18, "#ff9900");
+        dayColor.put(19, "#ffff00");
+        dayColor.put(20, "#cc33ff");
+        dayColor.put(21, "#9966ff");
+        dayColor.put(22, "#33cc33");
+        dayColor.put(23, "#ff0000");
+        dayColor.put(24, "#0066ff");
+        dayColor.put(25, "#ff9900");
+        dayColor.put(26, "#ffff00");
+        dayColor.put(27, "#cc33ff");
+        dayColor.put(28, "#9966ff");
+        dayColor.put(29, "#ff9900");
+        dayColor.put(30, "#ffff00");
+        dayColor.put(31, "#cc33ff");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
@@ -156,8 +156,8 @@ public class GridActivity extends BaseActivity {
                 int month = cal.get(Calendar.MONTH);
                 int day = cal.get(Calendar.DAY_OF_MONTH);
 
-                if(hm.containsKey(day)) {
-                    tv.setBackgroundColor(Color.parseColor(hm.get(day).toString()));
+                if(dayColor.containsKey(day)) {
+                    tv.setBackgroundColor(Color.parseColor(dayColor.get(day).toString()));
                 }
 
                 tv.setText(String.valueOf(gridCoordinates.get(k).getDepth()));
