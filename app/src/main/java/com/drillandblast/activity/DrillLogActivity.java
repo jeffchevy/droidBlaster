@@ -1,52 +1,61 @@
 package com.drillandblast.activity;
 
-import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
-import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Required;
 
-import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
-public class DrillLogActivity extends BaseActivity {
+public class DrillLogActivity extends BaseActivity implements Validator.ValidationListener {
     private boolean isEdit = false;
     public String token = null;
     public Project project = null;
     public DrillLog drillLog = null;
     private AsyncTask<String, String, String> asyncTask;
+    private Validator validator = null;
+    private Class<?> next = null;
 
+    @Required(order=1)
+    EditText log_name = null;
+
+    @Required(order=2)
+    EditText driller_name = null;
+
+    @Required(order=3)
+    EditText pattern_name = null;
+
+    @Required(order=4)
+    EditText shot_number = null;
+
+    @Required(order=5)
+    EditText bit_size = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drill_log);
+        next = DrillLogListActivity.class;
+
+        validator = new Validator(this);
+        validator.setValidationListener(this);
 
         final Intent process = getIntent();
         String id =  process.getStringExtra("id");
@@ -67,6 +76,8 @@ public class DrillLogActivity extends BaseActivity {
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
         //final Project project = ProjectListActivity.projects.get(position);
         //DrillLog drillLog = new DrillLog(null, 0, new Date(), new ArrayList<GridCoordinate>());
+        getAndroidFields();
+
         if(drillLog != null) {
             isEdit = true;
             setDrillLogData(drillLog);
@@ -75,7 +86,6 @@ public class DrillLogActivity extends BaseActivity {
         {
             drillLog = new DrillLog();
             drillLog.setDrillerName(ProjectKeep.getInstance().getUserName());
-            EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
             driller_name.setText(drillLog.getDrillerName());
             drillLog.setGridCoordinates( new ArrayList<GridCoordinate>());
         }
@@ -85,16 +95,8 @@ public class DrillLogActivity extends BaseActivity {
             gridCoordinatesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent toDrillLogCoordinates = new Intent(DrillLogActivity.this, GridActivity.class);
-                    toDrillLogCoordinates.putExtra("id", project.getId());
-                    if (drillLog.getId() == null) {
-                        toDrillLogCoordinates.putExtra("drill.name", drillLog.getName());
-                    }
-                    else {
-                        toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
-                    }
-                    startActivity(toDrillLogCoordinates);
-                    finish();
+                    next = GridActivity.class;
+                    validator.validate();
                 }
             });
         }
@@ -119,13 +121,7 @@ public class DrillLogActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.menu_save:
                 // Here we might start a background refresh task
-                Log.d("app", "Save clicked");
-                Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
-                saveDrillLogData(project);
-                Intent toDrillLogList = new Intent(DrillLogActivity.this, DrillLogListActivity.class);
-                toDrillLogList.putExtra("id", project.getId());
-                startActivity(toDrillLogList);
-                finish();
+                validator.validate();
                 return true;
 
             default:
@@ -137,11 +133,6 @@ public class DrillLogActivity extends BaseActivity {
     }
 
     public void setDrillLogData(DrillLog drillLog){
-        EditText log_name = (EditText) findViewById(R.id.drill_log_name_text_field);
-        EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
-        EditText pattern_name = (EditText) findViewById(R.id.pattern_name_text_field);
-        EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
-        EditText bit_size = (EditText) findViewById(R.id.bit_size_text_field);
 
         log_name.setText(drillLog.getName());
         driller_name.setText(drillLog.getDrillerName());
@@ -150,14 +141,16 @@ public class DrillLogActivity extends BaseActivity {
         bit_size.setText(drillLog.getBitSize());
     }
 
+    private void getAndroidFields() {
+        log_name = (EditText) findViewById(R.id.drill_log_name_text_field);
+        driller_name = (EditText) findViewById(R.id.driller_name_text_field);
+        pattern_name = (EditText) findViewById(R.id.pattern_name_text_field);
+        shot_number = (EditText) findViewById(R.id.shot_number_text_field);
+        bit_size = (EditText) findViewById(R.id.bit_size_text_field);
+    }
+
     public String saveDrillLogData(Project project)
     {
-        EditText log_name = (EditText) findViewById(R.id.drill_log_name_text_field);
-        EditText driller_name = (EditText) findViewById(R.id.driller_name_text_field);
-        EditText pattern_name = (EditText) findViewById(R.id.pattern_name_text_field);
-        EditText shot_number = (EditText) findViewById(R.id.shot_number_text_field);
-        EditText bit_size = (EditText) findViewById(R.id.bit_size_text_field);
-
         String name = log_name.getText().toString();
         String drillerName = driller_name.getText().toString();
         String patternName = pattern_name.getText().toString();
@@ -178,8 +171,6 @@ public class DrillLogActivity extends BaseActivity {
 
         return asyncTask.getStatus().toString();
     }
-
-
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
         @Override
@@ -202,5 +193,38 @@ public class DrillLogActivity extends BaseActivity {
         }
     }
 
+    public void onValidationSucceeded() {
+        Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+        saveDrillLogData(project);
+        nextActivity();
+    }
+
+    private void nextActivity() {
+        Intent toActivity = new Intent(DrillLogActivity.this, next);
+        toActivity.putExtra("id", project.getId());
+        toActivity.putExtra("id", project.getId());
+        if (next == GridActivity.class) {
+            if (drillLog.getId() == null) {
+                toActivity.putExtra("drill.name", drillLog.getName());
+            }
+            else {
+                toActivity.putExtra("drillId", drillLog.getId());
+            }
+        }
+        startActivity(toActivity);
+        finish();
+    }
+
+    public void onValidationFailed(View view, Rule<?> rule) {
+
+        final String failureMessage = rule.getFailureMessage();
+        if (view instanceof EditText) {
+            EditText failed = (EditText) view;
+            failed.requestFocus();
+            failed.setError(failureMessage);
+        } else {
+            Toast.makeText(getApplicationContext(), failureMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
 
 }

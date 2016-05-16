@@ -26,7 +26,7 @@ import java.util.List;
 public class GridActivity extends BaseActivity {
     public Project project = null;
     public DrillLog drillLog = null;
-    SimpleDateFormat format = new SimpleDateFormat("dd MM yyyy");
+    SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
     HashMap hm = new HashMap();
 
     @Override
@@ -81,8 +81,8 @@ public class GridActivity extends BaseActivity {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
 
-        int rowCount = 40;
-        int colCount = 40;
+        int rowCount = 35;
+        int colCount = 35;
 
         setTitle(String.valueOf(drillLog.getName())+" - "+String.valueOf(drillLog.getDrillerName()));
         TableLayout.LayoutParams tableRowParams=

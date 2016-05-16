@@ -254,8 +254,6 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
         }
     }
     public void onValidationSucceeded() {
-        Toast.makeText(this, "Validation Succeeded", Toast.LENGTH_SHORT).show();
-
         Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
         saveDailyLog();
         backToDailyLogList();

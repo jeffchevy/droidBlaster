@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,9 @@ import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Required;
 
 import org.json.JSONObject;
 
@@ -35,7 +39,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class GridCoordinateActivity extends BaseActivity {
+public class GridCoordinateActivity extends BaseActivity implements Validator.ValidationListener{
+    private Validator validator = null;
     private boolean isEdit = false;
     public DrillLog drillLog = null;
     public Project project = null;
@@ -43,7 +48,13 @@ public class GridCoordinateActivity extends BaseActivity {
     private AsyncTask<String, String, String> asyncTask;
     SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
 
-
+    @Required(order=1)
+    TextView depth = null;
+    @Required(order=2)
+    TextView bitSize = null;
+    TextView comment = null;
+    @Required(order=3)
+    TextView date = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +63,12 @@ public class GridCoordinateActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_grid_coordinate);
+        validator = new Validator(this);
+        validator.setValidationListener(this);
 
         Intent process = getIntent();
         gridCoordinate = (GridCoordinate) process.getSerializableExtra("gridCoordinate");
-        if (gridCoordinate.getId() != null)
+        if (gridCoordinate.getId() != null || gridCoordinate.isDirty() == true)
         {
             isEdit = true;
         }
@@ -69,30 +82,21 @@ public class GridCoordinateActivity extends BaseActivity {
         else {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
-
+        getAndroidFields();
         setTitle("Drill Hole Row "+String.valueOf(gridCoordinate.getRow())+" Column "+String.valueOf(gridCoordinate.getColumn()));
-        TextView depth = (TextView) findViewById(R.id.depth_text_field);
         if(gridCoordinate.getDepth() != 0) {
             depth.setText(String.valueOf(gridCoordinate.getDepth()));
         }
         else {
             depth.setText("");
         }
-        TextView bitSize = (TextView) findViewById(R.id.bit_size_text_field);
         bitSize.setText(String.valueOf(gridCoordinate.getBitSize()));
-        TextView comment = (TextView) findViewById(R.id.comment_text_field);
         comment.setText(gridCoordinate.getComment().toString());
-        TextView date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
         date.setText(format.format(gridCoordinate.getDate()));
     }
 
     public String saveDrillCoordinateData(DrillLog drillLog, GridCoordinate gridCoordinate)
     {
-        TextView depth = (TextView) findViewById(R.id.depth_text_field);
-        TextView bitSize = (TextView) findViewById(R.id.bit_size_text_field);
-        TextView comment = (TextView) findViewById(R.id.comment_text_field);
-        TextView date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
-
         gridCoordinate.setDepth(Double.parseDouble(depth.getText().toString()));
         gridCoordinate.setBitSize(bitSize.getText().toString());
         gridCoordinate.setComment(comment.getText().toString());
@@ -107,9 +111,18 @@ public class GridCoordinateActivity extends BaseActivity {
             for(int i=0; i<grids.size(); i++)
             {
                 GridCoordinate gc = (GridCoordinate) grids.get(i);
-                if (gc.getId().equalsIgnoreCase(gridCoordinate.getId()))
-                {
-                    drillLog.getGridCoordinates().set(i, gridCoordinate);
+                // we will have the case where the id of the coordinate is not know
+                // until we sync with the server.  in the mean time we will update it by the coordinates
+                if (gridCoordinate.getId() == null) {
+                    if (gc.getRow() == gridCoordinate.getRow() && gc.getColumn() == gridCoordinate.getColumn()) {
+                        drillLog.getGridCoordinates().set(i, gridCoordinate);
+                    }
+                }
+                else {
+                    if (gc.getId().equalsIgnoreCase(gridCoordinate.getId()))
+                    {
+                        drillLog.getGridCoordinates().set(i, gridCoordinate);
+                    }
                 }
             }
         }
@@ -120,6 +133,14 @@ public class GridCoordinateActivity extends BaseActivity {
         return asyncTask.getStatus().toString();
 
     }
+
+    private void getAndroidFields() {
+        depth = (TextView) findViewById(R.id.depth_text_field);
+        bitSize = (TextView) findViewById(R.id.bit_size_text_field);
+        comment = (TextView) findViewById(R.id.comment_text_field);
+        date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
+    }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate our menu from the resources by using the menu inflater.
         getMenuInflater().inflate(R.menu.save, menu);
@@ -133,8 +154,7 @@ public class GridCoordinateActivity extends BaseActivity {
             case R.id.menu_save:
                 // Here we might start a background refresh task
                 Log.d("app", "Save clicked");
-                Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
-                saveDrillCoordinateData(drillLog,gridCoordinate);
+                validator.validate();
                 return true;
 
             default:
@@ -225,6 +245,22 @@ public class GridCoordinateActivity extends BaseActivity {
             finish();
         }
 
+    }
+    public void onValidationSucceeded() {
+        Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+        saveDrillCoordinateData(drillLog,gridCoordinate);
+    }
+
+    public void onValidationFailed(View view, Rule<?> rule) {
+
+        final String failureMessage = rule.getFailureMessage();
+        if (view instanceof EditText) {
+            EditText failed = (EditText) view;
+            failed.requestFocus();
+            failed.setError(failureMessage);
+        } else {
+            Toast.makeText(getApplicationContext(), failureMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
