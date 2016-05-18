@@ -4,6 +4,7 @@ import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -61,6 +62,9 @@ public class Project extends Entity {
     }
 
     public void addDrillLog(DrillLog drillLog) {
+        if (drillLogs == null) {
+            drillLogs = new ArrayList<>();
+        }
         drillLogs.add(drillLog);
     }
 
@@ -78,6 +82,9 @@ public class Project extends Entity {
     }
 
     public void addDailyLog(DailyLog dailyLog) {
+        if (dailyLogs == null) {
+            dailyLogs = new ArrayList<>();
+        }
         dailyLogs.add(dailyLog);
     }
 }
