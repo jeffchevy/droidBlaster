@@ -15,8 +15,12 @@ import android.widget.Toast;
 
 import com.drillandblast.R;
 import com.drillandblast.model.DailyLog;
+import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DailyListActivity extends BaseActivity {
     private static final String TAG = "DailyListActivity";
@@ -32,7 +36,8 @@ public class DailyListActivity extends BaseActivity {
         String id =  process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
 
-        arrayAdapter = new ArrayAdapter<DailyLog>(this, R.layout.simple_row, project.getDailyLogs());
+        List<DailyLog> dailyLogs = (project.getDailyLogs() == null) ? new ArrayList<DailyLog>() : project.getDailyLogs();
+        arrayAdapter = new ArrayAdapter<DailyLog>(this, R.layout.simple_row, dailyLogs);
 
         ListView listView = (ListView) findViewById(R.id.daily_list_view);
         listView.setAdapter(arrayAdapter);

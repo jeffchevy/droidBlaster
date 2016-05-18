@@ -18,6 +18,9 @@ import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DrillLogListActivity extends BaseActivity {
     private static final String TAG = "DrillLogListActivity";
     private ArrayAdapter arrayAdapter = null;
@@ -33,7 +36,8 @@ public class DrillLogListActivity extends BaseActivity {
         String id =  process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
 
-        arrayAdapter = new ArrayAdapter<DrillLog>(this, R.layout.simple_row, project.getDrillLogs());
+        List<DrillLog> drillLogs = (project.getDrillLogs() == null) ? new ArrayList<DrillLog>() : project.getDrillLogs();
+        arrayAdapter = new ArrayAdapter<DrillLog>(this, R.layout.simple_row, drillLogs);
 
         ListView listView = (ListView) findViewById(R.id.drill_log_list_view);
         listView.setAdapter(arrayAdapter);
