@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -47,7 +48,7 @@ public class ProjectSync {
         return instance;
     }
 
-    public void push()
+    public void push(HashSet<String> updateFailList)
     {
         List<Project> projects = ProjectKeep.getInstance().readFiles();
 
@@ -58,14 +59,15 @@ public class ProjectSync {
                 // remove file
                 ProjectKeep.getInstance().removeFile(project);
             } catch (Exception e) {
+                updateFailList.add(project.getId());
                 e.printStackTrace();
             }
         }
     }
-    public void pull()
+    public void pull(HashSet<String> updateFailList)
     {
         // get new data from cloud
-        List<Project> projects = getProjectData();
+        List<Project> projects = getProjectData(updateFailList);
 
         // update our in memory storage
         ProjectKeep.getInstance().refreshProjectData(projects);
@@ -86,9 +88,10 @@ public class ProjectSync {
 
     public void sync() {
         Log.i(TAG, "Starting Sync");
+        HashSet<String> updateFailList = new HashSet<>();
         synchronized (updateMutex) {
-            push();
-            pull();
+            push(updateFailList);
+            pull(updateFailList);
         }
         Log.i(TAG, "Finished Sync");
     }
@@ -215,7 +218,7 @@ public class ProjectSync {
         }
         return result;
     }
-    public List<Project> getProjectData() {
+    public List<Project> getProjectData(HashSet<String> ignoreList) {
         Log.i(TAG, "Starting getProjectData()");
         List<Project> projects = new ArrayList<>();
         try {
@@ -244,7 +247,15 @@ public class ProjectSync {
                             // read from json and only add project if it does not error out
                             try {
                                 project = getProjectFromJson(jsonobject);
-                                projects.add(project);
+
+                                // if we had a problem updating the project on the push then we don't want to overrite the data
+                                // we we query the server
+                                if (!ignoreList.contains(project.getId())) {
+                                    projects.add(project);
+                                }
+                                else {
+                                    Log.d(TAG, "Ignoring project: "+project.getId()+ " because of push issue!");
+                                }
                             } catch (Exception ex)
                             {
                                 Log.e(TAG, ex.getMessage());

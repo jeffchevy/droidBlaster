@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.drillandblast.R;
+import com.drillandblast.model.DailyLog;
+import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
@@ -21,11 +24,14 @@ import com.drillandblast.project.ProjectSync;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class ProjectActivity extends BaseActivity {
     private static final String TAG = "ProjectActivity";
     public boolean isEdit = false;
     public int position = 0;
     public Project project = null;
+    private boolean saveToDisk = false;
     private AsyncTask<String, String, String> asyncTask;
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -58,6 +64,7 @@ public class ProjectActivity extends BaseActivity {
 
         Intent process = getIntent();
 
+        saveToDisk = false;
         String id = process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
         if (project != null) {
@@ -66,6 +73,8 @@ public class ProjectActivity extends BaseActivity {
         }
         else {
             project = new Project();
+            project.setDailyLogs(new ArrayList<DailyLog>());
+            project.setDrillLogs(new ArrayList<DrillLog>());
         }
 
         Button drillLogButton = (Button) findViewById(R.id.drill_log_button);
@@ -75,10 +84,15 @@ public class ProjectActivity extends BaseActivity {
             drillLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent toDrillLogList = new Intent(ProjectActivity.this, DrillLogListActivity.class);
-                    toDrillLogList.putExtra("id", project.getId());
-                    startActivity(toDrillLogList);
-                    finish();
+                    if (project.getId() != null) {
+                        Intent toDrillLogList = new Intent(ProjectActivity.this, DrillLogListActivity.class);
+                        toDrillLogList.putExtra("id", project.getId());
+                        startActivity(toDrillLogList);
+                        finish();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Project has not been saved!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -86,30 +100,37 @@ public class ProjectActivity extends BaseActivity {
             dailyLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent toDailyLogList = new Intent(ProjectActivity.this, DailyListActivity.class);
-                    //toDailyLogList.putExtra("key", position);
-                    toDailyLogList.putExtra("id", project.getId());
-                    startActivity(toDailyLogList);
-                    finish();
+                    if (project.getId() != null) {
+                        Intent toDailyLogList = new Intent(ProjectActivity.this, DailyListActivity.class);
+                        //toDailyLogList.putExtra("key", position);
+                        toDailyLogList.putExtra("id", project.getId());
+                        startActivity(toDailyLogList);
+                        finish();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Project has not been saved!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
         Switch mySwitch = (Switch) findViewById(R.id.project_offline);
 
+        boolean offline = (project != null && project.getId() != null) ? ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId()) : false;
+        Log.d(TAG, "Project Offline status: "+offline);
         //set the switch to ON
-        mySwitch.setChecked(ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId()));
+        mySwitch.setChecked(offline);
         //attach a listener to check for changes in state
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (project.getId() != null) {
-                    if (isChecked) {
-                        ProjectKeep.getInstance().saveProjectToFile(project);
-                    } else {
+                    if (!isChecked) {
                         ProjectKeep.getInstance().removeFile(project);
                     }
+                    ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), isChecked);
+                } else {
+                    saveToDisk = isChecked;
                 }
-                ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), isChecked);
             }
         });
     }
@@ -171,6 +192,12 @@ public class ProjectActivity extends BaseActivity {
             else {
                 project.setDirty(true);
             }
+            // if saveToDisk is true then we coulnd't save the file before becuase we didn't know the id
+            // becuase it was not save before so do it now
+            if (saveToDisk && project.getId() != null ) {
+                ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
+            }
+
             if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
@@ -178,8 +205,11 @@ public class ProjectActivity extends BaseActivity {
         }
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-            backToProjectList();
+            String text = (result == null) ? "Error Saving" : result;
+            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            if (result != null) {
+                backToProjectList();
+            }
         }
 
     }

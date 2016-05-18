@@ -58,9 +58,11 @@ public class ProjectKeep {
 
     public DrillLog findDrillLogById(Project project, String drillId) {
         if (project != null) {
-            for (DrillLog log : project.getDrillLogs()) {
-                if (log.getId() != null && log.getId().equalsIgnoreCase(drillId)) {
-                    return log;
+            if (project.getDrillLogs() != null ) {
+                for (DrillLog log : project.getDrillLogs()) {
+                    if (log.getId() != null && log.getId().equalsIgnoreCase(drillId)) {
+                        return log;
+                    }
                 }
             }
         }
@@ -68,9 +70,11 @@ public class ProjectKeep {
     }
     public DrillLog findDrillLogByName(Project project, String drillName) {
         if (project != null) {
-            for (DrillLog log : project.getDrillLogs()) {
-                if (log.getName() != null && log.getName().equalsIgnoreCase(drillName)) {
-                    return log;
+            if (project.getDrillLogs() != null) {
+                for (DrillLog log : project.getDrillLogs()) {
+                    if (log.getName() != null && log.getName().equalsIgnoreCase(drillName)) {
+                        return log;
+                    }
                 }
             }
         }
@@ -79,9 +83,11 @@ public class ProjectKeep {
 
     public DailyLog findDailyLogById(Project project, String dailyId) {
         if (project != null) {
-            for (DailyLog log : project.getDailyLogs()) {
-                if (log.getId() != null && log.getId().equalsIgnoreCase(dailyId)) {
-                    return log;
+            if (project.getDailyLogs() != null) {
+                for (DailyLog log : project.getDailyLogs()) {
+                    if (log.getId() != null && log.getId().equalsIgnoreCase(dailyId)) {
+                        return log;
+                    }
                 }
             }
         }
@@ -89,9 +95,11 @@ public class ProjectKeep {
     }
     public DailyLog findDailyLogByNum(Project project, String num) {
         if (project != null) {
-            for (DailyLog log : project.getDailyLogs()) {
-                if (log.getDrillNum() != null && log.getDrillNum().equalsIgnoreCase(num)) {
-                    return log;
+            if (project.getDailyLogs() != null ) {
+                for (DailyLog log : project.getDailyLogs()) {
+                    if (log.getDrillNum() != null && log.getDrillNum().equalsIgnoreCase(num)) {
+                        return log;
+                    }
                 }
             }
         }
