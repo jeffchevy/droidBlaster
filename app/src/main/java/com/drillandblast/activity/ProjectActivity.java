@@ -191,6 +191,7 @@ public class ProjectActivity extends BaseActivity {
             }
             else {
                 project.setDirty(true);
+                result = "saving offline";
             }
             // if saveToDisk is true then we coulnd't save the file before becuase we didn't know the id
             // becuase it was not save before so do it now

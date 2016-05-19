@@ -6,20 +6,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import com.drillandblast.R;
 import com.drillandblast.http.NetworkStateReceiver;
-import com.drillandblast.model.Project;
 import com.drillandblast.project.ProjectKeep;
-import com.drillandblast.project.ProjectSync;
 
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends BaseActivity {

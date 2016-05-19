@@ -186,6 +186,7 @@ public class ProjectKeep {
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
+            Log.d(TAG, sb.toString());
             Gson gson = new Gson();
             project = gson.fromJson(sb.toString(), Project.class);
         } catch (Exception e) {
