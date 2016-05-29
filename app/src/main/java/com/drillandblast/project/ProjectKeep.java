@@ -1,12 +1,12 @@
 package com.drillandblast.project;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.Project;
+import com.drillandblast.model.ProjectNameComparator;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -16,13 +16,12 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 public class ProjectKeep {
     private static final String TAG = "ProjectKeep";
@@ -53,6 +52,7 @@ public class ProjectKeep {
     }
 
     public List<Project> findAll() {
+        Collections.sort(this.projects, new ProjectNameComparator());
         return this.projects;
     }
 
@@ -107,6 +107,7 @@ public class ProjectKeep {
     }
 
     public void refreshProjectData(List<Project> projects) {
+        Collections.sort(projects, new ProjectNameComparator());
         // set the new list
         this.projects = projects;
         // clean out old map

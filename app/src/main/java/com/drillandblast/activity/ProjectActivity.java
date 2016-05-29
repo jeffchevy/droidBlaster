@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -147,6 +149,28 @@ public class ProjectActivity extends BaseActivity {
         EditText project_name = (EditText) findViewById(R.id.project_name_text_field);
         EditText contractor_name = (EditText) findViewById(R.id.contractor_name_text_field);
 
+        project_name.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d(TAG, "Text changed: "+s);
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
         project_name.setText(project.getProjectName());
         contractor_name.setText(project.getContractorName());
         //bug: need to figure out how to use our date as a string and place it in the start date field
@@ -182,16 +206,23 @@ public class ProjectActivity extends BaseActivity {
                     if (!isEdit) {
                         ProjectKeep.getInstance().addProject(project);
                     }
-                    JSONObject jsonobject = new JSONObject(result);
-                    result = jsonobject.getString("message");
                 } catch (Exception e) {
-                    result = e.getMessage();
+                    try {
+                        ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
+                        ProjectKeep.getInstance().saveProjectToFile(project);
+                        JSONObject json = new JSONObject();
+                        json.put("success", false);
+                        json.put("message", e.getMessage());
+                        result = json.toString();
+                    }
+                    catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     e.printStackTrace();
                 }
             }
             else {
                 project.setDirty(true);
-                result = "saving offline";
             }
             // if saveToDisk is true then we coulnd't save the file before becuase we didn't know the id
             // becuase it was not save before so do it now
@@ -204,14 +235,20 @@ public class ProjectActivity extends BaseActivity {
             }
             return result;
         }
-        @Override
         protected void onPostExecute(String result) {
-            String text = (result == null) ? "Error Saving" : result;
-            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            if (result != null) {
-                backToProjectList();
+            String message = getResultMessage(result);
+            if (isUpdateSuccessful(result)) {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                if (result != null) {
+                    backToProjectList();
+                }
+            }
+            else {
+                String text = (message == null) ? "Error Saving" : message;
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             }
         }
+
 
     }
 }

@@ -206,6 +206,8 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
                 try {
                     result = ProjectSync.getInstance().updateDailyLog(isEdit, project, dailyLog);
                 } catch (Exception e) {
+                    ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
+                    ProjectKeep.getInstance().saveProjectToFile(project);
                     e.printStackTrace();
                 }
             }
@@ -215,9 +217,22 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
             if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
-
             return result;
         }
+        protected void onPostExecute(String result) {
+            String message = getResultMessage(result);
+            if (isUpdateSuccessful(result)) {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                if (result != null) {
+                    backToDailyLogList();
+                }
+            }
+            else {
+                String text = (message == null) ? "Error Saving" : message;
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     public void showDatePickerDialog(View v) {
@@ -256,7 +271,6 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
     public void onValidationSucceeded() {
         Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
         saveDailyLog();
-        backToDailyLogList();
 
     }
 

@@ -222,7 +222,7 @@ public class ProjectSync {
         Log.i(TAG, "Starting getProjectData()");
         List<Project> projects = new ArrayList<>();
         try {
-            HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"project");
+            HttpGet httpGet = new HttpGet(SimpleHttpClient.baseUrl+"activeProjects");
 
             httpGet.setHeader("token", ProjectKeep.getInstance().getToken());
             HttpClient httpclient = new DefaultHttpClient();

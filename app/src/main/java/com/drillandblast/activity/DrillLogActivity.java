@@ -22,6 +22,8 @@ import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Required;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class DrillLogActivity extends BaseActivity implements Validator.ValidationListener {
@@ -180,6 +182,8 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
                 try {
                     result = ProjectSync.getInstance().updateDrillLog(isEdit, project, drillLog);
                 } catch (Exception e) {
+                    ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
+                    ProjectKeep.getInstance().saveProjectToFile(project);
                     e.printStackTrace();
                 }
             }
@@ -191,12 +195,25 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             }
             return result;
         }
+        @Override
+        protected void onPostExecute(String result) {
+            String message = getResultMessage(result);
+            if (isUpdateSuccessful(result)) {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                if (result != null) {
+                    nextActivity();
+                }
+            }
+            else {
+                String text = (message == null) ? "Error Saving" : message;
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public void onValidationSucceeded() {
         Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
         saveDrillLogData(project);
-        nextActivity();
     }
 
     private void nextActivity() {

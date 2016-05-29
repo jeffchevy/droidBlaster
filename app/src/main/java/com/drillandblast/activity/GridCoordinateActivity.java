@@ -221,6 +221,8 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
                 try {
                     result = ProjectSync.getInstance().updateDrillCoordinate(isEdit, project, drillLog, gridCoordinate);
                 } catch (Exception e) {
+                    ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
+                    ProjectKeep.getInstance().saveProjectToFile(project);
                     e.printStackTrace();
                 }
             }
@@ -233,19 +235,33 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
             return result;
         }
         protected void onPostExecute(String result) {
-            Intent toDrillLogCoordinates = new Intent(GridCoordinateActivity.this, GridActivity.class);
-            toDrillLogCoordinates.putExtra("id", project.getId());
-            if (drillLog.getId() == null) {
-                toDrillLogCoordinates.putExtra("drill.name", drillLog.getName());
+            String message = getResultMessage(result);
+            if (isUpdateSuccessful(result)) {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                if (result != null) {
+                    nextActivity();
+                }
             }
-            else{
-                toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
+            else {
+                String text = (message == null) ? "Error Saving" : message;
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             }
-            startActivity(toDrillLogCoordinates);
-            finish();
         }
 
     }
+    public void nextActivity() {
+        Intent toDrillLogCoordinates = new Intent(GridCoordinateActivity.this, GridActivity.class);
+        toDrillLogCoordinates.putExtra("id", project.getId());
+        if (drillLog.getId() == null) {
+            toDrillLogCoordinates.putExtra("drill.name", drillLog.getName());
+        }
+        else{
+            toDrillLogCoordinates.putExtra("drillId", drillLog.getId());
+        }
+        startActivity(toDrillLogCoordinates);
+        finish();
+    }
+
     public void onValidationSucceeded() {
         Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
         saveDrillCoordinateData(drillLog,gridCoordinate);
