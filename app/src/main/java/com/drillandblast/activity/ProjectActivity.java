@@ -20,9 +20,11 @@ import com.drillandblast.R;
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.Project;
+import com.drillandblast.model.UpdateStatus;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -34,7 +36,7 @@ public class ProjectActivity extends BaseActivity {
     public int position = 0;
     public Project project = null;
     private boolean saveToDisk = false;
-    private AsyncTask<String, String, String> asyncTask;
+    private AsyncTask<String, String, UpdateStatus> asyncTask;
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate our menu from the resources by using the menu inflater.
@@ -192,63 +194,47 @@ public class ProjectActivity extends BaseActivity {
         return asyncTask.getStatus().toString();
     }
 
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-
-        private String resp;
+    private class AsyncTaskRunner extends AsyncTask<String, String, UpdateStatus> {
+        Gson gson = new Gson();
 
         @Override
-        protected String doInBackground(String... params) {
-            String result = null;
+        protected UpdateStatus doInBackground(String... params) {
+            UpdateStatus status = null;
 
             if (isConnected()) {
                 try {
-                    result = ProjectSync.getInstance().updateProjectHeader(isEdit, project);
+                    String result = ProjectSync.getInstance().updateProjectHeader(isEdit, project);
+                    status = gson.fromJson(result, UpdateStatus.class);
+
                     if (!isEdit) {
                         ProjectKeep.getInstance().addProject(project);
                     }
                 } catch (Exception e) {
-                    try {
-                        ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
-                        ProjectKeep.getInstance().saveProjectToFile(project);
-                        JSONObject json = new JSONObject();
-                        json.put("success", false);
-                        json.put("message", e.getMessage());
-                        result = json.toString();
-                    }
-                    catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    status = new UpdateStatus(false, e.getMessage());
+                    project.setDirty(true);
                     e.printStackTrace();
                 }
             }
             else {
                 project.setDirty(true);
+                status = new UpdateStatus(true, "Saving offline");
             }
             // if saveToDisk is true then we coulnd't save the file before becuase we didn't know the id
             // becuase it was not save before so do it now
-            if (saveToDisk && project.getId() != null ) {
+            if ((saveToDisk || project.isDirty()) && project.getId() != null ) {
                 ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
             }
 
             if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
-            return result;
+            return status;
         }
-        protected void onPostExecute(String result) {
-            String message = getResultMessage(result);
-            if (isUpdateSuccessful(result)) {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                if (result != null) {
-                    backToProjectList();
-                }
-            }
-            else {
-                String text = (message == null) ? "Error Saving" : message;
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(UpdateStatus status) {
+            Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_SHORT).show();
+            if (status.getSuccess()) {
+                backToProjectList();
             }
         }
-
-
     }
 }

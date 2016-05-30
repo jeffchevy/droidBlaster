@@ -24,9 +24,11 @@ import com.drillandblast.http.SimpleHttpClient;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
+import com.drillandblast.model.UpdateStatus;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
+import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Required;
@@ -45,7 +47,7 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
     public DrillLog drillLog = null;
     public Project project = null;
     public GridCoordinate gridCoordinate = null;
-    private AsyncTask<String, String, String> asyncTask;
+    private AsyncTask<String, String, UpdateStatus> asyncTask;
     SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
 
     @Required(order=1)
@@ -212,39 +214,41 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
         }
     }
 
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... params) {
+    private class AsyncTaskRunner extends AsyncTask<String, String, UpdateStatus> {
+        Gson gson = new Gson();
 
-            String result = null;
+        @Override
+        protected UpdateStatus doInBackground(String... params) {
+            UpdateStatus status = null;
+
             if (isConnected()) {
                 try {
-                    result = ProjectSync.getInstance().updateDrillCoordinate(isEdit, project, drillLog, gridCoordinate);
+                    String result = ProjectSync.getInstance().updateDrillCoordinate(isEdit, project, drillLog, gridCoordinate);
+                    status = gson.fromJson(result, UpdateStatus.class);
                 } catch (Exception e) {
-                    ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
-                    ProjectKeep.getInstance().saveProjectToFile(project);
+                    status = new UpdateStatus(false, e.getMessage());
+                    gridCoordinate.setDirty(true);
                     e.printStackTrace();
                 }
             }
             else {
                 gridCoordinate.setDirty(true);
+                status = new UpdateStatus(true, "Saving offline");
             }
+
+            if (gridCoordinate.isDirty() && project.getId() != null ) {
+                ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
+            }
+
             if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
-            return result;
+            return status;
         }
-        protected void onPostExecute(String result) {
-            String message = getResultMessage(result);
-            if (isUpdateSuccessful(result)) {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                if (result != null) {
-                    nextActivity();
-                }
-            }
-            else {
-                String text = (message == null) ? "Error Saving" : message;
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(UpdateStatus status) {
+            Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_SHORT).show();
+            if (status.getSuccess()) {
+                nextActivity();
             }
         }
 

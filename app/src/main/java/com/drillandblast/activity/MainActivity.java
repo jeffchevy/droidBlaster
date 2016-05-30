@@ -62,12 +62,16 @@ public class MainActivity extends BaseActivity {
         Map<String, ?> map = getSharedPreferences("file", Context.MODE_PRIVATE).getAll();
         token = (String)map.get("token");
         userName = (String)map.get("username");
-        if (token != null)
-        {
+        if (token != null) {
             ProjectKeep.getInstance().setToken(token);
             ProjectKeep.getInstance().setUserName(userName);
-            AsyncTaskRunner runner = new AsyncTaskRunner();
-            runner.execute();
+            if (isConnected()) {
+                AsyncTaskRunner runner = new AsyncTaskRunner();
+                runner.execute();
+            }
+            else {
+                nextActivity(ProjectListActivity.class);
+            }
         }
         else
         {

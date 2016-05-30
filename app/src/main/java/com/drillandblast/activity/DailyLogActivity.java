@@ -21,9 +21,11 @@ import android.widget.Toast;
 import com.drillandblast.R;
 import com.drillandblast.model.DailyLog;
 import com.drillandblast.model.Project;
+import com.drillandblast.model.UpdateStatus;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
+import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NumberRule;
@@ -39,7 +41,7 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
     private boolean isEdit = false;
     private Project project = null;
     private DailyLog dailyLog = null;
-    private AsyncTask<String, String, String> asyncTask;
+    private AsyncTask<String, String, UpdateStatus> asyncTask;
     SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy");
 
     @Required(order=1)
@@ -195,44 +197,42 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
         asyncTask = dailyLogSaveRunner.execute();
         return asyncTask.getStatus().toString();
     }
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-
-        private String resp;
+    private class AsyncTaskRunner extends AsyncTask<String, String, UpdateStatus> {
+        Gson gson = new Gson();
 
         @Override
-        protected String doInBackground(String... params) {
-            String result = null;
+        protected UpdateStatus doInBackground(String... params) {
+            UpdateStatus status = null;
             if (isConnected()) {
                 try {
-                    result = ProjectSync.getInstance().updateDailyLog(isEdit, project, dailyLog);
+                    String result = ProjectSync.getInstance().updateDailyLog(isEdit, project, dailyLog);
+                    status = gson.fromJson(result, UpdateStatus.class);
                 } catch (Exception e) {
-                    ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
-                    ProjectKeep.getInstance().saveProjectToFile(project);
+                    status = new UpdateStatus(false, e.getMessage());
+                    dailyLog.setDirty(true);
                     e.printStackTrace();
                 }
             }
             else {
                 dailyLog.setDirty(true);
+                status = new UpdateStatus(true, "Saving offline");
             }
+
+            if (dailyLog.isDirty() && project.getId() != null ) {
+                ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
+            }
+
             if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
-            return result;
+            return status;
         }
-        protected void onPostExecute(String result) {
-            String message = getResultMessage(result);
-            if (isUpdateSuccessful(result)) {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                if (result != null) {
-                    backToDailyLogList();
-                }
-            }
-            else {
-                String text = (message == null) ? "Error Saving" : message;
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(UpdateStatus status) {
+            Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_SHORT).show();
+            if (status.getSuccess()) {
+                backToDailyLogList();
             }
         }
-
     }
 
     public void showDatePickerDialog(View v) {
@@ -269,7 +269,6 @@ public class DailyLogActivity extends BaseActivity implements Validator.Validati
         }
     }
     public void onValidationSucceeded() {
-        Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
         saveDailyLog();
 
     }

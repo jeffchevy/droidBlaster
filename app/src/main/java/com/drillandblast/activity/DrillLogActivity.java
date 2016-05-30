@@ -15,9 +15,11 @@ import com.drillandblast.R;
 import com.drillandblast.model.DrillLog;
 import com.drillandblast.model.GridCoordinate;
 import com.drillandblast.model.Project;
+import com.drillandblast.model.UpdateStatus;
 import com.drillandblast.project.ProjectAvailableOfflineStatus;
 import com.drillandblast.project.ProjectKeep;
 import com.drillandblast.project.ProjectSync;
+import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Required;
@@ -31,7 +33,7 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
     public String token = null;
     public Project project = null;
     public DrillLog drillLog = null;
-    private AsyncTask<String, String, String> asyncTask;
+    private AsyncTask<String, String, UpdateStatus> asyncTask;
     private Validator validator = null;
     private Class<?> next = null;
 
@@ -174,45 +176,46 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
         return asyncTask.getStatus().toString();
     }
 
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+    private class AsyncTaskRunner extends AsyncTask<String, String, UpdateStatus> {
+        Gson gson = new Gson();
+
         @Override
-        protected String doInBackground(String... params) {
-            String result = null;
+        protected UpdateStatus doInBackground(String... params) {
+            UpdateStatus status = null;
             if (isConnected()) {
                 try {
-                    result = ProjectSync.getInstance().updateDrillLog(isEdit, project, drillLog);
+                    String result = ProjectSync.getInstance().updateDrillLog(isEdit, project, drillLog);
+                    status = gson.fromJson(result, UpdateStatus.class);
                 } catch (Exception e) {
-                    ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
-                    ProjectKeep.getInstance().saveProjectToFile(project);
+                    status = new UpdateStatus(false, e.getMessage());
+                    drillLog.setDirty(true);
                     e.printStackTrace();
                 }
             }
             else {
                 drillLog.setDirty(true);
+                status = new UpdateStatus(true, "Saving offline");
             }
+
+            if (drillLog.isDirty() && project.getId() != null ) {
+                ProjectAvailableOfflineStatus.getInstance().setIsAvailableOffline(project.getId(), true);
+            }
+
             if (ProjectAvailableOfflineStatus.getInstance().isAvailableOffline(project.getId())) {
                 ProjectKeep.getInstance().saveProjectToFile(project);
             }
-            return result;
+            return status;
         }
         @Override
-        protected void onPostExecute(String result) {
-            String message = getResultMessage(result);
-            if (isUpdateSuccessful(result)) {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                if (result != null) {
-                    nextActivity();
-                }
-            }
-            else {
-                String text = (message == null) ? "Error Saving" : message;
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(UpdateStatus status) {
+            Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_SHORT).show();
+            if (status.getSuccess()) {
+                nextActivity();
             }
         }
     }
 
     public void onValidationSucceeded() {
-        Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
         saveDrillLogData(project);
     }
 
