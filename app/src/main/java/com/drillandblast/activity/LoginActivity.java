@@ -53,9 +53,9 @@ public class LoginActivity extends AppCompatActivity implements Validator.Valida
         LoginActivity.context = getApplicationContext();
         setContentView(R.layout.activity_login);
         email = (EditText) findViewById(R.id.et_un);
-        email.setText("test@example.com");
+//        email.setText("test@example.com");
         password = (EditText) findViewById(R.id.et_pw);
-        password.setText("test");
+//        password.setText("test");
         ok = (Button) findViewById(R.id.btn_login);
         finalResult = (TextView) findViewById(R.id.tv_error);
         Boolean successValue = false;
