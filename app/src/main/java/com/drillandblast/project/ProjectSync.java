@@ -184,6 +184,8 @@ public class ProjectSync {
         json.put("pattern", drillLog.getPattern());
         json.put("shotNumber", drillLog.getShotNumber());
         json.put("bitSize", drillLog.getBitSize());
+        json.put("customerSignature", drillLog.getCustomerSignature());
+        json.put("supervisorSignature", drillLog.getSupervisorSignature());
 
         if (isEdit) {
             result = SimpleHttpClient.executeHttpPut("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
@@ -293,6 +295,8 @@ public class ProjectSync {
                     String pattern = (String) getValue(drillLog,"pattern");
                     String shotNumber = (String) getValue(drillLog,"shotNumber");
                     String bitSize = (String) getValue(drillLog,"bitSize");
+                    String customerSignature = (String) getValue(drillLog, "customerSignature");
+                    String supervisorSignature = (String) getValue(drillLog, "supervisorSignature");
 
                     String holesStr = (String)getValue(drillLog,"holes");
                     JSONArray holesArray = new JSONArray(holesStr);
@@ -319,6 +323,8 @@ public class ProjectSync {
                     DrillLog drill = new DrillLog(drillId, drillerName, name, pattern, Integer.valueOf(shotNumber), bitSize);
                     drill.setDirty(false);
                     drill.setGridCoordinates(holes);
+                    drill.setCustomerSignature(customerSignature);
+                    drill.setSupervisorSignature(supervisorSignature);
                     project.addDrillLog(drill);
                 }
             }

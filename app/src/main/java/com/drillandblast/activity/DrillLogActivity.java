@@ -1,14 +1,22 @@
 package com.drillandblast.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
@@ -26,6 +34,8 @@ import com.mobsandgeeks.saripaar.annotation.Required;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DrillLogActivity extends BaseActivity implements Validator.ValidationListener {
@@ -36,6 +46,9 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
     private AsyncTask<String, String, UpdateStatus> asyncTask;
     private Validator validator = null;
     private Class<?> next = null;
+    private String type = "Customer";
+    ImageButton cameraButton;
+    ImageView thumbnailImage;
 
     @Required(order=1)
     EditText log_name = null;
@@ -65,6 +78,19 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
         String id =  process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
 
+        cameraButton=(ImageButton)findViewById(R.id.camera_button);
+        thumbnailImage=(ImageView)findViewById(R.id.image_view);
+
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                next = SignatureActivity.class;
+                type = "Customer";
+                validator.validate();
+            }
+        });
+
         String drillId =  process.getStringExtra("drillId");
         if (drillId == null) {
             String drillName =  process.getStringExtra("drill.name");
@@ -72,6 +98,19 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
         }
         else {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
+        }
+        String signature = process.getStringExtra("signature");
+        if (signature != null && signature.length() > 0)
+        {
+            String signaturePerson =  process.getStringExtra("signaturePerson");
+            if (signaturePerson != null) {
+                if (signaturePerson.equals("Customer")) {
+                    drillLog.setCustomerSignature(signature);
+                }
+                else {
+                    drillLog.setSupervisorSignature(signature);
+                }
+            }
         }
 
         setTitle(project.getProjectName());
@@ -143,6 +182,15 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
         pattern_name.setText(drillLog.getPattern());
         shot_number.setText(drillLog.getShotNumber().toString());
         bit_size.setText(drillLog.getBitSize());
+        if (drillLog.getCustomerSignature() != null) {
+            setImage(drillLog.getCustomerSignature(), thumbnailImage);
+        }
+    }
+
+    private void setImage(String signature, ImageView view) {
+        byte[] bytes = Base64.decode(signature, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
+        view.setImageBitmap(bitmap);
     }
 
     private void getAndroidFields() {
@@ -222,13 +270,16 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
     private void nextActivity() {
         Intent toActivity = new Intent(DrillLogActivity.this, next);
         toActivity.putExtra("id", project.getId());
-        toActivity.putExtra("id", project.getId());
-        if (next == GridActivity.class) {
+        if (next == GridActivity.class || next == SignatureActivity.class) {
             if (drillLog.getId() == null) {
                 toActivity.putExtra("drill.name", drillLog.getName());
             }
             else {
                 toActivity.putExtra("drillId", drillLog.getId());
+            }
+            // do this also
+            if (next == SignatureActivity.class) {
+                toActivity.putExtra("signaturePerson", type);
             }
         }
         startActivity(toActivity);
@@ -246,5 +297,19 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             Toast.makeText(getApplicationContext(), failureMessage, Toast.LENGTH_SHORT).show();
         }
     }
+/*
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (data.getExtras() != null) {
+            Bitmap bp = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bp.compress(Bitmap.CompressFormat.PNG,100,bos);
+            byte[] bb = bos.toByteArray();
+            String image = Base64.encodeToString(bb, Base64.DEFAULT);
+            drillLog.setSignature(image);
+            thumbnailImage.setImageBitmap(bp);
+        }
+    }
+*/
 }

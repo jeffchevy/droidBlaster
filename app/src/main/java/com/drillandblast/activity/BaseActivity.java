@@ -30,6 +30,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         return successValue;
     }
+
     public String getResultMessage(String result) {
         JSONObject json = null;
         String message = null;

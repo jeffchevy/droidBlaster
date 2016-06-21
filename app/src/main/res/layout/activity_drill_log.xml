@@ -9,6 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".activity.DrillLogActivity">
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -135,5 +136,35 @@
         android:layout_below="@+id/bit_size_text_field"
         android:layout_alignRight="@+id/drill_log_name_text_field"
         android:layout_alignEnd="@+id/drill_log_name_text_field" />
+
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/hole_grid_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <ImageButton
+            android:id="@+id/camera_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hole_grid_button"
+            android:src="@drawable/ic_menu_camera" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/image_view"
+            android:src="@drawable/ic_menu_gallery"
+            android:layout_alignParentLeft="true"
+            android:maxWidth="400dp"
+            android:maxHeight="600dp"
+            android:layout_alignParentStart="true" />
+
+    </LinearLayout>
 
 </RelativeLayout>

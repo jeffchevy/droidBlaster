@@ -17,6 +17,8 @@ public class DrillLog extends Entity {
     private Integer shotNumber;
     private String bitSize;
     private List<GridCoordinate> gridCoordinates;
+    private String supervisorSignature;
+    private String customerSignature;
 
     public DrillLog() {
         super();
@@ -93,6 +95,22 @@ public class DrillLog extends Entity {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getSupervisorSignature() {
+        return supervisorSignature;
+    }
+
+    public void setSupervisorSignature(String supervisorSignature) {
+        this.supervisorSignature = supervisorSignature;
+    }
+
+    public String getCustomerSignature() {
+        return customerSignature;
+    }
+
+    public void setCustomerSignature(String customerSignature) {
+        this.customerSignature = customerSignature;
     }
 
     @Override

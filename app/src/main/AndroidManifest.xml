@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,6 +19,7 @@
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -26,48 +28,45 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.ProjectListActivity"
-            android:label="@string/projectList">
-        </activity>
-
+            android:label="@string/projectList"></activity>
         <activity
             android:name=".activity.ProjectActivity"
-            android:parentActivityName=".activity.ProjectListActivity"
-            android:label="@string/projectActivity">
+            android:label="@string/projectActivity"
+            android:parentActivityName=".activity.ProjectListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.ProjectListActivity" />
         </activity>
         <activity
             android:name=".activity.GridActivity"
-            android:parentActivityName=".activity.DrillLogActivity"
-            android:label="@string/gridActivity">
+            android:label="@string/gridActivity"
+            android:parentActivityName=".activity.DrillLogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.DrillLogActivity" />
         </activity>
         <activity
             android:name=".activity.DrillLogListActivity"
-            android:parentActivityName=".activity.ProjectActivity"
-            android:label="@string/drillList">
+            android:label="@string/drillList"
+            android:parentActivityName=".activity.ProjectActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.ProjectActivity" />
         </activity>
         <activity
             android:name=".activity.DailyListActivity"
-            android:parentActivityName=".activity.ProjectActivity"
-            android:label="@string/dailyLogList">
+            android:label="@string/dailyLogList"
+            android:parentActivityName=".activity.ProjectActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.ProjectActivity" />
         </activity>
         <activity
             android:name=".activity.DailyLogActivity"
-            android:parentActivityName=".activity.DailyListActivity"
-            android:label="@string/dailyList">
+            android:label="@string/dailyList"
+            android:parentActivityName=".activity.DailyListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.DailyListActivity" />
@@ -82,16 +81,16 @@
         </activity>
         <activity
             android:name=".activity.DrillLogActivity"
-            android:parentActivityName=".activity.DrillLogListActivity"
-            android:label="@string/drillLog">
+            android:label="@string/drillLog"
+            android:parentActivityName=".activity.DrillLogListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.DrillLogListActivity" />
         </activity>
         <activity
             android:name=".activity.GridCoordinateActivity"
-            android:parentActivityName=".activity.GridActivity"
-            android:label="@string/drillInfo">
+            android:label="@string/drillInfo"
+            android:parentActivityName=".activity.GridActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.GridActivity" />
@@ -130,6 +129,8 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".activity.SignatureActivity"></activity>
     </application>
 
 </manifest>
