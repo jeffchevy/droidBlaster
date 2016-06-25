@@ -12,6 +12,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
@@ -35,7 +37,7 @@ public class SignatureActivity extends AppCompatActivity {
     private Project project;
     private DrillLog drillLog;
     private String signaturePerson = null;
-
+    private EditText signatureName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +56,9 @@ public class SignatureActivity extends AppCompatActivity {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
 
+        signatureName = (EditText) findViewById(R.id.print_name);
+        TextView signatureType = (TextView) findViewById(R.id.signature_type);
+        signatureType.setText(signaturePerson);
         mSignaturePad = (SignaturePad) findViewById(R.id.signature_pad);
         mSignaturePad.setOnSignedListener(new SignaturePad.OnSignedListener() {
             @Override
@@ -116,6 +121,8 @@ public class SignatureActivity extends AppCompatActivity {
                 }
 */
                 Intent editDrillLog = new Intent(SignatureActivity.this, DrillLogActivity.class);
+                String name = signatureName.getText().toString();
+                editDrillLog.putExtra("signatureName", name);
                 editDrillLog.putExtra("signaturePerson", signaturePerson);
                 editDrillLog.putExtra("signature", image);
                 if (drillLog.getId() == null)
