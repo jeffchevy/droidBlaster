@@ -193,7 +193,7 @@ public class ProjectSync {
         String supervisorSignatureDateStr = (drillLog.getSupervisorSignatureDate() == null) ? null : serverDateFormat.format(drillLog.getSupervisorSignatureDate());
         json.put("supervisorSignatureDate", supervisorSignatureDateStr);
 
-        if (isEdit) {
+        if (isEdit && drillLog.getId() != null) {
             result = SimpleHttpClient.executeHttpPut("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
         } else {
             result = SimpleHttpClient.executeHttpPost("drillLogs/" + project.getId(), json, ProjectKeep.getInstance().getToken());

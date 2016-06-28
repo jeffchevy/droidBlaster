@@ -49,6 +49,7 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
     ImageView supervisorSignatureImage;
     TextView customerNameDate;
     TextView supervisorNameDate;
+    boolean gridEditable = true;
 
     @Required(order=1)
     EditText log_name = null;
@@ -131,9 +132,6 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
         String signature = process.getStringExtra("signature");
         if (signature != null && signature.length() > 0)
         {
-            // update the db
-            updateSignature= true;
-            saveDrillLogData(project);
 
             String signatureName = process.getStringExtra("signatureName");
             String signaturePerson =  process.getStringExtra("signaturePerson");
@@ -149,6 +147,9 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
                     drillLog.setSupervisorSignatureDate(new Date());
                 }
                 setDrillLogData(drillLog);
+                // update the db
+                updateSignature= true;
+                saveDrillLogData(project);
             }
         }
 
@@ -215,6 +216,7 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             supervisorSigned = true;
         }
         if (customerSigned && supervisorSigned) {
+            gridEditable = false;
             log_name.setEnabled(false);
             driller_name.setEnabled(false);
             pattern_name.setEnabled(false);
@@ -320,6 +322,9 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             // do this also
             if (next == SignatureActivity.class) {
                 toActivity.putExtra("signaturePerson", type);
+            }
+            if (next == GridActivity.class) {
+                toActivity.putExtra("editable", gridEditable);
             }
         }
         startActivity(toActivity);

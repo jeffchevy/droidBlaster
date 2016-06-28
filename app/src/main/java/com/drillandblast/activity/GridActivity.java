@@ -71,6 +71,7 @@ public class GridActivity extends BaseActivity {
         Intent process = getIntent();
 
         String id =  process.getStringExtra("id");
+        boolean editable = process.getBooleanExtra("editable", true);
         project = ProjectKeep.getInstance().findById(id);
         String drillId =  process.getStringExtra("drillId");
         if (drillId == null) {
@@ -114,23 +115,25 @@ public class GridActivity extends BaseActivity {
                     final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", drillLog.getBitSize(), new Date());
                     textView.setText("     ");
 
-                    textView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent toGridCoordinate = new Intent(GridActivity.this, GridCoordinateActivity.class);
-                            toGridCoordinate.putExtra("gridCoordinate", gridCoordinate);
-                            toGridCoordinate.putExtra("id", project.getId());
-                            // offline drill log does not have an id
-                            if (drillLog.getId() == null){
-                                toGridCoordinate.putExtra("drill.name", drillLog.getName());
+                    if (editable) {
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent toGridCoordinate = new Intent(GridActivity.this, GridCoordinateActivity.class);
+                                toGridCoordinate.putExtra("gridCoordinate", gridCoordinate);
+                                toGridCoordinate.putExtra("id", project.getId());
+                                // offline drill log does not have an id
+                                if (drillLog.getId() == null){
+                                    toGridCoordinate.putExtra("drill.name", drillLog.getName());
+                                }
+                                else {
+                                    toGridCoordinate.putExtra("drillId", drillLog.getId());
+                                }
+                                startActivity(toGridCoordinate);
+                                finish();
                             }
-                            else {
-                                toGridCoordinate.putExtra("drillId", drillLog.getId());
-                            }
-                            startActivity(toGridCoordinate);
-                            finish();
-                        }
-                    });
+                        });
+                    }
                 }
                 textView.setBackgroundDrawable(getResources().getDrawable(R.drawable.border));
                 row.addView(textView);
@@ -161,22 +164,23 @@ public class GridActivity extends BaseActivity {
                 }
 
                 tv.setText(String.valueOf(gridCoordinates.get(k).getDepth()));
-                tv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent toGridCoordinate = new Intent(GridActivity.this, GridCoordinateActivity.class);
-                        toGridCoordinate.putExtra("gridCoordinate", gc);
-                        toGridCoordinate.putExtra("id", project.getId());
-                        if (drillLog.getId() == null) {
-                            toGridCoordinate.putExtra("drill.name", drillLog.getName());
+                if (editable) {
+                    tv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent toGridCoordinate = new Intent(GridActivity.this, GridCoordinateActivity.class);
+                            toGridCoordinate.putExtra("gridCoordinate", gc);
+                            toGridCoordinate.putExtra("id", project.getId());
+                            if (drillLog.getId() == null) {
+                                toGridCoordinate.putExtra("drill.name", drillLog.getName());
+                            } else {
+                                toGridCoordinate.putExtra("drillId", drillLog.getId());
+                            }
+                            startActivity(toGridCoordinate);
+                            finish();
                         }
-                        else {
-                            toGridCoordinate.putExtra("drillId", drillLog.getId());
-                        }
-                        startActivity(toGridCoordinate);
-                        finish();
-                    }
-                });
+                    });
+                }
             }
         }
 
