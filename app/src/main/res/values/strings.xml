@@ -94,4 +94,9 @@
     <string name="projectActivity">Project</string>
     <string name="drillInfo">Hole Information</string>
 
+    <string name="signature">SignaturePad</string>
+    <string name="agreement">I have audited and verified the accuracy of this project.</string>
+    <string name="clear_pad">Clear Pad</string>
+    <string name="save_signature">Accept</string>
+    <string name="printed_name_label">Printed Name</string>
 </resources>

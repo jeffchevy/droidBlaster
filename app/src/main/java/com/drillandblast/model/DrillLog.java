@@ -17,6 +17,12 @@ public class DrillLog extends Entity {
     private Integer shotNumber;
     private String bitSize;
     private List<GridCoordinate> gridCoordinates;
+    private String supervisorSignature;
+    private String supervisorSignatureName;
+    private Date supervisorSignatureDate;
+    private String customerSignature;
+    private String customerSignatureName;
+    private Date customerSignatureDate;
 
     public DrillLog() {
         super();
@@ -93,6 +99,54 @@ public class DrillLog extends Entity {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getSupervisorSignature() {
+        return supervisorSignature;
+    }
+
+    public void setSupervisorSignature(String supervisorSignature) {
+        this.supervisorSignature = supervisorSignature;
+    }
+
+    public String getCustomerSignature() {
+        return customerSignature;
+    }
+
+    public void setCustomerSignature(String customerSignature) {
+        this.customerSignature = customerSignature;
+    }
+
+    public String getSupervisorSignatureName() {
+        return supervisorSignatureName;
+    }
+
+    public void setSupervisorSignatureName(String supervisorSignatureName) {
+        this.supervisorSignatureName = supervisorSignatureName;
+    }
+
+    public Date getSupervisorSignatureDate() {
+        return supervisorSignatureDate;
+    }
+
+    public void setSupervisorSignatureDate(Date supervisorSignatureDate) {
+        this.supervisorSignatureDate = supervisorSignatureDate;
+    }
+
+    public String getCustomerSignatureName() {
+        return customerSignatureName;
+    }
+
+    public void setCustomerSignatureName(String customerSignatureName) {
+        this.customerSignatureName = customerSignatureName;
+    }
+
+    public Date getCustomerSignatureDate() {
+        return customerSignatureDate;
+    }
+
+    public void setCustomerSignatureDate(Date customerSignatureDate) {
+        this.customerSignatureDate = customerSignatureDate;
     }
 
     @Override

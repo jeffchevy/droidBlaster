@@ -1,14 +1,20 @@
 package com.drillandblast.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.drillandblast.R;
@@ -24,9 +30,8 @@ import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Required;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DrillLogActivity extends BaseActivity implements Validator.ValidationListener {
     private boolean isEdit = false;
@@ -36,6 +41,15 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
     private AsyncTask<String, String, UpdateStatus> asyncTask;
     private Validator validator = null;
     private Class<?> next = null;
+    private boolean updateSignature = false;
+    private String type = "Customer";
+    ImageButton customerSignatureButton;
+    ImageView customerSignatureImage;
+    ImageButton supervisorSignatureButton;
+    ImageView supervisorSignatureImage;
+    TextView customerNameDate;
+    TextView supervisorNameDate;
+    boolean gridEditable = true;
 
     @Required(order=1)
     EditText log_name = null;
@@ -65,6 +79,31 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
         String id =  process.getStringExtra("id");
         project = ProjectKeep.getInstance().findById(id);
 
+        customerSignatureImage =(ImageView)findViewById(R.id.customer_signature_view);
+        customerNameDate = (TextView) findViewById(R.id.customer_name_date);
+
+        customerSignatureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                next = SignatureActivity.class;
+                type = "Customer";
+                validator.validate();
+            }
+        });
+        supervisorSignatureImage =(ImageView)findViewById(R.id.supervisor_signature_view);
+        supervisorNameDate = (TextView) findViewById(R.id.supervisor_name_date);
+
+        supervisorSignatureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                next = SignatureActivity.class;
+                type = "Supervisor";
+                validator.validate();
+            }
+        });
+
         String drillId =  process.getStringExtra("drillId");
         if (drillId == null) {
             String drillName =  process.getStringExtra("drill.name");
@@ -74,14 +113,8 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
 
-        setTitle(project.getProjectName());
-//                String.valueOf(drillLog.getName())+" - "+String.valueOf(drillLog.getDrillerName()));
-
-        Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
-        //final Project project = ProjectListActivity.projects.get(position);
-        //DrillLog drillLog = new DrillLog(null, 0, new Date(), new ArrayList<GridCoordinate>());
         getAndroidFields();
-
+        Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
         if(drillLog != null) {
             isEdit = true;
             setDrillLogData(drillLog);
@@ -94,6 +127,33 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             drillLog.setGridCoordinates( new ArrayList<GridCoordinate>());
         }
 
+        //final Project project = ProjectListActivity.projects.get(position);
+        //DrillLog drillLog = new DrillLog(null, 0, new Date(), new ArrayList<GridCoordinate>());
+        String signature = process.getStringExtra("signature");
+        if (signature != null && signature.length() > 0)
+        {
+
+            String signatureName = process.getStringExtra("signatureName");
+            String signaturePerson =  process.getStringExtra("signaturePerson");
+            if (signaturePerson != null) {
+                if (signaturePerson.equals("Customer")) {
+                    drillLog.setCustomerSignature(signature);
+                    drillLog.setCustomerSignatureName(signatureName);
+                    drillLog.setCustomerSignatureDate(new Date());
+                }
+                else {
+                    drillLog.setSupervisorSignature(signature);
+                    drillLog.setSupervisorSignatureName(signatureName);
+                    drillLog.setSupervisorSignatureDate(new Date());
+                }
+                setDrillLogData(drillLog);
+                // update the db
+                updateSignature= true;
+                saveDrillLogData(project);
+            }
+        }
+
+        setTitle(project.getProjectName());
 
         if(gridCoordinatesButton !=null) {
             gridCoordinatesButton.setOnClickListener(new View.OnClickListener() {
@@ -137,12 +197,38 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
     }
 
     public void setDrillLogData(DrillLog drillLog){
+        boolean customerSigned = false;
+        boolean supervisorSigned = false;
 
         log_name.setText(drillLog.getName());
         driller_name.setText(drillLog.getDrillerName());
         pattern_name.setText(drillLog.getPattern());
         shot_number.setText(drillLog.getShotNumber().toString());
         bit_size.setText(drillLog.getBitSize());
+        if (drillLog.getCustomerSignature() != null) {
+            setImage(drillLog.getCustomerSignature(), customerSignatureImage);
+            customerNameDate.setText(drillLog.getCustomerSignatureName()+" "+drillLog.getCustomerSignatureDate());
+            customerSigned = true;
+        }
+        if (drillLog.getSupervisorSignature() != null) {
+            setImage(drillLog.getSupervisorSignature(), supervisorSignatureImage);
+            supervisorNameDate.setText(drillLog.getSupervisorSignatureName()+" "+drillLog.getSupervisorSignatureDate());
+            supervisorSigned = true;
+        }
+        if (customerSigned && supervisorSigned) {
+            gridEditable = false;
+            log_name.setEnabled(false);
+            driller_name.setEnabled(false);
+            pattern_name.setEnabled(false);
+            shot_number.setEnabled(false);
+            bit_size.setEnabled(false);
+        }
+    }
+
+    private void setImage(String signature, ImageView view) {
+        byte[] bytes = Base64.decode(signature, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
+        view.setImageBitmap(bitmap);
     }
 
     private void getAndroidFields() {
@@ -208,10 +294,14 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
         }
         @Override
         protected void onPostExecute(UpdateStatus status) {
-            Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_SHORT).show();
-            if (status.getSuccess()) {
-                nextActivity();
+            // is we are not updating the signature then move to the next activity
+            if (!updateSignature) {
+                Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_SHORT).show();
+                if (status.getSuccess()) {
+                    nextActivity();
+                }
             }
+            updateSignature = false;
         }
     }
 
@@ -222,13 +312,19 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
     private void nextActivity() {
         Intent toActivity = new Intent(DrillLogActivity.this, next);
         toActivity.putExtra("id", project.getId());
-        toActivity.putExtra("id", project.getId());
-        if (next == GridActivity.class) {
+        if (next == GridActivity.class || next == SignatureActivity.class) {
             if (drillLog.getId() == null) {
                 toActivity.putExtra("drill.name", drillLog.getName());
             }
             else {
                 toActivity.putExtra("drillId", drillLog.getId());
+            }
+            // do this also
+            if (next == SignatureActivity.class) {
+                toActivity.putExtra("signaturePerson", type);
+            }
+            if (next == GridActivity.class) {
+                toActivity.putExtra("editable", gridEditable);
             }
         }
         startActivity(toActivity);
@@ -246,5 +342,19 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             Toast.makeText(getApplicationContext(), failureMessage, Toast.LENGTH_SHORT).show();
         }
     }
+/*
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (data.getExtras() != null) {
+            Bitmap bp = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bp.compress(Bitmap.CompressFormat.PNG,100,bos);
+            byte[] bb = bos.toByteArray();
+            String image = Base64.encodeToString(bb, Base64.DEFAULT);
+            drillLog.setSignature(image);
+            customerSignatureImage.setImageBitmap(bp);
+        }
+    }
+*/
 }

@@ -184,8 +184,16 @@ public class ProjectSync {
         json.put("pattern", drillLog.getPattern());
         json.put("shotNumber", drillLog.getShotNumber());
         json.put("bitSize", drillLog.getBitSize());
+        json.put("customerSignature", drillLog.getCustomerSignature());
+        json.put("customerSignatureName", drillLog.getCustomerSignatureName());
+        String customerSignatureDateStr = (drillLog.getCustomerSignatureDate() == null) ? null : serverDateFormat.format(drillLog.getCustomerSignatureDate());
+        json.put("customerSignatureDate", customerSignatureDateStr);
+        json.put("supervisorSignature", drillLog.getSupervisorSignature());
+        json.put("supervisorSignatureName", drillLog.getSupervisorSignatureName());
+        String supervisorSignatureDateStr = (drillLog.getSupervisorSignatureDate() == null) ? null : serverDateFormat.format(drillLog.getSupervisorSignatureDate());
+        json.put("supervisorSignatureDate", supervisorSignatureDateStr);
 
-        if (isEdit) {
+        if (isEdit && drillLog.getId() != null) {
             result = SimpleHttpClient.executeHttpPut("drillLogs/" + project.getId() + "/" + drillLog.getId(), json, ProjectKeep.getInstance().getToken());
         } else {
             result = SimpleHttpClient.executeHttpPost("drillLogs/" + project.getId(), json, ProjectKeep.getInstance().getToken());
@@ -280,6 +288,9 @@ public class ProjectSync {
         Project project = new Project(id, projectName, contractorName,new ArrayList<DrillLog>(), new ArrayList<DailyLog>());
         project.setDirty(false);
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        sdf.setTimeZone(UTC);
+
         String drillLogs = (String) getValue(jsonobject, "drillLogs");
         if (drillLogs != null)
         {
@@ -293,6 +304,18 @@ public class ProjectSync {
                     String pattern = (String) getValue(drillLog,"pattern");
                     String shotNumber = (String) getValue(drillLog,"shotNumber");
                     String bitSize = (String) getValue(drillLog,"bitSize");
+                    String customerSignature = (String) getValue(drillLog, "customerSignature");
+                    String customerSignatureName = (String) getValue(drillLog, "customerSignatureName");
+                    String customerSignatureDateStr = (String) getValue(drillLog, "customerSignatureDate");
+                    if (customerSignatureDateStr != null && customerSignatureDateStr.equals("null")) {
+                        customerSignatureDateStr = null;
+                    }
+                    String supervisorSignature = (String) getValue(drillLog, "supervisorSignature");
+                    String supervisorSignatureName = (String) getValue(drillLog, "supervisorSignatureName");
+                    String supervisorSignatureDateStr = (String) getValue(drillLog, "supervisorSignatureDate");
+                    if (supervisorSignatureDateStr != null && supervisorSignatureDateStr.equals("null")) {
+                        supervisorSignatureDateStr = null;
+                    }
 
                     String holesStr = (String)getValue(drillLog,"holes");
                     JSONArray holesArray = new JSONArray(holesStr);
@@ -307,8 +330,6 @@ public class ProjectSync {
                         String holeBitSize = (String) getValue(holesObject, "bitSize");
                         String dateStr = (String) getValue(holesObject, "date");
 
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                        sdf.setTimeZone(UTC);
                         Date date = sdf.parse(dateStr);
 
                         GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize, date);
@@ -319,6 +340,18 @@ public class ProjectSync {
                     DrillLog drill = new DrillLog(drillId, drillerName, name, pattern, Integer.valueOf(shotNumber), bitSize);
                     drill.setDirty(false);
                     drill.setGridCoordinates(holes);
+                    drill.setCustomerSignature(customerSignature);
+                    drill.setCustomerSignatureName(customerSignatureName);
+                    if (customerSignatureDateStr != null) {
+                        if (customerSignatureDateStr != null && customerSignatureDateStr.length() > 0) {
+                            drill.setCustomerSignatureDate(sdf.parse(customerSignatureDateStr));
+                        }
+                    }
+                    drill.setSupervisorSignature(supervisorSignature);
+                    drill.setSupervisorSignatureName(supervisorSignatureName);
+                    if (supervisorSignatureDateStr != null && supervisorSignatureDateStr.length() > 0) {
+                        drill.setSupervisorSignatureDate(sdf.parse(supervisorSignatureDateStr));
+                    }
                     project.addDrillLog(drill);
                 }
             }
@@ -339,8 +372,6 @@ public class ProjectSync {
                     String percussionTime = (String) getValue(dailyLog, "percussionTime");
                     String dateStr = (String) getValue(dailyLog, "date");
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                    sdf.setTimeZone(UTC);
                     Date date = sdf.parse(dateStr);
 
                     DailyLog daily = new DailyLog(dailyId, drillNumber, Double.valueOf(gallonsPumped), date, Double.valueOf(hourMeterStart),
