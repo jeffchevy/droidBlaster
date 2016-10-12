@@ -329,10 +329,11 @@ public class ProjectSync {
                         String comments = (String) getValue(holesObject, "comments");
                         String holeBitSize = (String) getValue(holesObject, "bitSize");
                         String dateStr = (String) getValue(holesObject, "date");
+                        Boolean isDrilled = (Boolean) getValue(holesObject, "isDrilled");
 
                         Date date = sdf.parse(dateStr);
 
-                        GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize, date);
+                        GridCoordinate gridCoordinate = new GridCoordinate(holeId, Integer.valueOf(x), Integer.valueOf(y), Double.valueOf(z), comments, holeBitSize, date, isDrilled);
                         gridCoordinate.setDirty(false);
                         holes.add(gridCoordinate);
                     }

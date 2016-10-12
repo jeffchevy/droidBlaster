@@ -13,12 +13,13 @@ public class GridCoordinate extends Entity {
     private String comment;
     private String bitSize;
     private Date date;
+    private Boolean isDrilled;
 
     public GridCoordinate() {
         super();
     }
 
-    public GridCoordinate(String id, int row, int column, double depth, String comment, String bitSize, Date date) {
+    public GridCoordinate(String id, int row, int column, double depth, String comment, String bitSize, Date date, boolean isDrilled) {
         this.id = id;
         this.row = row;
         this.column = column;
@@ -26,6 +27,7 @@ public class GridCoordinate extends Entity {
         this.comment = comment;
         this.bitSize = bitSize;
         this.date = date;
+        this.isDrilled = isDrilled;
     }
 
     public String getId() {
@@ -79,6 +81,11 @@ public class GridCoordinate extends Entity {
     public Date getDate() { return date; }
 
     public void setDate(Date date){this.date = date;}
+
+    public Boolean getIsDrilled() { return isDrilled; }
+
+    public void setIsDrilled(boolean isDrilled) { this.isDrilled = isDrilled; }
+
 
     @Override
     public String toString() {
