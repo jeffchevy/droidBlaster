@@ -215,14 +215,14 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             supervisorNameDate.setText(drillLog.getSupervisorSignatureName()+" "+drillLog.getSupervisorSignatureDate());
             supervisorSigned = true;
         }
-        if (customerSigned && supervisorSigned) {
-            gridEditable = false;
-            log_name.setEnabled(false);
-            driller_name.setEnabled(false);
-            pattern_name.setEnabled(false);
-            shot_number.setEnabled(false);
-            bit_size.setEnabled(false);
-        }
+//        if (customerSigned && supervisorSigned) {
+//            gridEditable = false;
+//            log_name.setEnabled(false);
+//            driller_name.setEnabled(false);
+//            pattern_name.setEnabled(false);
+//            shot_number.setEnabled(false);
+//            bit_size.setEnabled(false);
+//        }
     }
 
     private void setImage(String signature, ImageView view) {
