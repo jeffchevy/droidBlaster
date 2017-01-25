@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -57,6 +58,7 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
     TextView comment = null;
     @Required(order=3)
     TextView date = null;
+    CheckBox isDrilled = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +104,7 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
         gridCoordinate.setDepth(Double.parseDouble(depth.getText().toString()));
         gridCoordinate.setBitSize(bitSize.getText().toString());
         gridCoordinate.setComment(comment.getText().toString());
+        gridCoordinate.setIsDrilled(isDrilled.isChecked());
 
         AsyncTaskRunner holeTaskRunner = new AsyncTaskRunner();
         asyncTask = holeTaskRunner.execute();
@@ -141,6 +144,7 @@ public class GridCoordinateActivity extends BaseActivity implements Validator.Va
         bitSize = (TextView) findViewById(R.id.bit_size_text_field);
         comment = (TextView) findViewById(R.id.comment_text_field);
         date = (TextView) findViewById(R.id.drill_coordinate_date_text_field);
+        isDrilled = (CheckBox) findViewById(R.id.is_drilled_check_box);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

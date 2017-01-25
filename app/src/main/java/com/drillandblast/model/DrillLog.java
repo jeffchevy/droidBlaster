@@ -3,6 +3,7 @@ package com.drillandblast.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Zachary on 4/5/2016.
@@ -17,6 +18,7 @@ public class DrillLog extends Entity {
     private Integer shotNumber;
     private String bitSize;
     private List<GridCoordinate> gridCoordinates;
+    private Map managerGridCoordinates;
     private String supervisorSignature;
     private String supervisorSignatureName;
     private Date supervisorSignatureDate;
@@ -59,6 +61,14 @@ public class DrillLog extends Entity {
 
     public void setGridCoordinates(List<GridCoordinate> gridCoordinates) {
         this.gridCoordinates = gridCoordinates;
+    }
+
+    public Map getManagerGridCoordinates() {
+        return managerGridCoordinates;
+    }
+
+    public void setManagerGridCoordinates(Map managerGridCoordinates) {
+        this.managerGridCoordinates = managerGridCoordinates;
     }
 
     public String getPattern() {

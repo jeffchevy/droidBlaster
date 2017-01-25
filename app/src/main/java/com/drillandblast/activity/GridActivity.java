@@ -82,8 +82,8 @@ public class GridActivity extends BaseActivity {
             drillLog = ProjectKeep.getInstance().findDrillLogById(project, drillId);
         }
 
-        int rowCount = 35;
-        int colCount = 35;
+        int rowCount = 50;
+        int colCount = 30;
 
         setTitle(String.valueOf(drillLog.getName())+" - "+String.valueOf(drillLog.getDrillerName()));
         TableLayout.LayoutParams tableRowParams=
@@ -112,7 +112,7 @@ public class GridActivity extends BaseActivity {
                     textView.setBackgroundColor(Color.parseColor("#cccccc"));
                 }
                 else {
-                    final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", drillLog.getBitSize(), new Date());
+                    final GridCoordinate gridCoordinate = new GridCoordinate(null, i, j, 0, "", drillLog.getBitSize(), new Date(), false);
                     textView.setText("     ");
 
                     if (editable) {
@@ -159,7 +159,7 @@ public class GridActivity extends BaseActivity {
                 int month = cal.get(Calendar.MONTH);
                 int day = cal.get(Calendar.DAY_OF_MONTH);
 
-                if(dayColor.containsKey(day)) {
+                if(dayColor.containsKey(day) && gc.getIsDrilled()) {
                     tv.setBackgroundColor(Color.parseColor(dayColor.get(day).toString()));
                 }
 

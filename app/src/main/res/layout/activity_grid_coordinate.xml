@@ -111,4 +111,18 @@
         android:layout_alignEnd="@+id/comment_text_field"
         android:onClick="showDatePickerDialog" />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mark Hole as Drilled"
+        android:id="@+id/is_drilled_check_box"
+        android:layout_below="@+id/imageButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/drill_coordinate_date_text_field"
+        android:textSize="18dp"
+        android:textColor="@color/abc_secondary_text_material_light"
+        android:layout_alignRight="@+id/imageButton"
+        android:layout_alignEnd="@+id/imageButton" />
+
 </RelativeLayout>

@@ -48,6 +48,14 @@
                 android:value=".activity.DrillLogActivity" />
         </activity>
         <activity
+            android:name=".activity.ManagerGridActivity"
+            android:label="@string/managerGridActivity"
+            android:parentActivityName=".activity.DrillLogActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.DrillLogActivity" />
+        </activity>
+        <activity
             android:name=".activity.DrillLogListActivity"
             android:label="@string/drillList"
             android:parentActivityName=".activity.ProjectActivity">
