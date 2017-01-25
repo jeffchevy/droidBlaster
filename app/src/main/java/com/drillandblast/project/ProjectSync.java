@@ -226,6 +226,7 @@ public class ProjectSync {
         }
         return result;
     }
+
     public List<Project> getProjectData(HashSet<String> ignoreList) {
         Log.i(TAG, "Starting getProjectData()");
         List<Project> projects = new ArrayList<>();
@@ -330,6 +331,9 @@ public class ProjectSync {
                         String holeBitSize = (String) getValue(holesObject, "bitSize");
                         String dateStr = (String) getValue(holesObject, "date");
                         Boolean isDrilled = (Boolean) getValue(holesObject, "isDrilled");
+                        if(isDrilled == null) {
+                            isDrilled = false;
+                        }
 
                         Date date = sdf.parse(dateStr);
 

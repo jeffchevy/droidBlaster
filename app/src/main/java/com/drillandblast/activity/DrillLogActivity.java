@@ -115,6 +115,7 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
 
         getAndroidFields();
         Button gridCoordinatesButton = (Button) findViewById(R.id.hole_grid_button);
+        Button managerGridCoordinatesButton = (Button) findViewById(R.id.manager_hole_grid_button);
         if(drillLog != null) {
             isEdit = true;
             setDrillLogData(drillLog);
@@ -160,6 +161,16 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
                 @Override
                 public void onClick(View v) {
                     next = GridActivity.class;
+                    validator.validate();
+                }
+            });
+        }
+
+        if(managerGridCoordinatesButton !=null) {
+            managerGridCoordinatesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    next = ManagerGridActivity.class;
                     validator.validate();
                 }
             });
@@ -312,7 +323,7 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
     private void nextActivity() {
         Intent toActivity = new Intent(DrillLogActivity.this, next);
         toActivity.putExtra("id", project.getId());
-        if (next == GridActivity.class || next == SignatureActivity.class) {
+        if (next == GridActivity.class || next == SignatureActivity.class || next == ManagerGridActivity.class) {
             if (drillLog.getId() == null) {
                 toActivity.putExtra("drill.name", drillLog.getName());
             }
@@ -323,7 +334,7 @@ public class DrillLogActivity extends BaseActivity implements Validator.Validati
             if (next == SignatureActivity.class) {
                 toActivity.putExtra("signaturePerson", type);
             }
-            if (next == GridActivity.class) {
+            if (next == GridActivity.class || next == ManagerGridActivity.class) {
                 toActivity.putExtra("editable", gridEditable);
             }
         }
