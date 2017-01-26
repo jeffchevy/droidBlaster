@@ -121,7 +121,13 @@ public class ManagerGridActivity extends BaseActivity {
                         @Override
                         public void afterTextChanged(Editable s) {
                             String idToSearchFor = editText.getExcelId();
-                            editText.setDepth(Double.parseDouble(editText.getText().toString()));
+                            String text = editText.getText().toString();
+                            if(!text.isEmpty()) {
+                                editText.setDepth(Double.parseDouble(editText.getText().toString()));
+                            }
+                            else {
+                                editText.setDepth(0);
+                            }
                             if(coordinates.containsKey(Integer.parseInt(idToSearchFor))){
                                 coordinates.put(editText.getExcelId(), editText);
                                 System.out.println(editText.toString());
@@ -143,16 +149,6 @@ public class ManagerGridActivity extends BaseActivity {
         }
 
         if(drillLog != null) {
-            if(drillLog.getManagerGridCoordinates() != null && drillLog.getManagerGridCoordinates().size()>0) {
-                Collection<ExcelField> excelFields = drillLog.getManagerGridCoordinates().values();
-                for(ExcelField ef : excelFields) {
-                    TableRow tr = (TableRow) tbl.getChildAt(ef.getRow());
-                    if(tr.getChildAt(ef.getColumn())instanceof ExcelField) {
-                        ExcelField existingExcelField = (ExcelField) tr.getChildAt(ef.getColumn());
-                        existingExcelField.setText(String.valueOf(ef.getDepth()));
-                    }
-                }
-            }
             if(drillLog.getGridCoordinates() !=null && drillLog.getGridCoordinates().size() > 0) {
                 final List<GridCoordinate> gridCoordinates = drillLog.getGridCoordinates();
                 for(int k = 0; k<gridCoordinates.size(); k++)
